@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Normal Distribution Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f5f7fa; color: #333; line-height: 1.6; padding: 20px; }
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .description { font-size: 1.1rem; max-width: 800px; margin: 0 auto; }
+        .content { display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 30px; }
+        .chart-container { flex: 1; min-width: 400px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; }
+        .stat-item { text-align: center; padding: 10px; }
+        .stat-value { font-size: 1.4rem; font-weight: bold; color: #2575fc; }
+        .input-section { flex: 0 0 300px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        h2 { margin-bottom: 15px; color: #2575fc; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        textarea { width: 100%; height: 200px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; resize: vertical; font-family: monospace; margin-bottom: 15px; }
+        button { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; width: 100%; transition: transform 0.2s, box-shadow 0.2s; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
+        .instructions { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-top: 30px; }
+        .instructions h2 { color: #6a11cb; }
+        .instructions ul { padding-left: 20px; margin: 15px 0; }
+        .instructions li { margin-bottom: 8px; }
+        @media (max-width: 1200px) { .content { flex-direction: column; } .input-section { flex: 1; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Normal Distribution Visualization</h1>
+            <p class="description">Explore how adding new data points affects the distribution of a normally distributed dataset</p>
+        </header>
+        
+        <div class="content">
+            <div class="chart-container">
+                <h2>Original Dataset</h2>
+                <canvas id="originalChart"></canvas>
+                <div class="stats" id="originalStats"></div>
+            </div>
+            
+            <div class="input-section">
+                <h2>Add New Data Points</h2>
+                <textarea id="newDataInput" placeholder="Enter one number per line. Example:
+2.5
+-1.3
+0.8"></textarea>
+                <button id="modifyButton">Modify Dataset</button>
+                <div style="margin-top: 20px;">
+                    <h3>Sample Data to Try</h3>
+                    <ul>
+                        <li>Outliers: 5, -5, 10, -10</li>
+                        <li>Shift mean: 2, 2, 2, 2</li>
+                        <li>Bimodal: -3, -3, 3, 3</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h2>Updated Dataset</h2>
+                <canvas id="updatedChart"></canvas>
+                <div class="stats" id="updatedStats"></div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h2>How to Use This Tool</h2>
+            <ul>
+                <li>The left chart shows a normally distributed dataset with 1000 data points</li>
+                <li>Enter your own numbers in the text box (one number per line)</li>
+                <li>Click "Modify Dataset" to add your numbers to the original dataset</li>
+                <li>The updated distribution will be shown on the right for comparison</li>
+                <li>Statistical measures are calculated for both datasets</li>
+                <li>The blue curve shows the normal distribution fitted to the data</li>
+            </ul>
+            <p>Try adding outliers or multiple values in a specific range to see how they affect the distribution!</p>
+        </div>
+    </div>
+
+    <script>
+        function generateNormalData(mean, stdDev, count) {
+            const data = [];
+            for (let i = 0; i < count/2; i++) {
+                let u = 0, v = 0;
+                while(u === 0) u = Math.random();
+                while(v === 0) v = Math.random();
+                const num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+                data.push(num * stdDev + mean);
+                data.push(2 * mean - (num * stdDev + mean));
+            }
+            if (data.length > count) data.pop();
+            return data;
+        }
+
+        function calculateStats(data) {
+            const sorted = [...data].sort((a,b)=>a-b);
+            const min = Math.min(...data);
+            const max = Math.max(...data);
+            const range = max - min;
+            const mean = data.reduce((s,v)=>s+v,0)/data.length;
+            const mid = Math.floor(sorted.length/2);
+            const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid-1]+sorted[mid])/2;
+            const sqDiff = data.map(v => (v-mean)**2);
+            const stdDev = Math.sqrt(sqDiff.reduce((s,v)=>s+v,0)/data.length);
+            return { mean, median, min, max, range, stdDev };
+        }
+
+        function createHistogramData(data, binCount=20) {
+            const min = Math.min(...data);
+            const max = Math.max(...data);
+            const binSize = (max - min)/binCount;
+            const bins = Array(binCount).fill(0);
+            const labels = [];
+            for(let i=0;i<binCount;i++){
+                const binStart = min + i*binSize;
+                labels.push((binStart+binSize/2).toFixed(2));
+            }
+            data.forEach(v=>{
+                let idx = Math.floor((v-min)/binSize);
+                if(idx===binCount) idx--;
+                bins[idx]++;
+            });
+            return { bins, labels, binSize, min, max };
+        }
+
+        function createChart(canvasId, data, stats, isOriginal=false){
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const hist = createHistogramData(data);
+
+            // Generate normal curve at bin midpoints
+            const scaledCurve = hist.labels.map(l=>{
+                const x = parseFloat(l);
+                const y = (1/(stats.stdDev*Math.sqrt(2*Math.PI))) * Math.exp(-0.5*((x-stats.mean)/stats.stdDev)**2);
+                return y * data.length * hist.binSize;
+            });
+
+            if(window[canvasId+'Chart']) window[canvasId+'Chart'].destroy();
+
+            window[canvasId+'Chart'] = new Chart(ctx,{
+                type:'bar',
+                data:{
+                    labels: hist.labels,
+                    datasets:[
+                        { label:'Frequency', data: hist.bins, backgroundColor:'rgba(54, 162, 235, 0.5)', borderColor:'rgba(54, 162, 235, 1)', borderWidth:1, barPercentage:1.0, categoryPercentage:1.0 },
+                        { label:'Normal Distribution', data: scaledCurve, type:'line', borderColor:'rgba(255,99,132,1)', backgroundColor:'rgba(255,99,132,0)', borderWidth:2, pointRadius:0, fill:false }
+                    ]
+                },
+                options:{
+                    responsive:true,
+                    plugins:{
+                        legend:{ display:true, position:'top' },
+                        title:{ display:true, text:`Data Distribution (n=${data.length})` },
+                        tooltip:{
+                            callbacks:{
+                                label:function(ctx){
+                                    let label = ctx.dataset.label||'';
+                                    if(label) label += ': ';
+                                    label += ctx.datasetIndex===0 ? ctx.parsed.y.toFixed(0) : ctx.parsed.y.toFixed(2);
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales:{
+                        y:{ beginAtZero:true, title:{ display:true, text:'Frequency' } },
+                        x:{ title:{ display:true, text:'Value' }, ticks:{ callback:function(v,i){ return i%2===0 ? this.getLabelForValue(v) : ''; } } }
+                    }
+                }
+            });
+
+            const statsEl = document.getElementById(canvasId.replace('Chart','Stats'));
+            statsEl.innerHTML = `
+                <div class="stat-item"><div>Mean</div><div class="stat-value">${stats.mean.toFixed(4)}</div></div>
+                <div class="stat-item"><div>Median</div><div class="stat-value">${stats.median.toFixed(4)}</div></div>
+                <div class="stat-item"><div>Min</div><div class="stat-value">${stats.min.toFixed(4)}</div></div>
+                <div class="stat-item"><div>Max</div><div class="stat-value">${stats.max.toFixed(4)}</div></div>
+                <div class="stat-item"><div>Range</div><div class="stat-value">${stats.range.toFixed(4)}</div></div>
+                <div class="stat-item"><div>Std Dev</div><div class="stat-value">${stats.stdDev.toFixed(4)}</div></div>
+            `;
+            if(isOriginal && Math.abs(stats.mean-stats.median)<0.001){
+                statsEl.innerHTML += `<div class="stat-item" style="grid-column:1/-1;color:green;font-weight:bold;">Note: Mean and Median are equal (perfectly symmetric)</div>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', ()=>{
+            const initialData = generateNormalData(0,1,1000);
+            const initialStats = calculateStats(initialData);
+            createChart('originalChart', initialData, initialStats, true);
+
+            document.getElementById('modifyButton').addEventListener('click', ()=>{
+                const input = document.getElementById('newDataInput').value;
+                const newData = input.split('\n').map(l=>l.trim()).filter(l=>l!=='').map(Number).filter(n=>!isNaN(n));
+                if(newData.length===0){ alert('Please enter at least one valid number'); return; }
+                const updatedData = [...initialData, ...newData];
+                const updatedStats = calculateStats(updatedData);
+                createChart('updatedChart', updatedData, updatedStats);
+            });
+        });
+    </script>
+</body>
+</html>
