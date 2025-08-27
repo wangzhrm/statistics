@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribution Skewness Quiz</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            margin: 20px 0;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        .description {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        .question {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #e74c3c;
+        }
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        .options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .option {
+            padding: 10px 20px;
+            background: #f1f2f6;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option:hover {
+            background: #dfe4ea;
+        }
+        .option.selected {
+            background: #3498db;
+            color: white;
+        }
+        .show-answer {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .show-answer:hover {
+            background: #c0392b;
+        }
+        .answer {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .answer.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .answer.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .answer-reason {
+            margin-top: 10px;
+            font-style: italic;
+        }
+        .progress {
+            background: #f1f2f6;
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        .results {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        .results h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        .score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+        .reset-btn {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .reset-btn:hover {
+            background: #27ae60;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        footer {
+            margin-top: 20px;
+            color: white;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 600px) {
+            .options {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Distribution Skewness Quiz</h1>
+            <p class="description">Test your understanding of positively and negatively skewed distributions</p>
+        </header>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        
+        <div class="quiz-container" id="quiz-container">
+            <!-- Questions will be inserted here -->
+        </div>
+        
+        <div class="results" id="results">
+            <h2>Quiz Completed!</h2>
+            <div class="score" id="score">0/0</div>
+            <button class="reset-btn" id="reset-btn">Take Quiz Again</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Created for educational purposes - Test your knowledge of distribution skewness</p>
+    </footer>
+
+    <script>
+        const questions = [
+            {
+                question: "Wealth Distribution: Many people have modest wealth, but a small number of billionaires push the average up.",
+                answer: "positive",
+                reason: "The majority have modest wealth, but extreme values (billionaires) on the right create a long tail."
+            },
+            {
+                question: "Age at Retirement: Most people retire around the usual retirement age (e.g., 60-70), but some retire earlier (e.g., 40s or 50s).",
+                answer: "negative",
+                reason: "Most cluster at higher ages (right side), but early retirees create a long tail on the left."
+            },
+            {
+                question: "Housing Prices: Most houses are in affordable ranges, but luxury properties can be much higher.",
+                answer: "positive",
+                reason: "Most homes are moderately priced, but expensive luxury properties create extreme values on the right."
+            },
+            {
+                question: "Exam Scores: Most students score very high, but a few score poorly.",
+                answer: "negative",
+                reason: "Most scores cluster at the high end (right), with a few low scores creating a left tail."
+            },
+            {
+                question: "Hospital Stays: Most patients stay a short time, but a few with complex conditions stay for months.",
+                answer: "positive",
+                reason: "Most stays are short, but extended stays create extreme values on the right."
+            },
+            {
+                question: "Life Expectancy: Most people live close to or above the average lifespan, but some die early.",
+                answer: "negative",
+                reason: "Most cluster at higher ages (right), but early deaths create a long left tail."
+            },
+            {
+                question: "Waiting Times: Most people wait a reasonable amount, but some may wait extremely long.",
+                answer: "positive",
+                reason: "Most wait times are moderate, but extremely long waits create a right tail."
+            },
+            {
+                question: "Task Completion Time: Most people take about the same time, but a few rush through extremely quickly.",
+                answer: "negative",
+                reason: "Most take a similar amount of time, but extremely fast completions create a left tail."
+            },
+            {
+                question: "Insurance Claims: Most claims are small, but a few catastrophic claims are extremely large.",
+                answer: "positive",
+                reason: "Most claims are moderate, but extremely large claims create a long right tail."
+            },
+            {
+                question: "Customer Satisfaction: Most ratings cluster at 8-10, with a few much lower ones.",
+                answer: "negative",
+                reason: "Most ratings are high (right side), but a few low ratings create a left tail."
+            },
+            {
+                question: "Earthquake Magnitudes: Small tremors are frequent, very large quakes are rare but extreme.",
+                answer: "positive",
+                reason: "Most earthquakes are small, but extreme large quakes create a long right tail."
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+        const resultsContainer = document.getElementById('results');
+        const scoreElement = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+        const resetButton = document.getElementById('reset-btn');
+
+        let score = 0;
+        let answeredCount = 0;
+
+        // Initialize the quiz
+        function initQuiz() {
+            questions.forEach((q, index) => {
+                const questionEl = document.createElement('div');
+                questionEl.className = 'question';
+                questionEl.innerHTML = `
+                    <p class="question-text">${index + 1}. ${q.question}</p>
+                    <div class="options">
+                        <div class="option" data-choice="positive">Positively Skewed</div>
+                        <div class="option" data-choice="negative">Negatively Skewed</div>
+                    </div>
+                    <button class="show-answer">Show Answer</button>
+                    <div class="answer" id="answer-${index}">
+                        <strong class="answer-text"></strong>
+                        <p class="answer-reason">${q.reason}</p>
+                    </div>
+                `;
+                quizContainer.appendChild(questionEl);
+            });
+
+            // Add event listeners
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const questionDiv = this.closest('.question');
+                    questionDiv.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                });
+            });
+
+            document.querySelectorAll('.show-answer').forEach((button, index) => {
+                button.addEventListener('click', function() {
+                    const questionDiv = this.closest('.question');
+                    const selectedOption = questionDiv.querySelector('.option.selected');
+                    const answerDiv = questionDiv.querySelector('.answer');
+                    const answerText = questionDiv.querySelector('.answer-text');
+                    
+                    if (!selectedOption) {
+                        alert('Please select an answer first.');
+                        return;
+                    }
+                    
+                    const userAnswer = selectedOption.dataset.choice;
+                    const correctAnswer = questions[index].answer;
+                    
+                    if (userAnswer === correctAnswer) {
+                        answerDiv.className = 'answer correct';
+                        answerText.innerHTML = 'Correct! This distribution is ' + 
+                            (correctAnswer === 'positive' ? 'positively' : 'negatively') + ' skewed.';
+                        score++;
+                    } else {
+                        answerDiv.className = 'answer incorrect';
+                        answerText.innerHTML = 'Incorrect. This distribution is ' + 
+                            (correctAnswer === 'positive' ? 'positively' : 'negatively') + ' skewed.';
+                    }
+                    
+                    answerDiv.style.display = 'block';
+                    answeredCount++;
+                    
+                    // Update progress
+                    progressBar.style.width = `${(answeredCount / questions.length) * 100}%`;
+                    
+                    // Disable options after answer is shown
+                    questionDiv.querySelectorAll('.option').forEach(opt => {
+                        opt.style.pointerEvents = 'none';
+                    });
+                    this.style.display = 'none';
+                    
+                    // Check if all questions are answered
+                    if (answeredCount === questions.length) {
+                        showResults();
+                    }
+                });
+            });
+        }
+
+        function showResults() {
+            quizContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+            scoreElement.textContent = `${score}/${questions.length}`;
+        }
+
+        resetButton.addEventListener('click', function() {
+            score = 0;
+            answeredCount = 0;
+            progressBar.style.width = '0%';
+            quizContainer.innerHTML = '';
+            resultsContainer.style.display = 'none';
+            quizContainer.style.display = 'block';
+            initQuiz();
+        });
+
+        // Initialize the quiz
+        initQuiz();
+    </script>
+</body>
+</html>
