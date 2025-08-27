@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percentile Practice Quiz</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MathJax for LaTeX rendering -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .question-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .answer-feedback {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .correct {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .incorrect {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .working {
+            background-color: #e5e7eb;
+            color: #4b5563;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-10 flex items-center justify-center min-h-screen">
+
+    <div class="container mx-auto p-6 space-y-8">
+        <!-- Header -->
+        <header class="text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold text-slate-800">Percentile Practice Quiz</h1>
+            <p class="mt-2 text-lg text-slate-600">
+                Test your knowledge of percentile calculations using the formula \(L_p = (n+1)\frac{p}{100}\).
+            </p>
+            <div class="mt-4 p-4 rounded-xl border border-gray-200 bg-gray-50 text-gray-700">
+                <p><strong>Formula:</strong> \(L_p = (n+1)\frac{p}{100}\)</p>
+                <p>Where \(L_p\) is the location of the p-th percentile, \(n\) is the number of data points, and \(p\) is the percentile.</p>
+            </div>
+        </header>
+
+        <!-- Quiz Section -->
+        <main id="quiz-container" class="space-y-6">
+            <!-- Questions will be dynamically inserted here -->
+        </main>
+
+        <!-- Score & Restart -->
+        <footer class="text-center mt-8 space-y-4">
+            <div id="score-display" class="text-2xl font-semibold text-slate-800" style="display:none;"></div>
+            <button id="restart-btn" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition-colors" style="display:none;">
+                Restart Quiz
+            </button>
+        </footer>
+    </div>
+
+    <script>
+        // Array of quiz questions
+        const questions = [
+            {
+                data: [12, 15, 18, 20, 22],
+                percentile: 25,
+                answer: '15.75',
+                working: 'n = 5, p = 25. Location = $(5+1)*25/100 = 1.5$. The percentile value is between the 1st and 2nd data points. Value = 1st point + (0.5 * (2nd point - 1st point)) = $12 + (0.5 * (15 - 12)) = 12 + 1.5 = 13.5$.'
+            },
+            {
+                data: [5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
+                percentile: 50,
+                answer: '27.5',
+                working: 'n = 10, p = 50. Location = $(10+1)*50/100 = 5.5$. The percentile value is between the 5th and 6th data points. Value = 5th point + (0.5 * (6th point - 5th point)) = $25 + (0.5 * (30 - 25)) = 25 + 2.5 = 27.5$.'
+            },
+            {
+                data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+                percentile: 75,
+                answer: '12',
+                working: 'n = 15, p = 75. Location = $(15+1)*75/100 = 12$. Since the location is a whole number, the percentile is the 12th data point, which is 12.'
+            },
+            {
+                data: [2, 4, 6, 8, 10, 12, 14, 16],
+                percentile: 50,
+                answer: '9',
+                working: 'n = 8, p = 50. Location = $(8+1)*50/100 = 4.5$. The percentile value is between the 4th and 5th data points. Value = 4th point + (0.5 * (5th point - 4th point)) = $8 + (0.5 * (10 - 8)) = 8 + 1 = 9$.'
+            },
+            {
+                data: [100, 200, 300, 400, 500, 600, 700, 800, 900],
+                percentile: 30,
+                answer: '300',
+                working: 'n = 9, p = 30. Location = $(9+1)*30/100 = 3$. Since the location is a whole number, the percentile is the 3rd data point, which is 300.'
+            },
+            {
+                data: [10, 20, 30, 40, 50, 60, 70, 80],
+                percentile: 60,
+                answer: '54',
+                working: 'n = 8, p = 60. Location = $(8+1)*60/100 = 5.4$. The percentile value is between the 5th and 6th data points. Value = 5th point + (0.4 * (6th point - 5th point)) = $50 + (0.4 * (60 - 50)) = 50 + 4 = 54$.'
+            },
+            {
+                data: [1, 2, 3, 4, 5, 6, 7],
+                percentile: 90,
+                answer: '6.4',
+                working: 'n = 7, p = 90. Location = $(7+1)*90/100 = 7.2$. The percentile value is between the 7th and 8th data points. Value = 7th point + (0.2 * (8th point - 7th point)) = $6 + (0.2 * (7 - 6)) = 6 + 0.2 = 6.2$.'
+            },
+            {
+                data: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+                percentile: 80,
+                answer: '22',
+                working: 'n = 15, p = 80. Location = $(15+1)*80/100 = 12.8$. The percentile value is between the 12th and 13th data points. Value = 12th point + (0.8 * (13th point - 12th point)) = $21 + (0.8 * (22 - 21)) = 21 + 0.8 = 21.8$.'
+            },
+            {
+                data: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55],
+                percentile: 25,
+                answer: '1.5',
+                working: 'n = 10, p = 25. Location = $(10+1)*25/100 = 2.75$. The percentile value is between the 2nd and 3rd data points. Value = 2nd point + (0.75 * (3rd point - 2nd point)) = $1 + (0.75 * (2 - 1)) = 1 + 0.75 = 1.75$.'
+            },
+            {
+                data: [5, 10, 15, 20, 25],
+                percentile: 50,
+                answer: '15',
+                working: 'n = 5, p = 50. Location = $(5+1)*50/100 = 3$. Since the location is a whole number, the percentile is the 3rd data point, which is 15.'
+            }
+        ];
+        
+        // This function will fix the wrong answers and working processes.
+        function getFixedQuestions() {
+            const fixedQuestions = JSON.parse(JSON.stringify(questions)); // Deep copy to avoid modifying original array
+            fixedQuestions.forEach(q => {
+                const sortedData = [...q.data].sort((a, b) => a - b);
+                const n = sortedData.length;
+                const p = q.percentile;
+                const location = (n + 1) * p / 100;
+
+                let answer;
+                let working;
+
+                if (Number.isInteger(location)) {
+                    answer = sortedData[location - 1].toString();
+                    working = `n = ${n}, p = ${p}. Location = $(${n}+1)*${p}/100 = ${location}$. Since the location is a whole number, the percentile is the ${location}th data point, which is ${sortedData[location - 1]}.`;
+                } else {
+                    const i = Math.floor(location);
+                    const j = location - i;
+                    const value = sortedData[i - 1] + (j * (sortedData[i] - sortedData[i - 1]));
+                    answer = value.toFixed(2);
+                    working = `n = ${n}, p = ${p}. Location = $(${n}+1)*${p}/100 = ${location}$. The percentile value is between the ${i}th and ${i + 1}th data points. Value = ${i}th point + (${j} * (${i + 1}th point - ${i}th point)) = $${sortedData[i-1]} + (${j} * (${sortedData[i]} - ${sortedData[i-1]})) = ${value.toFixed(2)}$.`;
+                }
+                q.answer = answer;
+                q.working = working;
+            });
+            return fixedQuestions;
+        }
+
+        const fixedQuestions = getFixedQuestions();
+
+        let score = 0;
+        let submittedAnswers = {}; // Object to store submitted answers and feedback
+
+        // Function to create and display all questions
+        function displayAllQuestions() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = ''; // Clear previous content
+
+            fixedQuestions.forEach((question, index) => {
+                const sortedData = [...question.data].sort((a, b) => a - b);
+                const questionText = `Given the dataset $\{${sortedData.join(', ')}\}$, what is the ${question.percentile}th percentile?`;
+
+                const card = document.createElement('div');
+                card.className = 'question-card p-6 space-y-4';
+                card.innerHTML = `
+                    <h3 class="text-xl font-semibold text-slate-700">Question ${index + 1}</h3>
+                    <p class="text-lg text-slate-600">${questionText}</p>
+                    <input type="text" id="answer-input-${index}" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your answer">
+                    <div class="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0 md:space-x-4">
+                        <button id="submit-btn-${index}" class="px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition-colors w-full md:w-auto">
+                            Submit
+                        </button>
+                    </div>
+                    <div id="feedback-${index}" class="answer-feedback text-sm w-full md:w-auto text-center mt-2" style="display: none;"></div>
+                    <div id="working-${index}" class="working mt-2" style="display: none;"></div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Add event listeners for each question
+            fixedQuestions.forEach((question, index) => {
+                const submitBtn = document.getElementById(`submit-btn-${index}`);
+                const answerInput = document.getElementById(`answer-input-${index}`);
+                const feedbackDiv = document.getElementById(`feedback-${index}`);
+                const workingDiv = document.getElementById(`working-${index}`);
+
+                submitBtn.addEventListener('click', () => {
+                    if (submittedAnswers[index]) return; // Prevent multiple submissions
+
+                    const userAnswer = answerInput.value.trim();
+                    const correctAnswer = question.answer;
+
+                    if (parseFloat(userAnswer) === parseFloat(correctAnswer)) {
+                        feedbackDiv.textContent = 'Correct!';
+                        feedbackDiv.className = 'answer-feedback correct';
+                        score++;
+                    } else {
+                        feedbackDiv.textContent = `Incorrect. The correct answer is ${correctAnswer}.`;
+                        feedbackDiv.className = 'answer-feedback incorrect';
+                    }
+                    feedbackDiv.style.display = 'block';
+                    workingDiv.innerHTML = `<strong>Working Process:</strong> ${question.working}`;
+                    workingDiv.style.display = 'block';
+
+                    answerInput.disabled = true;
+                    submitBtn.disabled = true;
+                    submittedAnswers[index] = true;
+
+                    // Update score display
+                    updateScoreDisplay();
+                });
+            });
+        }
+
+        function updateScoreDisplay() {
+            const scoreDisplay = document.getElementById('score-display');
+            const totalQuestions = fixedQuestions.length;
+            const submittedCount = Object.keys(submittedAnswers).length;
+
+            scoreDisplay.textContent = `Your current score is: ${score} / ${submittedCount}`;
+            scoreDisplay.style.display = 'block';
+
+            if (submittedCount === totalQuestions) {
+                document.getElementById('restart-btn').style.display = 'block';
+            }
+        }
+
+        // Restart quiz
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            score = 0;
+            submittedAnswers = {};
+            document.getElementById('score-display').style.display = 'none';
+            document.getElementById('restart-btn').style.display = 'none';
+            displayAllQuestions();
+        });
+        
+        // Start the quiz on page load
+        window.onload = () => {
+            displayAllQuestions();
+        };
+
+    </script>
+</body>
+</html>
