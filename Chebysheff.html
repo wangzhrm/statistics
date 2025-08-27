@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Quiz: Chebysheff's Theorem</title>
+    <style>
+        /* General body and container styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: #f4f7f9;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading and introductory text styling */
+        h1 {
+            text-align: center;
+            color: #3498db;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .intro-text {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        /* Question block styling */
+        .question {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-left: 5px solid #3498db;
+            border-radius: 8px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .question:hover {
+            transform: translateY(-5px);
+        }
+
+        .question p {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        /* Options list and individual option styling */
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .option {
+            background: #ffffff;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            padding: 12px 18px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .option:hover {
+            background-color: #f8f9f9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .option.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+            animation: pulse-correct 0.5s ease-in-out;
+        }
+
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Rationale styling */
+        .rationale {
+            margin-top: 10px;
+            font-size: 0.95em;
+            font-style: italic;
+            color: #555;
+            display: none;
+        }
+
+        /* Hint styling */
+        .hint {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #007bff;
+            font-style: italic;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .hint-text {
+            display: none;
+            margin-top: 5px;
+            padding-left: 15px;
+            border-left: 3px solid #007bff;
+            color: #34495e;
+            font-style: normal;
+        }
+
+        /* Keyframe animations */
+        @keyframes pulse-correct {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Chebysheff's Theorem Practice Quiz</h1>
+        <p class="intro-text">
+            Test your understanding of Chebysheff's Theorem, which provides a minimum proportion of data that lies within a certain number of standard deviations from the mean for *any* data distribution.
+        </p>
+
+        <div id="quiz-container"></div>
+    </div>
+
+    <script>
+        const quizData = {
+            "questions": [
+                {
+                    "questionNumber": 1,
+                    "question": "The mean of a dataset is 50 with a standard deviation of 5. The distribution is unknown. What is the minimum percentage of data that falls between 40 and 60?",
+                    "answerOptions": [
+                        { "text": "At least 68%", "rationale": "This percentage is part of the Empirical Rule, which only applies to bell-shaped distributions.", "isCorrect": false },
+                        { "text": "At least 75%", "rationale": "The range from 40 to 60 is 2 standard deviations from the mean (since 60 - 50 = 10 and 10 / 5 = 2). Applying Chebysheff's Theorem with k=2 gives a minimum of 1 - 1/2² = 1 - 1/4 = 0.75, or 75%.", "isCorrect": true },
+                        { "text": "Approximately 95%", "rationale": "This percentage is from the Empirical Rule, not Chebysheff's Theorem, and it only applies to bell-shaped distributions.", "isCorrect": false },
+                        { "text": "At least 88.9%", "rationale": "This is the minimum percentage for a range of 3 standard deviations, not 2.", "isCorrect": false }
+                    ],
+                    "hint": "First, determine how many standard deviations away from the mean the values 40 and 60 are. Then, use Chebysheff's formula with that value for 'k'."
+                },
+                {
+                    "questionNumber": 2,
+                    "question": "A dataset on the daily temperature in a city has a mean of 70°F and a standard deviation of 8°F. What can you say about the proportion of days with a temperature between 46°F and 94°F?",
+                    "answerOptions": [
+                        { "text": "Approximately 99.7% of the temperatures are in this range.", "rationale": "This is an approximation from the Empirical Rule, which we cannot use without knowing the distribution is bell-shaped.", "isCorrect": false },
+                        { "text": "At least 88.9% of the temperatures are in this range.", "rationale": "The range from 46°F to 94°F is 3 standard deviations from the mean (70 - 46 = 24 and 24 / 8 = 3). Using Chebysheff's Theorem with k=3 gives a minimum of 1 - 1/3² = 1 - 1/9 ≈ 0.889, or 88.9%.", "isCorrect": true },
+                        { "text": "At least 75% of the temperatures are in this range.", "rationale": "This is the minimum percentage for a range of 2 standard deviations, not 3.", "isCorrect": false },
+                        { "text": "Exactly 95% of the temperatures are in this range.", "rationale": "Chebysheff's Theorem provides a lower bound, not an exact value, and this percentage is associated with the Empirical Rule.", "isCorrect": false }
+                    ],
+                    "hint": "Chebysheff's Theorem gives a lower bound for any distribution, while the Empirical Rule gives an approximation only for bell-shaped distributions."
+                },
+                {
+                    "questionNumber": 3,
+                    "question": "A student's exam score is 2.5 standard deviations from the class mean. What is the minimum proportion of students whose scores fall within this same range from the mean?",
+                    "answerOptions": [
+                        { "text": "At least 84%", "rationale": "Using Chebysheff's Theorem with k = 2.5, we get a minimum proportion of 1 - 1/(2.5)² = 1 - 1/6.25 = 1 - 0.16 = 0.84, or 84%.", "isCorrect": true },
+                        { "text": "At least 75%", "rationale": "This is the minimum percentage for a range of 2 standard deviations, not 2.5.", "isCorrect": false },
+                        { "text": "At least 88.9%", "rationale": "This is the minimum percentage for a range of 3 standard deviations, not 2.5.", "isCorrect": false },
+                        { "text": "At least 95%", "rationale": "This is an approximate percentage for a bell-shaped distribution and is not a lower bound from Chebysheff's Theorem.", "isCorrect": false }
+                    ],
+                    "hint": "The formula for Chebysheff's Theorem is $1 - 1/k^2$. Substitute 2.5 for k and solve."
+                },
+                {
+                    "questionNumber": 4,
+                    "question": "For a dataset with a mean of 150 and a standard deviation of 10, how many standard deviations away from the mean is the value 175?",
+                    "answerOptions": [
+                        { "text": "1.5 standard deviations", "rationale": "The distance from the mean is 175 - 150 = 25. To find the number of standard deviations (k), you divide this distance by the standard deviation: k = 25 / 10 = 2.5.", "isCorrect": false },
+                        { "text": "2 standard deviations", "rationale": "This would correspond to a value of 170 (150 + 2*10).", "isCorrect": false },
+                        { "text": "2.5 standard deviations", "rationale": "The value 175 is 25 units away from the mean of 150. To find the number of standard deviations, we divide the difference by the standard deviation: (175 - 150) / 10 = 25 / 10 = 2.5.", "isCorrect": true },
+                        { "text": "3 standard deviations", "rationale": "This would correspond to a value of 180 (150 + 3*10).", "isCorrect": false }
+                    ],
+                    "hint": "The number of standard deviations away from the mean (k) is calculated as: k = (x - mean) / standard deviation."
+                },
+                {
+                    "questionNumber": 5,
+                    "question": "Which statement best describes the difference between the Empirical Rule and Chebysheff's Theorem?",
+                    "answerOptions": [
+                        { "text": "The Empirical Rule gives a precise value, while Chebysheff's Theorem gives an approximation.", "rationale": "The Empirical Rule gives an *approximation*, not a precise value. Chebysheff's Theorem gives a *lower bound*, not an approximation.", "isCorrect": false },
+                        { "text": "The Empirical Rule applies to any distribution, while Chebysheff's Theorem is only for bell-shaped distributions.", "rationale": "This statement is the opposite of the truth. The Empirical Rule is specific to bell-shaped (normal) distributions, and Chebysheff's Theorem is a more general rule for any distribution.", "isCorrect": false },
+                        { "text": "Chebysheff's Theorem is more conservative (provides a looser bound) than the Empirical Rule when applied to a bell-shaped distribution.", "rationale": "This is correct. Since Chebysheff's Theorem must work for all distributions, its bounds are more conservative. For example, for a bell-shaped curve, approximately 95% of data is within 2 standard deviations, while Chebysheff's Theorem only guarantees a minimum of 75%.", "isCorrect": true },
+                        { "text": "Both rules provide the exact same percentages for bell-shaped distributions.", "rationale": "This is incorrect. Chebysheff's Theorem provides a lower bound, not the same approximate percentages as the Empirical Rule.", "isCorrect": false }
+                    ],
+                    "hint": "Think about the generality of each rule. Which one is a more universal statement that applies to a wider variety of data shapes?"
+                }
+            ]
+        };
+
+        const quizContainer = document.getElementById('quiz-container');
+
+        quizData.questions.forEach(q => {
+            const questionEl = document.createElement('div');
+            questionEl.classList.add('question');
+
+            const questionText = document.createElement('p');
+            questionText.textContent = `${q.questionNumber}. ${q.question}`;
+            questionEl.appendChild(questionText);
+
+            const optionsList = document.createElement('ul');
+            optionsList.classList.add('options-list');
+
+            q.answerOptions.forEach(opt => {
+                const optionItem = document.createElement('li');
+                optionItem.classList.add('option');
+                optionItem.textContent = opt.text;
+                optionsList.appendChild(optionItem);
+
+                optionItem.addEventListener('click', () => {
+                    const allOptions = optionsList.querySelectorAll('.option');
+                    allOptions.forEach(o => {
+                        o.classList.remove('correct', 'incorrect');
+                        if (o.querySelector('.rationale')) {
+                            o.querySelector('.rationale').remove();
+                        }
+                    });
+
+                    const rationaleEl = document.createElement('div');
+                    rationaleEl.classList.add('rationale');
+                    rationaleEl.textContent = opt.rationale;
+
+                    if (opt.isCorrect) {
+                        optionItem.classList.add('correct');
+                        rationaleEl.style.display = 'block';
+                    } else {
+                        optionItem.classList.add('incorrect');
+                        rationaleEl.style.display = 'block';
+                        const correctOption = allOptions[q.answerOptions.findIndex(o => o.isCorrect)];
+                        if (correctOption) {
+                            correctOption.classList.add('correct');
+                        }
+                    }
+                    optionItem.appendChild(rationaleEl);
+                });
+            });
+
+            questionEl.appendChild(optionsList);
+
+            const hintBtn = document.createElement('div');
+            hintBtn.classList.add('hint');
+            hintBtn.textContent = 'Show Hint';
+            questionEl.appendChild(hintBtn);
+
+            const hintText = document.createElement('div');
+            hintText.classList.add('hint-text');
+            hintText.textContent = q.hint;
+            questionEl.appendChild(hintText);
+
+            hintBtn.addEventListener('click', () => {
+                hintText.style.display = 'block';
+                hintBtn.style.display = 'none';
+            });
+
+            quizContainer.appendChild(questionEl);
+        });
+    </script>
+</body>
+</html>
