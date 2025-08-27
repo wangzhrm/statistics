@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Population vs Sample Statistics Activity</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(to bottom, #f9fbfd, #e6f0f7);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin: 25px 0 15px;
+            color: #2c3e50;
+            padding-bottom: 8px;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .instructions {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            border-left: 5px solid #4a6491;
+        }
+        
+        .activity-steps {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #4a6491;
+            border-radius: 4px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .step-number {
+            background-color: #4a6491;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        
+        .step-text {
+            flex: 1;
+        }
+        
+        .discussion-questions {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #4a6491;
+            border-radius: 4px;
+        }
+        
+        .question-number {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-right: 8px;
+        }
+        
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Population vs Sample Statistics Activity</h1>
+            <p>Understanding Parameters and Statistics through Data Analysis</p>
+        </header>
+        
+        <section class="instructions">
+            <h2>Activity Overview</h2>
+            <p>In this activity, we will explore the differences between <span class="highlight">population parameters</span> and <span class="highlight">sample statistics</span> by analyzing distance data from our class.</p>
+        </section>
+        
+        <section class="activity-steps">
+            <h2>Activity Steps</h2>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-text">Each student fills out the online form that includes variables including name, gender, and distance from home to UESTC campus.</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-text">One student randomly selects several students from the class roster.</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-text">Another student selects several students sitting in the back of the classroom.</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-text">Calculate the population mean and standard deviation for all students.</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-text">Calculate the sample mean and standard deviation for the randomly selected students.</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">6</div>
+                <div class="step-text">Calculate the sample mean and standard deviation for the students from the back of the classroom.</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">7</div>
+                <div class="step-text">Compare the population parameters with the sample statistics.</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">8</div>
+                <div class="step-text">Discuss why differences exist between parameters and statistics.</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">9</div>
+                <div class="step-text">Analyze why the back-of-class sample might differ from the random sample.</div>
+            </div>
+        </section>
+        
+        <section class="discussion-questions">
+            <h2>Discussion Questions</h2>
+            
+            <div class="question">
+                <p><span class="question-number">1.</span> What differences do you observe between the population parameters and sample statistics?</p>
+            </div>
+            
+            <div class="question">
+                <p><span class="question-number">2.</span> Why are there differences between the population mean and the sample means?</p>
+            </div>
+            
+            <div class="question">
+                <p><span class="question-number">3.</span> How does the random sample compare to the back-of-class sample? Why might they differ?</p>
+            </div>
+            
+            <div class="question">
+                <p><span class="question-number">4.</span> What might be the reasons for the difference between the back sample and the population?</p>
+            </div>
+            
+            <div class="question">
+                <p><span class="question-number">5.</span> Is the back-of-class sample representative of the population? Why or why not?</p>
+            </div>
+            
+            <div class="question">
+                <p><span class="question-number">6.</span> What are the implications of these differences for statistical inference?</p>
+            </div>
+            
+            <div class="question">
+                <p><span class="question-number">7.</span> How does sample size affect the accuracy of statistics?</p>
+            </div>
+            
+            <div class="question">
+                <p><span class="question-number">8.</span> Why is random sampling important in statistics?</p>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
