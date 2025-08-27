@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Cream & Drowning: Correlation vs Causation</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #1a2a6c;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            color: #fdbb2d;
+            font-weight: 300;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .story-section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        h2 {
+            color: #1a2a6c;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #fdbb2d;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .chart-box {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .discussion-prompt {
+            background: #e8f5e9;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #4caf50;
+            text-align: center;
+        }
+        
+        .discussion-prompt h2 {
+            color: #2e7d32;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #1a2a6c;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-container {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ice Cream Sales & Drowning Incidents</h1>
+            <p class="subtitle">A Case Study in Correlation vs Causation</p>
+        </header>
+        
+        <div class="content">
+            <div class="story-section">
+                <h2>The Story</h2>
+                <p>In the coastal town of Sunnyville, researchers noticed something alarming. During the summer months, both ice cream sales and drowning incidents were increasing at an alarming rate.</p>
+                <p>The town council collected data over the past five years and found a strong correlation (r = 0.92) between ice cream sales and drowning incidents. The mayor presented these findings, suggesting that ice cream consumption might be causing people to drown.</p>
+                <p>"The data clearly shows," the mayor stated, "that as ice cream sales increase, so do drowning deaths. We must consider regulating ice cream sales to protect our citizens!"</p>
+                
+                <div class="chart-container">
+                    <div class="chart-box">
+                        <canvas id="correlationChart"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="discussion-prompt">
+                <h2>Class Activity: What's Wrong With This Analysis?</h2>
+                <p>Discuss with your group why the town's conclusion might be incorrect. Consider what other factors could explain this correlation.</p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Class Activity &copy; 2023 | Understanding Correlation vs Causation</p>
+        </footer>
+    </div>
+
+    <script>
+        // Scatter correlation chart
+        const correlationCtx = document.getElementById('correlationChart').getContext('2d');
+        new Chart(correlationCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Ice Cream Sales vs Drowning Incidents',
+                    data: [
+                        {x: 50, y: 2}, {x: 75, y: 3}, {x: 150, y: 4}, 
+                        {x: 200, y: 5}, {x: 400, y: 7}, {x: 650, y: 12}, 
+                        {x: 900, y: 18}, {x: 850, y: 16}, {x: 600, y: 10}, 
+                        {x: 350, y: 6}, {x: 100, y: 3}, {x: 60, y: 2}
+                    ],
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    pointRadius: 8,
+                    pointHoverRadius: 10
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Ice Cream Sales (in thousands of dollars)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Drowning Incidents'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Strong Correlation (r = 0.92)',
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Sales: $${context.raw.x}K, Drownings: ${context.raw.y}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Line chart with dual axes
+        const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+        new Chart(monthlyCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'Ice Cream Sales ($ thousands)',
+                        data: [50, 75, 150, 200, 400, 650, 900, 850, 600, 350, 100, 60],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        tension: 0.3,
+                        fill: true,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'Drowning Incidents',
+                        data: [2, 3, 4, 5, 7, 12, 18, 16, 10, 6, 3, 2],
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.3,
+                        fill: true,
+                        yAxisID: 'y2'
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y1: {
+                        type: 'linear',
+                        position: 'left',
+                        title: { display: true, text: 'Ice Cream Sales ($K)' }
+                    },
+                    y2: {
+                        type: 'linear',
+                        position: 'right',
+                        title: { display: true, text: 'Drowning Incidents' },
+                        grid: { drawOnChartArea: false } // avoids gridline overlap
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Monthly Trends: Both Peak in Summer',
+                        font: { size: 16 }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
