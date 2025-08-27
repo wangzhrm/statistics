@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics Quiz: Empirical Rule & Chebysheff's Theorem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #0056b3;
+        }
+        .question {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 20px;
+        }
+        .question p {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .option {
+            background: #e9e9e9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background: #dcdcdc;
+        }
+        .option.correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .rationale {
+            margin-top: 5px;
+            font-style: italic;
+            color: #555;
+            display: none;
+        }
+        .hint {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #007bff;
+            font-style: italic;
+            cursor: pointer;
+        }
+        .hint-text {
+            display: none;
+            margin-top: 5px;
+            padding-left: 15px;
+            border-left: 3px solid #007bff;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .submit-btn, .next-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Practice Quiz: Empirical Rule & Chebysheff's Theorem</h1>
+        <p>This quiz will test your knowledge of two important statistical concepts. Choose the best answer for each question.</p>
+        <div id="quiz-container"></div>
+    </div>
+
+    <script>
+        const quizData = {
+            "questions": [
+                {
+                    "questionNumber": 1,
+                    "question": "A dataset of student test scores has a bell-shaped distribution with a mean of 75 and a standard deviation of 5. According to the Empirical Rule, what percentage of students scored between 70 and 80?",
+                    "imageUrl": null,
+                    "answerOptions": [
+                        {
+                            "text": "95%",
+                            "rationale": "This range is within 2 standard deviations of the mean, which corresponds to approximately 95% of the data for a bell-shaped distribution.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "68%",
+                            "rationale": "This range is exactly one standard deviation above and below the mean, and for a bell-shaped curve, approximately 68% of the data falls within this range.",
+                            "isCorrect": true
+                        },
+                        {
+                            "text": "99.7%",
+                            "rationale": "This percentage corresponds to the range within 3 standard deviations of the mean, not one.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "50%",
+                            "rationale": "The 50% mark is related to the median, not the spread of data within a specific range according to the Empirical Rule.",
+                            "isCorrect": false
+                        }
+                    ],
+                    "hint": "The Empirical Rule is also known as the 68-95-99.7 rule. What do those numbers represent?"
+                },
+                {
+                    "questionNumber": 2,
+                    "question": "The ages of employees at a large company have a mean of 40 years and a standard deviation of 5 years. The distribution is unknown. According to Chebysheff's Theorem, what can be said about the percentage of employees whose ages are between 30 and 50 years?",
+                    "imageUrl": null,
+                    "answerOptions": [
+                        {
+                            "text": "At least 68% of the employees are between 30 and 50 years old.",
+                            "rationale": "Chebysheff's Theorem does not guarantee a specific percentage for one standard deviation; it applies to any distribution and provides a lower bound for ranges beyond one standard deviation.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "Exactly 95% of the employees are between 30 and 50 years old.",
+                            "rationale": "This statement is true only if the distribution is bell-shaped and not guaranteed for an unknown distribution.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "At least 75% of the employees are between 30 and 50 years old.",
+                            "rationale": "The range from 30 to 50 is two standard deviations away from the mean on each side. According to Chebysheff's Theorem, at least 1 - 1/k^2 of the data will fall within k standard deviations of the mean. Here k=2, so at least 1 - 1/2^2 = 1 - 1/4 = 0.75, or 75% of the data will be in this range.",
+                            "isCorrect": true
+                        },
+                        {
+                            "text": "At least 88.9% of the employees are between 30 and 50 years old.",
+                            "rationale": "The range of 30 to 50 is two standard deviations from the mean, not three. The 88.9% minimum is for three standard deviations.",
+                            "isCorrect": false
+                        }
+                    ],
+                    "hint": "Chebysheff's Theorem provides a lower bound for the percentage of data within k standard deviations of the mean. What value of k does this range represent?"
+                },
+                {
+                    "questionNumber": 3,
+                    "question": "A bell-shaped distribution has a mean of 50 and a standard deviation of 5. Approximately 99.7% of the data falls between which two values?",
+                    "imageUrl": null,
+                    "answerOptions": [
+                        {
+                            "text": "45 and 55",
+                            "rationale": "This range represents one standard deviation from the mean, not three.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "40 and 60",
+                            "rationale": "This range represents two standard deviations from the mean, not three.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "35 and 65",
+                            "rationale": "According to the Empirical Rule, approximately 99.7% of data in a bell-shaped distribution lies within three standard deviations of the mean: 50 - 3(5) = 35 and 50 + 3(5) = 65.",
+                            "isCorrect": true
+                        },
+                        {
+                            "text": "30 and 70",
+                            "rationale": "This range is four standard deviations from the mean, which is outside the scope of the 68-95-99.7 rule.",
+                            "isCorrect": false
+                        }
+                    ],
+                    "hint": "Remember the three percentages of the Empirical Rule and the number of standard deviations they correspond to."
+                },
+                {
+                    "questionNumber": 4,
+                    "question": "A dataset has a mean of 100 and a standard deviation of 10. We know nothing about the shape of its distribution. What is the minimum percentage of data that falls between 80 and 120?",
+                    "imageUrl": null,
+                    "answerOptions": [
+                        {
+                            "text": "At least 95%",
+                            "rationale": "The 95% rule applies specifically to bell-shaped distributions, which is not stated in this problem.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "At least 75%",
+                            "rationale": "The range from 80 to 120 is two standard deviations from the mean. Since the shape is unknown, we must use Chebysheff's Theorem, which gives a minimum of 1 - 1/2^2 = 0.75, or 75%.",
+                            "isCorrect": true
+                        },
+                        {
+                            "text": "At least 68%",
+                            "rationale": "This percentage is only guaranteed for a bell-shaped distribution. Chebysheff's Theorem is a more general rule that provides a more conservative estimate.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "At least 50%",
+                            "rationale": "Chebysheff's Theorem provides a tighter lower bound than 50% for this range.",
+                            "isCorrect": false
+                        }
+                    ],
+                    "hint": "Since the shape is unknown, you must use the more general theorem. The range from 80 to 120 is two standard deviations from the mean."
+                },
+                {
+                    "questionNumber": 5,
+                    "question": "Which of the following statements correctly differentiates the Empirical Rule from Chebysheff's Theorem?",
+                    "imageUrl": null,
+                    "answerOptions": [
+                        {
+                            "text": "The Empirical Rule can be applied to any distribution, while Chebysheff's Theorem is only for bell-shaped distributions.",
+                            "rationale": "This is incorrect. The opposite is true: Chebysheff's Theorem is for any distribution, and the Empirical Rule is specific to bell-shaped distributions.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "The Empirical Rule provides an exact percentage, while Chebysheff's Theorem provides a minimum percentage.",
+                            "rationale": "The Empirical Rule provides an approximation for the percentages, not an exact value.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "Chebysheff's Theorem is more precise and provides a tighter bound than the Empirical Rule.",
+                            "rationale": "The Empirical Rule is more precise for bell-shaped distributions, while Chebysheff's Theorem provides a looser, but more universally applicable, lower bound.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "The Empirical Rule is applicable only to bell-shaped distributions, while Chebysheff's Theorem applies to any distribution shape.",
+                            "rationale": "This is the correct distinction. The Empirical Rule is a specific case for normal distributions, while Chebysheff's Theorem is a general rule for any data distribution.",
+                            "isCorrect": true
+                        }
+                    ],
+                    "hint": "Think about the shape of the histogram each rule requires."
+                },
+                {
+                    "questionNumber": 6,
+                    "question": "A dataset of the heights of adult males has a mean of 70 inches and a standard deviation of 3 inches. The histogram is bell-shaped. What percentage of adult males have a height between 67 and 73 inches?",
+                    "imageUrl": null,
+                    "answerOptions": [
+                        {
+                            "text": "95%",
+                            "rationale": "The range of 67 to 73 inches is within one standard deviation of the mean, not two.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "Exactly 68%",
+                            "rationale": "The Empirical Rule gives an approximation, not an exact percentage.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "Approximately 99.7%",
+                            "rationale": "This percentage corresponds to three standard deviations from the mean.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "Approximately 68%",
+                            "rationale": "The range from 67 to 73 inches is one standard deviation above and below the mean. For a bell-shaped distribution, the Empirical Rule states that approximately 68% of the data lies within this interval.",
+                            "isCorrect": true
+                        }
+                    ],
+                    "hint": "The keyword 'bell-shaped' should guide you to the appropriate rule."
+                },
+                {
+                    "questionNumber": 7,
+                    "question": "The mean salary at a company is $50,000 with a standard deviation of $5,000. The distribution is highly skewed. What is the *minimum* percentage of employees who earn a salary between $40,000 and $60,000?",
+                    "imageUrl": null,
+                    "answerOptions": [
+                        {
+                            "text": "At least 95%",
+                            "rationale": "The Empirical Rule is not applicable to a skewed distribution. Also, this is a very high minimum percentage.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "At least 88.9%",
+                            "rationale": "This is the minimum percentage for a range of three standard deviations, not two.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "At least 75%",
+                            "rationale": "The range from $40,000 to $60,000 is two standard deviations from the mean. Since the distribution is not bell-shaped, we must use Chebysheff's Theorem, which gives a minimum of 1 - 1/2^2 = 0.75, or 75%.",
+                            "isCorrect": true
+                        },
+                        {
+                            "text": "Approximately 68%",
+                            "rationale": "The Empirical Rule cannot be used because the distribution is not bell-shaped.",
+                            "isCorrect": false
+                        }
+                    ],
+                    "hint": "The phrase 'highly skewed' means the Empirical Rule doesn't apply. You'll need to use a different theorem."
+                },
+                {
+                    "questionNumber": 8,
+                    "question": "A dataset has a mean of 20 and a standard deviation of 2. We are told the distribution is bell-shaped. What is the range of values that contains approximately 95% of the data?",
+                    "imageUrl": null,
+                    "answerOptions": [
+                        {
+                            "text": "18 to 22",
+                            "rationale": "This range is for one standard deviation from the mean, not two.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "16 to 24",
+                            "rationale": "According to the Empirical Rule, approximately 95% of data in a bell-shaped distribution lies within two standard deviations of the mean. 20 - 2(2) = 16 and 20 + 2(2) = 24.",
+                            "isCorrect": true
+                        },
+                        {
+                            "text": "14 to 26",
+                            "rationale": "This range is for three standard deviations from the mean, not two.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "20 to 24",
+                            "rationale": "This only covers the data above the mean within two standard deviations, not the full range.",
+                            "isCorrect": false
+                        }
+                    ],
+                    "hint": "Remember which percentage corresponds to two standard deviations for a bell-shaped curve."
+                },
+                {
+                    "questionNumber": 9,
+                    "question": "For any data distribution, how much of the data must lie within 2.5 standard deviations of the mean?",
+                    "imageUrl": null,
+                    "answerOptions": [
+                        {
+                            "text": "Exactly 99.7%",
+                            "rationale": "The Empirical Rule for bell-shaped distributions gives this percentage for 3 standard deviations, not 2.5.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "At least 84%",
+                            "rationale": "Using Chebysheff's Theorem with k=2.5, the minimum is 1 - 1/2.5^2 = 1 - 1/6.25 = 1 - 0.16 = 0.84, or 84%.",
+                            "isCorrect": true
+                        },
+                        {
+                            "text": "At least 75%",
+                            "rationale": "This is the minimum for two standard deviations, not 2.5.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "Exactly 95%",
+                            "rationale": "This is an approximate percentage for a bell-shaped distribution within two standard deviations.",
+                            "isCorrect": false
+                        }
+                    ],
+                    "hint": "You'll need to apply Chebysheff's Theorem using the given number of standard deviations for k."
+                },
+                {
+                    "questionNumber": 10,
+                    "question": "A bell-shaped distribution has a mean of 100 and a standard deviation of 15. What is the range of values that would contain approximately 68% of the data?",
+                    "imageUrl": null,
+                    "answerOptions": [
+                        {
+                            "text": "85 to 115",
+                            "rationale": "According to the Empirical Rule, approximately 68% of the data lies within one standard deviation of the mean. The range would be 100 - 15 = 85 and 100 + 15 = 115.",
+                            "isCorrect": true
+                        },
+                        {
+                            "text": "70 to 130",
+                            "rationale": "This range is two standard deviations from the mean, which corresponds to approximately 95% of the data.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "55 to 145",
+                            "rationale": "This range is three standard deviations from the mean, corresponding to approximately 99.7% of the data.",
+                            "isCorrect": false
+                        },
+                        {
+                            "text": "85 to 100",
+                            "rationale": "This range only covers the data one standard deviation below the mean and up to the mean, not the full 68% range.",
+                            "isCorrect": false
+                        }
+                    ],
+                    "hint": "The percentage 68% corresponds to which part of the Empirical Rule?"
+                }
+            ]
+        };
+
+        const quizContainer = document.getElementById('quiz-container');
+
+        quizData.questions.forEach(q => {
+            const questionEl = document.createElement('div');
+            questionEl.classList.add('question');
+
+            const questionText = document.createElement('p');
+            questionText.textContent = `${q.questionNumber}. ${q.question}`;
+            questionEl.appendChild(questionText);
+
+            const optionsList = document.createElement('ul');
+            optionsList.classList.add('options-list');
+
+            q.answerOptions.forEach(opt => {
+                const optionItem = document.createElement('li');
+                optionItem.classList.add('option');
+                optionItem.textContent = opt.text;
+                optionsList.appendChild(optionItem);
+
+                optionItem.addEventListener('click', () => {
+                    const allOptions = optionsList.querySelectorAll('.option');
+                    allOptions.forEach(o => {
+                        o.classList.remove('correct', 'incorrect');
+                        if (o.querySelector('.rationale')) {
+                            o.querySelector('.rationale').remove();
+                        }
+                    });
+
+                    const rationaleEl = document.createElement('div');
+                    rationaleEl.classList.add('rationale');
+                    rationaleEl.textContent = opt.rationale;
+
+                    if (opt.isCorrect) {
+                        optionItem.classList.add('correct');
+                        rationaleEl.style.display = 'block';
+                    } else {
+                        optionItem.classList.add('incorrect');
+                        rationaleEl.style.display = 'block';
+                        const correctOption = allOptions[q.answerOptions.findIndex(o => o.isCorrect)];
+                        if (correctOption) {
+                            correctOption.classList.add('correct');
+                        }
+                    }
+                    optionItem.appendChild(rationaleEl);
+                });
+            });
+
+            questionEl.appendChild(optionsList);
+
+            const hintBtn = document.createElement('div');
+            hintBtn.classList.add('hint');
+            hintBtn.textContent = 'Show Hint';
+            questionEl.appendChild(hintBtn);
+
+            const hintText = document.createElement('div');
+            hintText.classList.add('hint-text');
+            hintText.textContent = q.hint;
+            questionEl.appendChild(hintText);
+
+            hintBtn.addEventListener('click', () => {
+                hintText.style.display = 'block';
+                hintBtn.style.display = 'none';
+            });
+
+            quizContainer.appendChild(questionEl);
+        });
+    </script>
+</body>
+</html>
