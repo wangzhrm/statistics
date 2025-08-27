@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standard Deviation vs. Coefficient of Variation</title>
+    <!-- Use Tailwind CSS for modern styling and responsiveness -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 1024px;
+        }
+        .canvas-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 250px; /* Fixed height for consistent canvas size */
+        }
+    </style>
+</head>
+<body class="p-6 md:p-10 flex items-center justify-center min-h-screen">
+
+    <div class="container mx-auto p-6 bg-white rounded-2xl shadow-xl space-y-8">
+        <!-- Title and Introduction -->
+        <header class="text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold text-slate-800">Standard Deviation is Relative</h1>
+            <p class="mt-2 text-lg text-slate-600">
+                This page demonstrates why standard deviation isn't always the best indicator of variability on its own.
+                We'll compare two datasets with very different values but the same relative spread.
+            </p>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="grid lg:grid-cols-2 gap-8 items-start">
+
+            <!-- Dataset 1 Section -->
+            <div class="p-6 bg-gray-50 rounded-xl border border-gray-200">
+                <h2 class="text-2xl font-semibold text-center text-slate-700 mb-4">Dataset 1</h2>
+                <div class="space-y-4">
+                    <div class="flex flex-col items-center">
+                        <span class="text-sm text-gray-500">Values</span>
+                        <p class="text-xl font-medium" id="dataset1-values">$\{1, 2, 3, 4, 5\}$</p>
+                    </div>
+                    <div class="flex justify-between items-center text-center">
+                        <div>
+                            <span class="text-sm text-gray-500">Mean ($\mu$)</span>
+                            <p class="text-lg font-medium text-blue-600" id="dataset1-mean"></p>
+                        </div>
+                        <div>
+                            <span class="text-sm text-gray-500">Std. Dev. ($\sigma$)</span>
+                            <p class="text-lg font-medium text-red-600" id="dataset1-stddev"></p>
+                        </div>
+                        <div>
+                            <span class="text-sm text-gray-500">CV (%)</span>
+                            <p class="text-lg font-medium text-green-600" id="dataset1-cv"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dataset 2 Section -->
+            <div class="p-6 bg-gray-50 rounded-xl border border-gray-200">
+                <h2 class="text-2xl font-semibold text-center text-slate-700 mb-4">Dataset 2</h2>
+                <div class="space-y-4">
+                    <div class="flex flex-col items-center">
+                        <span class="text-sm text-gray-500">Values</span>
+                        <p class="text-xl font-medium" id="dataset2-values">$\{10, 20, 30, 40, 50\}$</p>
+                    </div>
+                    <div class="flex justify-between items-center text-center">
+                        <div>
+                            <span class="text-sm text-gray-500">Mean ($\mu$)</span>
+                            <p class="text-lg font-medium text-blue-600" id="dataset2-mean"></p>
+                        </div>
+                        <div>
+                            <span class="text-sm text-gray-500">Std. Dev. ($\sigma$)</span>
+                            <p class="text-lg font-medium text-red-600" id="dataset2-stddev"></p>
+                        </div>
+                        <div>
+                            <span class="text-sm text-gray-500">CV (%)</span>
+                            <p class="text-lg font-medium text-green-600" id="dataset2-cv"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Canvas Sections for each dataset -->
+            <div class="lg:col-span-2 grid md:grid-cols-2 gap-8 mt-6">
+                <!-- Dataset 1 Canvas -->
+                <div class="canvas-container">
+                    <h3 class="text-xl font-semibold text-slate-700 mb-2">Dataset 1 Distribution</h3>
+                    <canvas id="canvas1"></canvas>
+                </div>
+                <!-- Dataset 2 Canvas -->
+                <div class="canvas-container">
+                    <h3 class="text-xl font-semibold text-slate-700 mb-2">Dataset 2 Distribution</h3>
+                    <canvas id="canvas2"></canvas>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-2 text-center mt-6">
+                <p class="text-xl text-slate-700 font-medium mb-4">
+                    As the graphs clearly show, the two distributions are of very different scales. However, the
+                    <span class="text-green-600 font-bold">Coefficients of Variation</span>
+                    are nearly identical, which accurately reflects that their relative variability is the same.
+                </p>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- JavaScript for calculations and drawing the curves -->
+    <script>
+        // Data for the two datasets
+        const dataset1 = [1, 2, 3, 4, 5];
+        const dataset2 = [10, 20, 30, 40, 50];
+
+        /**
+         * Calculates the mean of a dataset.
+         * @param {number[]} data
+         * @returns {number} The mean.
+         */
+        function calculateMean(data) {
+            const sum = data.reduce((acc, val) => acc + val, 0);
+            return sum / data.length;
+        }
+
+        /**
+         * Calculates the standard deviation of a dataset (population standard deviation).
+         * @param {number[]} data
+         * @param {number} mean
+         * @returns {number} The standard deviation.
+         */
+        function calculateStdDev(data, mean) {
+            const sumOfSquaredDiffs = data.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0);
+            return Math.sqrt(sumOfSquaredDiffs / data.length);
+        }
+
+        /**
+         * Calculates the Coefficient of Variation (CV).
+         * @param {number} stdDev
+         * @param {number} mean
+         * @returns {number} The CV.
+         */
+        function calculateCV(stdDev, mean) {
+            if (mean === 0) return 0; // Avoid division by zero
+            return (stdDev / mean) * 100;
+        }
+
+        /**
+         * Draws a Gaussian curve on a specified canvas.
+         * @param {string} canvasId - The ID of the canvas element.
+         * @param {number} mean - The mean of the distribution.
+         * @param {number} stdDev - The standard deviation.
+         * @param {string} color - The color of the curve.
+         */
+        function drawCurve(canvasId, mean, stdDev, color) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Set up drawing parameters
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+
+            // Define the viewport for the canvas
+            const xPadding = 0.05; // 5% padding on x-axis
+            const xMin = mean - 4 * stdDev;
+            const xMax = mean + 4 * stdDev;
+            const xRange = xMax - xMin;
+
+            const yMax = 1 / (stdDev * Math.sqrt(2 * Math.PI));
+            const yPadding = 0.2; // 20% padding on top of the curve
+            const yRange = yMax * (1 + yPadding);
+
+            // Function to get the PDF value at a given x
+            function getPDF(x, mean, stdDev) {
+                return (1 / (stdDev * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mean) / stdDev, 2));
+            }
+
+            // Draw the curve
+            for (let i = 0; i <= canvas.width; i++) {
+                // Map the canvas x coordinate to the data x value
+                const x = xMin + (i / canvas.width) * xRange;
+                const y = getPDF(x, mean, stdDev);
+                
+                // Map the data x and y values to canvas coordinates
+                const canvasX = (x - xMin) / xRange * canvas.width;
+                const canvasY = canvas.height * (1 - y / yRange);
+
+                if (i === 0) {
+                    ctx.moveTo(canvasX, canvasY);
+                } else {
+                    ctx.lineTo(canvasX, canvasY);
+                }
+            }
+            ctx.stroke();
+        }
+
+        // Run the calculations and update the DOM
+        function updatePage() {
+            // Dataset 1
+            const mean1 = calculateMean(dataset1);
+            const stdDev1 = calculateStdDev(dataset1, mean1);
+            const cv1 = calculateCV(stdDev1, mean1);
+            document.getElementById('dataset1-mean').textContent = mean1.toFixed(2);
+            document.getElementById('dataset1-stddev').textContent = stdDev1.toFixed(2);
+            document.getElementById('dataset1-cv').textContent = cv1.toFixed(2) + '%';
+
+            // Dataset 2
+            const mean2 = calculateMean(dataset2);
+            const stdDev2 = calculateStdDev(dataset2, mean2);
+            const cv2 = calculateCV(stdDev2, mean2);
+            document.getElementById('dataset2-mean').textContent = mean2.toFixed(2);
+            document.getElementById('dataset2-stddev').textContent = stdDev2.toFixed(2);
+            document.getElementById('dataset2-cv').textContent = cv2.toFixed(2) + '%';
+            
+            // Draw the curves on their respective canvases
+            drawCurve('canvas1', mean1, stdDev1, '#dc2626');
+            drawCurve('canvas2', mean2, stdDev2, '#2563eb');
+        }
+        
+        // Initial setup and event listeners
+        window.addEventListener('load', updatePage);
+        window.addEventListener('resize', updatePage);
+
+    </script>
+</body>
+</html>
