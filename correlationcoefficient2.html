@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Scatter Plot with Expanded Width</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .chart-container {
+            width: 600px;
+            height: 600px;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .controls, .stats {
+            margin: 20px;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .controls h3, .stats h3 {
+            margin-top: 0;
+        }
+        .stats p {
+            font-size: 1.1em;
+            margin: 5px 0;
+        }
+        input[type="range"] {
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Dynamic Scatter Plot with Expanded Width</h1>
+
+    <div class="container">
+        <div class="chart-container">
+            <canvas id="myChart"></canvas>
+        </div>
+
+        <div class="controls">
+            <h3>Band Controls</h3>
+            <label for="slope">Slope (Degrees): <span id="slopeValue">0</span></label>
+            <input type="range" id="slope" min="-90" max="90" value="0" step="1">
+            <br><br>
+            <label for="width">Width (Factor): <span id="widthValue">1.0</span></label>
+            <input type="range" id="width" min="0.0" max="5.0" value="1.0" step="0.01">
+        </div>
+
+        <div class="stats">
+            <h3>Statistics</h3>
+            <p>Variance X: <span id="varX"></span></p>
+            <p>Variance Y: <span id="varY"></span></p>
+            <p>Covariance: <span id="cov"></span></p>
+            <p>Correlation Coef: <span id="corr"></span></p>
+        </div>
+    </div>
+
+    <script>
+        const numPoints = 100;
+        const initialPoints = [];
+        let chart;
+
+        for (let i = 0; i < numPoints; i++) {
+            const x = Math.random() * 100 - 50;
+            const y = Math.random() * 20 - 10;
+            initialPoints.push({ x, y });
+        }
+
+        const mean = (arr) => arr.reduce((sum, val) => sum + val, 0) / arr.length;
+        
+        const calculateVariance = (arr) => {
+            if (arr.length < 2) return 0;
+            const m = mean(arr);
+            const sumOfSquares = arr.reduce((sum, val) => sum + Math.pow(val - m, 2), 0);
+            return sumOfSquares / (arr.length - 1);
+        };
+
+        const calculateCovariance = (xArr, yArr) => {
+            if (xArr.length < 2) return 0;
+            const meanX = mean(xArr);
+            const meanY = mean(yArr);
+            let sum = 0;
+            for (let i = 0; i < xArr.length; i++) {
+                sum += (xArr[i] - meanX) * (yArr[i] - meanY);
+            }
+            return sum / (xArr.length - 1);
+        };
+
+        const calculateCorrelation = (cov, varX, varY) => {
+            if (Math.abs(varX) < 1e-9 || Math.abs(varY) < 1e-9) {
+                if (cov > 0) return 1;
+                if (cov < 0) return -1;
+                return 0;
+            }
+            const denominator = Math.sqrt(varX) * Math.sqrt(varY);
+            return cov / denominator;
+        };
+
+        const updateChart = () => {
+            const slopeDeg = parseFloat(document.getElementById('slope').value);
+            const widthFactor = parseFloat(document.getElementById('width').value);
+
+            document.getElementById('slopeValue').textContent = slopeDeg;
+            document.getElementById('widthValue').textContent = widthFactor.toFixed(2);
+
+            const slopeRad = slopeDeg * Math.PI / 180;
+            const cos = Math.cos(slopeRad);
+            const sin = Math.sin(slopeRad);
+
+            const transformedPoints = initialPoints.map(p => {
+                const compressedY = p.y * widthFactor;
+                const realX = p.x * cos - compressedY * sin;
+                const realY = p.x * sin + compressedY * cos;
+                return { x: realX, y: realY };
+            });
+
+            const allPoints = [{ x: 0, y: 0 }].concat(transformedPoints);
+            
+            chart.data.datasets[0].data = transformedPoints;
+            chart.data.datasets[1].data = [{ x: 0, y: 0 }];
+            chart.update();
+
+            const xValues = allPoints.map(p => p.x);
+            const yValues = allPoints.map(p => p.y);
+
+            const varX = calculateVariance(xValues);
+            const varY = calculateVariance(yValues);
+            const cov = calculateCovariance(xValues, yValues);
+            const corr = calculateCorrelation(cov, varX, varY);
+
+            document.getElementById('varX').textContent = varX.toFixed(2);
+            document.getElementById('varY').textContent = varY.toFixed(2);
+            document.getElementById('cov').textContent = cov.toFixed(2);
+            document.getElementById('corr').textContent = corr.toFixed(2);
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Data Points',
+                            data: [],
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Point A (Origin)',
+                            data: [],
+                            backgroundColor: 'red',
+                            pointRadius: 8,
+                            pointStyle: 'crossRot'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'X-coordinate'
+                            },
+                            min: -300,
+                            max: 300
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Y-coordinate'
+                            },
+                            min: -300,
+                            max: 300
+                        }
+                    }
+                }
+            });
+
+            updateChart();
+            document.getElementById('slope').addEventListener('input', updateChart);
+            document.getElementById('width').addEventListener('input', updateChart);
+        });
+    </script>
+
+</body>
+</html>
