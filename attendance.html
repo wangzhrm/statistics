@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounting Vocab Quiz & Attendance</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary-bg: #f4f7fc;
+            --container-bg: #ffffff;
+            --header-color: #333;
+            --text-color: #444;
+            --accent-color: #4a90e2;
+            --accent-hover: #357ABD;
+            --correct-bg: #e8f5e9;
+            --correct-text: #2e7d32;
+            --incorrect-bg: #ffebee;
+            --incorrect-text: #c62828;
+            --absent-bg: #fffde7;
+            --absent-text: #f57f17;
+            --border-color: #e0e0e0;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background-color: var(--primary-bg);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background-color: var(--container-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            width: 95%;
+            max-width: 800px;
+            padding: 35px;
+            margin: 20px 0;
+        }
+        h1, h2 {
+            text-align: center;
+            color: var(--header-color);
+            margin-bottom: 25px;
+        }
+        .section {
+            display: none;
+        }
+        #setup-section {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        select, button {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            font-size: 16px;
+            background-color: #fff;
+        }
+        select {
+            cursor: pointer;
+        }
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #loading-status {
+            text-align: center;
+            color: #888;
+            margin-top: 15px;
+            min-height: 20px;
+        }
+        .quiz-card {
+            text-align: center;
+            padding: 30px;
+        }
+        .student-name {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .word-display {
+            font-size: 36px;
+            color: var(--accent-color);
+            margin: 30px 0;
+            font-weight: 700;
+        }
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .option-btn {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            color: var(--text-color);
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #e9ecef;
+            transform: translateY(-3px);
+            border-color: var(--accent-color);
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .feedback {
+            font-size: 22px;
+            font-weight: 600;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .correct { background-color: var(--correct-bg); color: var(--correct-text); }
+        .incorrect { background-color: var(--incorrect-bg); color: var(--incorrect-text); }
+        .quiz-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        #not-here-btn {
+            background-color: var(--incorrect-text);
+        }
+        #not-here-btn:hover {
+            background-color: #a92222;
+        }
+        .results-section {
+            margin-bottom: 25px;
+        }
+        .results-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+        }
+        .results-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .result-item {
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .correct-student { background-color: var(--correct-bg); color: var(--correct-text); }
+        .incorrect-student { background-color: var(--incorrect-bg); color: var(--incorrect-text); }
+        .absent-student { background-color: var(--absent-bg); color: var(--absent-text); }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            text-align: center;
+            gap: 15px;
+        }
+        .stat-box {
+            padding: 20px;
+            border-radius: 12px;
+            flex: 1;
+        }
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .correct-stat { background-color: var(--correct-bg); color: var(--correct-text); }
+        .incorrect-stat { background-color: var(--incorrect-bg); color: var(--incorrect-text); }
+        .absent-stat { background-color: var(--absent-bg); color: var(--absent-text); }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        #save-results-btn { background-color: #2e7d32; }
+        #save-results-btn:hover { background-color: #1b5e20; }
+        #new-quiz-btn { background-color: #f57f17; }
+        #new-quiz-btn:hover { background-color: #e65100; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vocabulary Quiz & Attendance</h1>
+        
+        <div id="setup-section" class="section">
+            <div id="loading-status">Loading vocabulary data...</div>
+            <div class="form-group">
+                <label for="word-list-select">1. Select Word List:</label>
+                <select id="word-list-select" disabled>
+                    <option value="" disabled selected>Waiting for file selection...</option>
+                </select>
+            </div>
+            <button id="go-btn" disabled>Go</button>
+        </div>
+        
+        <div id="quiz-section" class="section">
+            <div class="quiz-card">
+                <div class="student-name" id="student-name">Student Name</div>
+                <div class="word-display" id="word-display">Vocabulary Word</div>
+                <div class="options-container" id="options-container"></div>
+                <div id="feedback" class="feedback" style="display: none;"></div>
+                <div class="quiz-buttons">
+                    <button id="not-here-btn">Not Here</button>
+                    <button id="next-btn" style="display: none;">Next Student</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="results-section" class="section">
+            <h2>Quiz Results</h2>
+            <div class="stats">
+                <div class="stat-box correct-stat"><div class="stat-number" id="correct-count">0</div><div>Correct</div></div>
+                <div class="stat-box incorrect-stat"><div class="stat-number" id="incorrect-count">0</div><div>Incorrect</div></div>
+                <div class="stat-box absent-stat"><div class="stat-number" id="absent-count">0</div><div>Absent</div></div>
+            </div>
+            <div class="results-section">
+                <div class="results-title">Correct Students</div>
+                <div class="results-list" id="correct-students"></div>
+            </div>
+            <div class="results-section">
+                <div class="results-title">Incorrect Students</div>
+                <div class="results-list" id="incorrect-students"></div>
+            </div>
+            <div class="results-section">
+                <div class="results-title">Absent Students</div>
+                <div class="results-list" id="absent-students"></div>
+            </div>
+            <div class="action-buttons">
+                <button id="save-results-btn">Save Results as Image</button>
+                <button id="new-quiz-btn">Start New Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const students = [
+            "李伟", "王静", "张浩", "刘芳", "陈宇", "杨婷", "赵磊", "黄丽", "周凯", 
+            "吴霞", "徐鹏", "孙燕", "郭强", "何梅", "林杰", "高颖", "邓晨", "谢琳", 
+            "宋阳", "韩雪", "马超", "傅敏", "蒋涛", "罗慧", "曾昊", "唐婧"
+        ];
+        
+        // This is the only vocabulary file we'll use now
+        const vocabUrl = "https://raw.githubusercontent.com/wangzhrm/statistics/main/vocab.json";
+        
+        // Global State
+        let allVocabData = {};
+        let selectedWordList = [];
+        let usedWords = [];
+        let studentStatus = {};
+        let currentStudent = null;
+        let currentWord = null;
+        let correctAnswers = 0, incorrectAnswers = 0, absentStudents = 0;
+
+        // DOM Elements
+        const wordListSelect = document.getElementById('word-list-select');
+        const loadingStatus = document.getElementById('loading-status');
+        const goBtn = document.getElementById('go-btn');
+        const setupSection = document.getElementById('setup-section');
+        const quizSection = document.getElementById('quiz-section');
+        const resultsSection = document.getElementById('results-section');
+        const studentNameEl = document.getElementById('student-name');
+        const wordDisplayEl = document.getElementById('word-display');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackEl = document.getElementById('feedback');
+        const notHereBtn = document.getElementById('not-here-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        async function initializeApp() {
+            loadingStatus.textContent = "Loading vocabulary data...";
+            wordListSelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
+            wordListSelect.disabled = true;
+            goBtn.disabled = true;
+            
+            try {
+                const response = await fetch(vocabUrl);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                allVocabData = await response.json();
+                populateWordListDropdown();
+                loadingStatus.textContent = "File loaded. Please select a word list.";
+            } catch (error) {
+                console.error("Failed to fetch vocabulary data:", error);
+                loadingStatus.textContent = "Error loading file. Please try again.";
+                alert("Could not load the vocabulary file. Please check your internet connection or the file URL.");
+            }
+        }
+        
+        function populateWordListDropdown() {
+            wordListSelect.innerHTML = '<option value="" disabled selected>Choose a word list...</option>';
+            Object.keys(allVocabData).forEach(listKey => {
+                const option = document.createElement('option');
+                option.value = listKey;
+                option.textContent = listKey;
+                wordListSelect.appendChild(option);
+            });
+            wordListSelect.disabled = false;
+        }
+
+        function startQuiz() {
+            const listKey = wordListSelect.value;
+            if (!listKey) {
+                alert("Please select a word list.");
+                return;
+            }
+            selectedWordList = [...allVocabData[listKey]];
+            usedWords = [];
+            
+            // Reset state
+            correctAnswers = 0;
+            incorrectAnswers = 0;
+            absentStudents = 0;
+            studentStatus = {};
+            students.forEach(s => {
+                studentStatus[s] = { status: "pending" }; // pending, correct, incorrect, absent
+            });
+
+            setupSection.style.display = 'none';
+            resultsSection.style.display = 'none';
+            quizSection.style.display = 'block';
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            const availableStudents = students.filter(s => studentStatus[s].status === "pending");
+            
+            if (availableStudents.length === 0) {
+                endQuiz();
+                return;
+            }
+            
+            // If we've used up all the words, reset the 'usedWords' list to allow for a new cycle.
+            if (usedWords.length >= selectedWordList.length) {
+                usedWords = [];
+            }
+
+            // Select student and word
+            currentStudent = availableStudents[Math.floor(Math.random() * availableStudents.length)];
+            const availableWords = selectedWordList.filter(w => !usedWords.includes(w.word));
+            currentWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+            usedWords.push(currentWord.word);
+
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            studentNameEl.textContent = currentStudent;
+            wordDisplayEl.textContent = currentWord.word;
+
+            // Generate options
+            const options = generateOptions();
+            optionsContainer.innerHTML = '';
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option.chinese_meaning;
+                button.onclick = () => checkAnswer(option.chinese_meaning);
+                optionsContainer.appendChild(button);
+            });
+
+            feedbackEl.style.display = 'none';
+            nextBtn.style.display = 'none';
+            notHereBtn.style.display = 'block';
+        }
+
+        function generateOptions() {
+            const options = [currentWord];
+            const wrongOptionsPool = selectedWordList.filter(w => w.word !== currentWord.word);
+
+            while (options.length < 4 && wrongOptionsPool.length > 0) {
+                const randomIndex = Math.floor(Math.random() * wrongOptionsPool.length);
+                options.push(wrongOptionsPool.splice(randomIndex, 1)[0]);
+            }
+
+            // Shuffle options
+            return options.sort(() => Math.random() - 0.5);
+        }
+
+        function checkAnswer(selectedMeaning) {
+            const isCorrect = selectedMeaning === currentWord.chinese_meaning;
+
+            if (isCorrect) {
+                feedbackEl.textContent = "Well done!";
+                feedbackEl.className = "feedback correct";
+                studentStatus[currentStudent].status = "correct";
+                correctAnswers++;
+            } else {
+                feedbackEl.textContent = `More work is needed. Correct answer: ${currentWord.chinese_meaning}`;
+                feedbackEl.className = "feedback incorrect";
+                studentStatus[currentStudent].status = "incorrect";
+                incorrectAnswers++;
+            }
+
+            showFeedbackAndNext();
+        }
+        
+        function markStudentAbsent() {
+            studentStatus[currentStudent].status = "absent";
+            absentStudents++;
+            nextQuestion();
+        }
+        
+        function showFeedbackAndNext() {
+            feedbackEl.style.display = 'block';
+            nextBtn.style.display = 'block';
+            notHereBtn.style.display = 'none';
+            // Disable option buttons after an answer
+            Array.from(optionsContainer.children).forEach(button => button.disabled = true);
+        }
+
+        function endQuiz() {
+            quizSection.style.display = 'none';
+            resultsSection.style.display = 'block';
+
+            document.getElementById('correct-count').textContent = correctAnswers;
+            document.getElementById('incorrect-count').textContent = incorrectAnswers;
+            document.getElementById('absent-count').textContent = absentStudents;
+
+            const correctList = document.getElementById('correct-students');
+            const incorrectList = document.getElementById('incorrect-students');
+            const absentList = document.getElementById('absent-students');
+
+            correctList.innerHTML = '';
+            incorrectList.innerHTML = '';
+            absentList.innerHTML = '';
+
+            students.forEach(student => {
+                const state = studentStatus[student].status;
+                if (state !== "pending") {
+                    const el = document.createElement('div');
+                    el.className = 'result-item';
+                    el.textContent = student;
+
+                    if (state === 'correct') {
+                        el.classList.add('correct-student');
+                        correctList.appendChild(el);
+                    } else if (state === 'incorrect') {
+                        el.classList.add('incorrect-student');
+                        incorrectList.appendChild(el);
+                    } else if (state === 'absent') {
+                        el.classList.add('absent-student');
+                        absentList.appendChild(el);
+                    }
+                }
+            });
+        }
+        
+        function saveResultsAsImage() {
+            // Temporarily set background to white for better image output
+            const originalBg = resultsSection.style.backgroundColor;
+            resultsSection.style.backgroundColor = 'white';
+
+            html2canvas(resultsSection).then(canvas => {
+                const link = document.createElement('a');
+                const date = new Date();
+                
+                // Format date and time parts, ensuring two digits with padStart
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                const seconds = String(date.getSeconds()).padStart(2, '0');
+
+                // Create the final timestamp string
+                const timestamp = `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
+                
+                link.download = `quiz-results-${timestamp}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                // Restore original background
+                resultsSection.style.backgroundColor = originalBg;
+            });
+        }
+
+        function startNewQuiz() {
+            resultsSection.style.display = 'none';
+            setupSection.style.display = 'block';
+            // Reset dropdowns
+            wordListSelect.selectedIndex = 0;
+            wordListSelect.disabled = false;
+            goBtn.disabled = true;
+            loadingStatus.textContent = "File loaded. Please select a word list.";
+        }
+
+        // Event Listeners
+        wordListSelect.addEventListener('change', () => {
+            if (wordListSelect.value) goBtn.disabled = false;
+        });
+        goBtn.addEventListener('click', startQuiz);
+        notHereBtn.addEventListener('click', markStudentAbsent);
+        nextBtn.addEventListener('click', nextQuestion);
+        document.getElementById('save-results-btn').addEventListener('click', saveResultsAsImage);
+        document.getElementById('new-quiz-btn').addEventListener('click', startNewQuiz);
+        
+        // Initialize the application
+        initializeApp();
+    </script>
+</body>
+</html>
