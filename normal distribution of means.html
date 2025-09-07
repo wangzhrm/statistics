@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Limit Theorem Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #controls { margin-bottom: 20px; }
+        canvas { max-width: 800px; margin-bottom: 20px; }
+        #datasets { margin-top: 20px; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>Central Limit Theorem Simulator</h1>
+    <p>This simulator demonstrates that the distribution of sample means from datasets (uniformly distributed integers between 0 and 100) approaches a normal distribution, while the raw data follows a uniform distribution.</p>
+    
+    <div id="controls">
+        <label for="n">Sample size per dataset (n):</label>
+        <input type="number" id="n" value="30" min="1"><br><br>
+        
+        <button onclick="addDatasets(1)">Get 1 random dataset</button>
+        <button onclick="addDatasets(10)">Get 10 random datasets</button>
+    </div>
+    
+    <h2>Histogram of Sample Means</h2>
+    <canvas id="meanHistogram"></canvas>
+    
+    <h2>Histogram of All Data Points</h2>
+    <canvas id="dataHistogram"></canvas>
+    
+    <div id="datasets">
+        <h2>Generated Datasets</h2>
+    </div>
+    
+    <script>
+        let means = [];
+        let datasets = [];
+        let meanChart;
+        let dataChart;
+        
+        function addDatasets(count) {
+            const n = parseInt(document.getElementById('n').value);
+            
+            if (n < 1) {
+                alert('Please enter a positive integer for n.');
+                return;
+            }
+            
+            for (let i = 0; i < count; i++) {
+                let data = [];
+                let sum = 0;
+                for (let j = 0; j < n; j++) {
+                    const num = Math.floor(Math.random() * 101);
+                    data.push(num);
+                    sum += num;
+                }
+                const mean = sum / n;
+                means.push(mean);
+                datasets.push(data);
+            }
+            
+            updateMeanHistogram();
+            updateDataHistogram();
+            updateDatasetsDisplay();
+        }
+        
+        function updateMeanHistogram() {
+            if (means.length === 0) return;
+            
+            const numBins = 20;
+            const min = Math.min(...means);
+            const max = Math.max(...means);
+            const binWidth = (max - min) / numBins;
+            const bins = new Array(numBins).fill(0);
+            
+            means.forEach(mean => {
+                const binIndex = Math.min(Math.floor((mean - min) / binWidth), numBins - 1);
+                bins[binIndex]++;
+            });
+            
+            const labels = [];
+            for (let k = 0; k < numBins; k++) {
+                const start = (min + k * binWidth).toFixed(2);
+                const end = (min + (k + 1) * binWidth).toFixed(2);
+                labels.push(`${start} - ${end}`);
+            }
+            
+            const ctx = document.getElementById('meanHistogram').getContext('2d');
+            if (meanChart) {
+                meanChart.destroy();
+            }
+            meanChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Frequency of Means',
+                        data: bins,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Frequency' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Mean Values' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true }
+                    }
+                }
+            });
+        }
+        
+        function updateDataHistogram() {
+            const allData = datasets.flat();
+            if (allData.length === 0) return;
+            
+            const numBins = 20;
+            const min = 0;
+            const max = 100;
+            const binWidth = (max - min) / numBins;
+            const bins = new Array(numBins).fill(0);
+            
+            allData.forEach(value => {
+                const binIndex = Math.min(Math.floor((value - min) / binWidth), numBins - 1);
+                bins[binIndex]++;
+            });
+            
+            const labels = [];
+            for (let k = 0; k < numBins; k++) {
+                const start = (min + k * binWidth).toFixed(0);
+                const end = (min + (k + 1) * binWidth).toFixed(0);
+                labels.push(`${start} - ${end}`);
+            }
+            
+            const ctx = document.getElementById('dataHistogram').getContext('2d');
+            if (dataChart) {
+                dataChart.destroy();
+            }
+            dataChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Frequency of Data Points',
+                        data: bins,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Frequency' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Data Values' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true }
+                    }
+                }
+            });
+        }
+        
+        function updateDatasetsDisplay() {
+            const div = document.getElementById('datasets');
+            div.innerHTML = '<h2>Generated Datasets</h2>';
+            datasets.forEach((data, index) => {
+                const mean = means[index].toFixed(2);
+                const p = document.createElement('p');
+                p.textContent = `Dataset ${index + 1}: [${data.join(', ')}] Mean: ${mean}`;
+                div.appendChild(p);
+            });
+        }
+    </script>
+</body>
+</html>
