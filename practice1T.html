@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher's Guide: Statistics Quiz</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f9;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        .question-block {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e6ea;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+        .answer {
+            color: #27ae60;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .explanation {
+            font-size: 0.95em;
+            color: #555;
+            margin-top: 10px;
+        }
+        p {
+            margin-top: 0;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .options li {
+            margin-bottom: 5px;
+            color: #555;
+        }
+        @media print {
+            body {
+                background-color: #fff;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+            .options {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Teacher's Guide</h1>
+        <h2>Statistics Practice Questions</h2>
+        <p>This guide provides the correct answers and explanations for the 10 multiple-choice questions in the practice quiz. The questions cover fundamental concepts in statistics, including population vs. sample, parameter vs. statistic, and branches of statistics.</p>
+
+        <div class="question-block">
+            <div class="question-text">
+                1. A researcher wants to estimate the average height of all 1,500 trees in a city park. She measures the height of a random sample of 200 trees and finds their average height is 35 feet. The population of interest is:
+            </div>
+            <ul class="options">
+                <li>a. the 200 trees selected at random.</li>
+                <li>b. all the trees in the city park.</li>
+                <li>c. the average height of the 200 trees.</li>
+                <li>d. all city park trees nationwide.</li>
+            </ul>
+            <p class="answer">Correct Answer: b. all the trees in the city park.</p>
+            <p class="explanation">
+                The population is the entire group the researcher wants to study. The researcher's goal is to estimate the average height of <strong>all 1,500 trees</strong> in the park, not just the 200 that were measured. The 200 trees represent the <strong>sample</strong>.
+            </p>
+        </div>
+
+        <div class="question-block">
+            <div class="question-text">
+                2. A clothing company wants to determine the average lifespan of their new line of jackets. They randomly select and test 50 jackets, finding the average lifespan to be 8 years. The 8 years represents a:
+            </div>
+            <ul class="options">
+                <li>a. sample.</li>
+                <li>b. statistic.</li>
+                <li>c. population.</li>
+                <li>d. parameter.</li>
+            </ul>
+            <p class="answer">Correct Answer: b. statistic.</p>
+            <p class="explanation">
+                A <strong>statistic</strong> is a descriptive measure calculated from a <strong>sample</strong>. The 8 years is the average lifespan found from testing a sample of 50 jackets. This measure is used to estimate the unknown average lifetime of the entire population of jackets.
+            </p>
+        </div>
+
+        <div class="question-block">
+            <div class="question-text">
+                3. Which of the following represents a population, as opposed to a sample?
+            </div>
+            <ul class="options">
+                <li>a. The first 50 customers to enter a grocery store on a Monday morning.</li>
+                <li>b. All registered students at a university.</li>
+                <li>c. 300 survey respondents from a list of 10,000 potential participants.</li>
+                <li>d. Every tenth person to complete an online survey.</li>
+            </ul>
+            <p class="answer">Correct Answer: b. All registered students at a university.</p>
+            <p class="explanation">
+                A <strong>population</strong> is the complete collection of all elements to be studied. "All registered students at a university" includes every single member of the group, making it a population. The other options are subsets of a larger group, which by definition makes them <strong>samples</strong>.
+            </p>
+        </div>
+
+        <div class="question-block">
+            <div class="question-text">
+                4. How do confidence levels and significance levels relate in hypothesis testing?
+            </div>
+            <ul class="options">
+                <li>a. Confidence levels are typically large and significance levels are typically small.</li>
+                <li>b. Confidence levels and significance levels are both typically large.</li>
+                <li>c. Confidence levels and significance levels are both typically small.</li>
+                <li>d. Confidence levels are typically small and significance levels are typically large.</li>
+            </ul>
+            <p class="answer">Correct Answer: a. Confidence levels are typically large and significance levels are typically small.</p>
+            <p class="explanation">
+                The <strong>confidence level</strong> is a measure of certainty that a result is not due to random chance, and it is usually expressed as a percentage. The <strong>significance level</strong>, also known as alpha ($\alpha$), is the probability of rejecting the null hypothesis when it is true. They are complementary: Confidence Level = $1 - \alpha$.
+            </p>
+        </div>
+
+        <div class="question-block">
+            <div class="question-text">
+                5. A company wants to estimate the average battery life of its new smartphone model. They test a random sample of 250 phones and find the average battery life is 18 hours. The 250 phones represent a:
+            </div>
+            <ul class="options">
+                <li>a. sample.</li>
+                <li>b. population.</li>
+                <li>c. statistic.</li>
+                <li>d. parameter.</li>
+            </ul>
+            <p class="answer">Correct Answer: a. sample.</p>
+            <p class="explanation">
+                A <strong>sample</strong> is a subset of the population. The company cannot test every single phone produced, so they select a smaller, manageable group of 250 phones to test.
+            </p>
+        </div>
+
+        <div class="question-block">
+            <div class="question-text">
+                6. A descriptive measure that is calculated from an entire population is called a:
+            </div>
+            <ul class="options">
+                <li>a. statistic.</li>
+                <li>b. sample.</li>
+                <li>c. parameter.</li>
+                <li>d. population.</li>
+            </ul>
+            <p class="answer">Correct Answer: c. parameter.</p>
+            <p class="explanation">
+                A <strong>parameter</strong> is a descriptive measure that is computed from an entire <strong>population</strong>. For example, the average height of <em>all</em> mature pine trees in a forest is a parameter. A <strong>statistic</strong> is the corresponding measure computed from a <strong>sample</strong>.
+            </p>
+        </div>
+        
+        <div class="question-block">
+            <div class="question-text">
+                7. A study aims to determine the average weight of all 5,000 packages shipped by a company in one week. The weights of 150 randomly selected packages are measured and analyzed. The sample in this study is:
+            </div>
+            <ul class="options">
+                <li>a. the average weight of all 5,000 packages.</li>
+                <li>b. all 5,000 packages shipped in one week.</li>
+                <li>c. the 150 packages selected at random.</li>
+                <li>d. the average weight of the 150 selected packages.</li>
+            </ul>
+            <p class="answer">Correct Answer: c. the 150 packages selected at random.</p>
+            <p class="explanation">
+                The <strong>sample</strong> is the specific group from which data is collected. The researcher measures a random subset of 150 packages from the entire group of 5,000. Therefore, the 150 packages are the sample.
+            </p>
+        </div>
+
+        <div class="question-block">
+            <div class="question-text">
+                8. A study is being conducted to find the average height of all 10,000 students at a college. A random sample of 200 students is measured, and their average height is found to be 5'8". The parameter in this study is:
+            </div>
+            <ul class="options">
+                <li>a. the average height of the 200 students.</li>
+                <li>b. all 10,000 students at the college.</li>
+                <li>c. the 200 students selected at random.</li>
+                <li>d. the average height of all 10,000 students.</li>
+            </ul>
+            <p class="answer">Correct Answer: d. the average height of all 10,000 students.</p>
+            <p class="explanation">
+                The <strong>parameter</strong> is the measure for the entire <strong>population</strong>. In this study, the goal is to determine the average height of all 10,000 students. The average height of the 200 students measured is a <strong>statistic</strong> that is used to estimate this parameter.
+            </p>
+        </div>
+
+        <div class="question-block">
+            <div class="question-text">
+                9. A random sample of 500 households is surveyed in a large city, and it is found that 65% of them have high-speed internet. If this information is used to estimate the percentage of all households in the city with high-speed internet, which branch of statistics was applied?
+            </div>
+            <ul class="options">
+                <li>a. Inferential statistics</li>
+                <li>b. Descriptive statistics</li>
+                <li>c. Sample statistics</li>
+                <li>d. Population statistics</li>
+            </ul>
+            <p class="answer">Correct Answer: a. Inferential statistics</p>
+            <p class="explanation">
+                <strong>Inferential statistics</strong> involves using data from a <strong>sample</strong> to draw conclusions or make predictions about a larger <strong>population</strong>. The researcher is using the data from the sample of 500 households to infer a conclusion about all households in the city.
+            </p>
+        </div>
+
+        <div class="question-block">
+            <div class="question-text">
+                10. A political campaign wants to estimate the proportion of a state's 5 million registered voters who support a new bill. They interview 5,000 voters and find that 55% support the bill. The population of interest is:
+            </div>
+            <ul class="options">
+                <li>a. the 5 million registered voters in the state.</li>
+                <li>b. the 5,000 voters interviewed.</li>
+                <li>c. the 55% who support the bill.</li>
+                <li>d. all residents of the state.</li>
+            </ul>
+            <p class="answer">Correct Answer: a. the 5 million registered voters in the state.</p>
+            <p class="explanation">
+                The <strong>population of interest</strong> is the total group that the survey's findings are intended to describe. The political campaign wants to know the opinion of all registered voters in the state, not just the 5,000 they interviewed. The 5,000 voters are the <strong>sample</strong>.
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>
