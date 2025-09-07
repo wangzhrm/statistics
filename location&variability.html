@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Histogram: Mean & Standard Deviation</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            text-align: center;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            color: #1a1a1a;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .control-group {
+            text-align: left;
+            width: 40%;
+            min-width: 250px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Interactive Histogram: Location and Variability</h1>
+    <p>Adjust the mean and standard deviation to see how they affect a dataset's distribution. The fixed axes allow for direct visual comparison of the changes.</p>
+
+    <div class="container">
+        <div class="controls">
+            <div class="control-group">
+                <label for="meanSlider">Mean: <span id="meanValue">50</span></label>
+                <input type="range" id="meanSlider" min="10" max="90" value="50">
+            </div>
+            <div class="control-group">
+                <label for="stdDevSlider">Standard Deviation: <span id="stdDevValue">15</span></label>
+                <input type="range" id="stdDevSlider" min="1" max="30" value="15">
+            </div>
+        </div>
+
+        <button id="updateBtn">Update Chart</button>
+
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        const meanSlider = document.getElementById('meanSlider');
+        const stdDevSlider = document.getElementById('stdDevSlider');
+        const meanValueSpan = document.getElementById('meanValue');
+        const stdDevValueSpan = document.getElementById('stdDevValue');
+        const updateBtn = document.getElementById('updateBtn');
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const fixedBins = 20;
+
+        // Function to generate random data with a normal distribution
+        function generateNormalData(mean, stdDev, count) {
+            const data = [];
+            for (let i = 0; i < count; i++) {
+                let u = 0, v = 0;
+                while(u === 0) u = Math.random(); 
+                while(v === 0) v = Math.random();
+                let z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+                data.push(z * stdDev + mean);
+            }
+            return data;
+        }
+
+        // Function to create histogram data from raw data for a fixed range
+        function createHistogramData(data, bins, minX, maxX) {
+            const range = maxX - minX;
+            const binSize = range / bins;
+            const histogram = new Array(bins).fill(0);
+            const labels = [];
+
+            for (let i = 0; i < bins; i++) {
+                labels.push(`${Math.round(minX + i * binSize)} - ${Math.round(minX + (i + 1) * binSize)}`);
+            }
+
+            data.forEach(value => {
+                if (value >= minX && value < maxX) {
+                    let binIndex = Math.floor((value - minX) / binSize);
+                    if (binIndex >= bins) {
+                        binIndex = bins - 1; 
+                    }
+                    histogram[binIndex]++;
+                }
+            });
+            return { histogram, labels };
+        }
+
+        // Initial chart data
+        let mean = parseFloat(meanSlider.value);
+        let stdDev = parseFloat(stdDevSlider.value);
+        let rawData = generateNormalData(mean, stdDev, 1000);
+        let { histogram, labels } = createHistogramData(rawData, fixedBins, 0, 100);
+
+        // Chart configuration with fixed axes
+        const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Frequency',
+                    data: histogram,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Value Bins'
+                        },
+                        // Fixed X-axis scale
+                        min: 0,
+                        max: 100,
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Frequency'
+                        },
+                        // Fixed Y-axis scale
+                        beginAtZero: true,
+                        suggestedMax: 150 
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Event listeners to update the chart
+        function updateChart() {
+            mean = parseFloat(meanSlider.value);
+            stdDev = parseFloat(stdDevSlider.value);
+            meanValueSpan.textContent = mean;
+            stdDevValueSpan.textContent = stdDev;
+
+            rawData = generateNormalData(mean, stdDev, 1000);
+            const { histogram: newHist, labels: newLabels } = createHistogramData(rawData, fixedBins, 0, 100);
+
+            myChart.data.labels = newLabels;
+            myChart.data.datasets[0].data = newHist;
+            myChart.update();
+        }
+
+        meanSlider.addEventListener('input', () => meanValueSpan.textContent = meanSlider.value);
+        stdDevSlider.addEventListener('input', () => stdDevValueSpan.textContent = stdDevSlider.value);
+        updateBtn.addEventListener('click', updateChart);
+    </script>
+
+</body>
+</html>
