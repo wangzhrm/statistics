@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factors Influencing Parenthood Decisions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="p-8 md:p-12 lg:p-16">
+    <div class="max-w-6xl mx-auto bg-white p-8 rounded-2xl shadow-xl">
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">Factors Influencing Parenthood Decisions</h1>
+            <p class="text-lg text-gray-600">A data-driven look at reasons young people choose not to have children</p>
+        </header>
+
+        <!-- The Problem Section -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">The Problem</h2>
+            <p class="text-gray-700 leading-relaxed">
+                Many modern societies are experiencing declining birth rates. This analysis aims to explore the key factors influencing young people's decisions to have or not have children. By examining a simulated dataset on various reasons and their perceived importance, we can identify major trends and specific differences between genders, particularly regarding economic concerns.
+            </p>
+        </section>
+
+        <!-- Dataset Section -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Dataset</h2>
+            <p class="text-gray-700 leading-relaxed mb-6">
+                This dataset represents a simulated survey of 50 young adults. The data includes the perceived importance of different reasons for not having children, rated on a scale of 1 (Not Important at All) to 5 (Extremely Important).
+            </p>
+            <div class="overflow-x-auto rounded-xl shadow">
+                <table class="min-w-full bg-gray-50 border-collapse">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Respondent ID</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Gender</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Reason</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Importance (1-5)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTable">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Diagram Section -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Top Reasons for Not Having Children</h2>
+            <p class="text-gray-700 leading-relaxed mb-6">
+                This bar chart shows the average importance rating for each reason across all respondents. . It provides a clear visual comparison of the factors that young people consider most influential.
+            </p>
+            <div class="flex justify-center items-center h-96">
+                <canvas id="reasonsChart" class="max-h-full max-w-full"></canvas>
+            </div>
+        </section>
+        
+        <!-- Statistical Analysis Section -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Statistical Analysis</h2>
+            <div id="analysisResults" class="bg-gray-100 p-6 rounded-xl space-y-4">
+                <!-- Analysis results will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Interpretation Section -->
+        <section>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Interpretation of Findings</h2>
+            <p id="interpretation" class="text-gray-700 leading-relaxed">
+                <!-- Interpretation will be populated by JavaScript -->
+            </p>
+        </section>
+    </div>
+
+    <script>
+        const data = [
+            { id: 1, gender: 'Male', reason: 'Economic', importance: 5 },
+            { id: 2, gender: 'Female', reason: 'Career', importance: 4 },
+            { id: 3, gender: 'Female', reason: 'Personal Freedom', importance: 5 },
+            { id: 4, gender: 'Male', reason: 'Economic', importance: 4 },
+            { id: 5, gender: 'Male', reason: 'Mental Health', importance: 3 },
+            { id: 6, gender: 'Female', reason: 'Climate Change', importance: 4 },
+            { id: 7, gender: 'Male', reason: 'Career', importance: 3 },
+            { id: 8, gender: 'Female', reason: 'Economic', importance: 3 },
+            { id: 9, gender: 'Male', reason: 'Personal Freedom', importance: 4 },
+            { id: 10, gender: 'Female', reason: 'Mental Health', importance: 5 },
+            { id: 11, gender: 'Male', reason: 'Economic', importance: 5 },
+            { id: 12, gender: 'Female', reason: 'Career', importance: 3 },
+            { id: 13, gender: 'Male', reason: 'Climate Change', importance: 2 },
+            { id: 14, gender: 'Male', reason: 'Personal Freedom', importance: 5 },
+            { id: 15, gender: 'Female', reason: 'Mental Health', importance: 4 },
+            { id: 16, gender: 'Male', reason: 'Economic', importance: 5 },
+            { id: 17, gender: 'Female', reason: 'Career', importance: 4 },
+            { id: 18, gender: 'Female', reason: 'Personal Freedom', importance: 4 },
+            { id: 19, gender: 'Male', reason: 'Economic', importance: 4 },
+            { id: 20, gender: 'Male', reason: 'Mental Health', importance: 4 },
+            { id: 21, gender: 'Female', reason: 'Climate Change', importance: 5 },
+            { id: 22, gender: 'Male', reason: 'Career', importance: 4 },
+            { id: 23, gender: 'Female', reason: 'Economic', importance: 3 },
+            { id: 24, gender: 'Male', reason: 'Personal Freedom', importance: 5 },
+            { id: 25, gender: 'Female', reason: 'Mental Health', importance: 5 },
+            { id: 26, gender: 'Male', reason: 'Economic', importance: 5 },
+            { id: 27, gender: 'Female', reason: 'Career', importance: 4 },
+            { id: 28, gender: 'Female', reason: 'Personal Freedom', importance: 4 },
+            { id: 29, gender: 'Male', reason: 'Economic', importance: 5 },
+            { id: 30, gender: 'Male', reason: 'Mental Health', importance: 3 },
+            { id: 31, gender: 'Female', reason: 'Climate Change', importance: 4 },
+            { id: 32, gender: 'Male', reason: 'Career', importance: 4 },
+            { id: 33, gender: 'Female', reason: 'Economic', importance: 3 },
+            { id: 34, gender: 'Male', reason: 'Personal Freedom', importance: 5 },
+            { id: 35, gender: 'Female', reason: 'Mental Health', importance: 5 },
+            { id: 36, gender: 'Male', reason: 'Economic', importance: 5 },
+            { id: 37, gender: 'Female', reason: 'Career', importance: 3 },
+            { id: 38, gender: 'Male', reason: 'Climate Change', importance: 2 },
+            { id: 39, gender: 'Male', reason: 'Personal Freedom', importance: 4 },
+            { id: 40, gender: 'Female', reason: 'Mental Health', importance: 5 },
+            { id: 41, gender: 'Male', reason: 'Economic', importance: 5 },
+            { id: 42, gender: 'Female', reason: 'Career', importance: 4 },
+            { id: 43, gender: 'Female', reason: 'Personal Freedom', importance: 4 },
+            { id: 44, gender: 'Male', reason: 'Economic', importance: 4 },
+            { id: 45, gender: 'Male', reason: 'Mental Health', importance: 4 },
+            { id: 46, gender: 'Female', reason: 'Climate Change', importance: 5 },
+            { id: 47, gender: 'Male', reason: 'Career', importance: 4 },
+            { id: 48, gender: 'Female', reason: 'Economic', importance: 3 },
+            { id: 49, gender: 'Male', reason: 'Personal Freedom', importance: 5 },
+            { id: 50, gender: 'Female', reason: 'Mental Health', importance: 5 }
+        ];
+
+        // Function to populate the data table
+        function populateTable() {
+            const dataTableBody = document.getElementById('dataTable');
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-t border-gray-200';
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-sm text-gray-600">${row.id}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600">${row.gender}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600">${row.reason}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600">${row.importance}</td>
+                `;
+                dataTableBody.appendChild(tr);
+            });
+        }
+
+        // Function to perform statistical analysis
+        function performAnalysis(data) {
+            const reasonsData = data.reduce((acc, row) => {
+                acc[row.reason] = acc[row.reason] || { total: 0, count: 0 };
+                acc[row.reason].total += row.importance;
+                acc[row.reason].count++;
+                return acc;
+            }, {});
+
+            const averageImportanceByReason = Object.fromEntries(
+                Object.entries(reasonsData).map(([reason, { total, count }]) => [reason, total / count])
+            );
+
+            // Analysis by gender for 'Economic' reason
+            const economicDataMales = data.filter(row => row.reason === 'Economic' && row.gender === 'Male');
+            const economicDataFemales = data.filter(row => row.reason === 'Economic' && row.gender === 'Female');
+            
+            const maleEconomicAverage = economicDataMales.length > 0 ? economicDataMales.reduce((sum, row) => sum + row.importance, 0) / economicDataMales.length : 0;
+            const femaleEconomicAverage = economicDataFemales.length > 0 ? economicDataFemales.reduce((sum, row) => sum + row.importance, 0) / economicDataFemales.length : 0;
+
+            return {
+                averageImportanceByReason,
+                maleEconomicAverage,
+                femaleEconomicAverage
+            };
+        }
+
+        // Function to render the analysis results
+        function renderAnalysisResults(analysis) {
+            const resultsDiv = document.getElementById('analysisResults');
+            resultsDiv.innerHTML = `
+                <h3 class="font-semibold text-gray-800 mt-4 mb-2">Average Importance by Reason:</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    ${Object.entries(analysis.averageImportanceByReason).map(([reason, avg]) => `
+                        <li>${reason}: ${avg.toFixed(2)}</li>
+                    `).join('')}
+                </ul>
+                <h3 class="font-semibold text-gray-800 mt-4 mb-2">Economic Factor Importance by Gender:</h3>
+                <p><span class="font-semibold text-gray-800">Average importance for Males:</span> ${analysis.maleEconomicAverage.toFixed(2)}</p>
+                <p><span class="font-semibold text-gray-800">Average importance for Females:</span> ${analysis.femaleEconomicAverage.toFixed(2)}</p>
+            `;
+        }
+
+        // Function to generate the chart
+        function generateChart(analysis) {
+            const ctx = document.getElementById('reasonsChart').getContext('2d');
+            const sortedReasons = Object.entries(analysis.averageImportanceByReason).sort((a, b) => b[1] - a[1]);
+            const labels = sortedReasons.map(([reason]) => reason);
+            const values = sortedReasons.map(([reason, avg]) => avg);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Average Importance Rating (1-5)',
+                        data: values,
+                        backgroundColor: [
+                            '#4a90e2', 
+                            '#50e3c2', 
+                            '#f5a623',
+                            '#bd10e0',
+                            '#e05050'
+                        ],
+                        borderColor: '#ffffff',
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            title: {
+                                display: true,
+                                text: 'Average Importance Rating'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to provide interpretation
+        function provideInterpretation(analysis) {
+            const interpretationDiv = document.getElementById('interpretation');
+            const topReason = Object.entries(analysis.averageImportanceByReason).sort((a, b) => b[1] - a[1])[0][0];
+            const economicImportanceMale = analysis.maleEconomicAverage.toFixed(2);
+            const economicImportanceFemale = analysis.femaleEconomicAverage.toFixed(2);
+            
+            interpretationDiv.innerHTML = `
+                <p>
+                    The statistical analysis shows that <strong>${topReason}</strong> is the most important factor overall for young people when considering the decision to not have children. This indicates that societal changes and personal priorities are significantly influencing family planning.
+                </p>
+                <p>
+                    A key finding is the notable difference in the importance of economic factors between genders. With an average importance of <strong>${economicImportanceMale}</strong>, economic concerns are a more significant reason for males than for females, who rated it at an average of <strong>${economicImportanceFemale}</strong>. This suggests that traditional gender roles related to financial provision may still be a strong psychological factor in decision-making.
+                </p>
+                <p>
+                    In summary, this data highlights that the reasons for declining birth rates are complex and multi-faceted, with both universal concerns and gender-specific differences playing a crucial role.
+                </p>
+            `;
+        }
+
+        // Main function to run everything
+        window.onload = () => {
+            populateTable();
+            const analysis = performAnalysis(data);
+            renderAnalysisResults(analysis);
+            generateChart(analysis);
+            provideInterpretation(analysis);
+        };
+    </script>
+</body>
+</html>
