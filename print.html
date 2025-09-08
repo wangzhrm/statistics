@@ -1,4 +1,4 @@
-<!DOCTYPE: html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -68,7 +68,9 @@
             color: #555;
             margin-left: 10px;
         }
-        
+        .print-title {
+            display: none; /* Hide by default */
+        }
         /* Printer-friendly styles */
         @media print {
             body {
@@ -81,6 +83,14 @@
             }
             .controls, h1, p {
                 display: none;
+            }
+            .print-title {
+                display: block; /* Show the print title */
+                text-align: center;
+                font-size: 1.5em;
+                font-weight: bold;
+                margin-bottom: 20px;
+                color: #000;
             }
             .vocab-list {
                 margin-top: 20px;
@@ -117,6 +127,7 @@
             <select id="lectureSelect"></select>
         </div>
 
+        <div class="print-title" id="printTitle"></div>
         <ul class="vocab-list" id="vocabList"></ul>
     </div>
 
@@ -125,6 +136,7 @@
             const vocabUrl = 'https://raw.githubusercontent.com/wangzhrm/statistics/main/vocab.json';
             const lectureSelect = document.getElementById('lectureSelect');
             const vocabList = document.getElementById('vocabList');
+            const printTitle = document.getElementById('printTitle');
 
             let allVocabData = {};
 
@@ -165,6 +177,7 @@
             // Function to display the vocabulary for the selected key
             function displayVocab(key) {
                 vocabList.innerHTML = '';
+                printTitle.textContent = key; // Update the print title
                 const vocabArray = allVocabData[key];
                 if (vocabArray) {
                     vocabArray.forEach(item => {
