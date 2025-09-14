@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics Practice Questions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .graph-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 250px;
+            background-color: #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        svg {
+            border: 1px solid #d1d5db;
+            background-color: #fff;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-12 lg:p-24 bg-gray-100 min-h-screen flex items-center justify-center">
+
+    <div class="container mx-auto p-8 bg-white rounded-2xl shadow-lg max-w-3xl">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Statistics Practice Questions</h1>
+
+        <form>
+            <div class="space-y-6">
+                <!-- Question 1 -->
+                <div id="q1-container" class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <p class="font-semibold text-gray-700 mb-4">1. The graph below shows the daily high temperatures over a month. If you were to create a new graph of the same data, but you changed the maximum value on the Y-axis from 100°F to 200°F, your new graph would appear to have ____ variability in temperatures compared to the original graph.
+                    </p>
+                    <div class="graph-container">
+                         <svg width="100%" height="100%" viewBox="0 0 600 400">
+                            <!-- Graph Area -->
+                            <rect x="50" y="50" width="500" height="300" fill="#F3F4F6"/>
+                            <!-- Y-Axis -->
+                            <line x1="50" y1="50" x2="50" y2="350" stroke="#4B5563"/>
+                            <text x="35" y="55" font-size="12" text-anchor="end">100°F</text>
+                            <text x="35" y="200" font-size="12" text-anchor="end">50°F</text>
+                            <text x="35" y="345" font-size="12" text-anchor="end">0°F</text>
+                            <text x="5" y="200" font-size="14" font-weight="bold" transform="rotate(-90 5 200)">Temperature</text>
+                            <!-- X-Axis -->
+                            <line x1="50" y1="350" x2="550" y2="350" stroke="#4B5563"/>
+                            <text x="50" y="365" font-size="12" text-anchor="middle">Day 1</text>
+                            <text x="300" y="365" font-size="12" text-anchor="middle">Day 15</text>
+                            <text x="550" y="365" font-size="12" text-anchor="middle">Day 30</text>
+                            <text x="300" y="390" font-size="14" font-weight="bold" text-anchor="middle">Time (Days)</text>
+                            <!-- Line Plot -->
+                            <polyline points="50,200 100,180 150,220 200,150 250,250 300,190 350,210 400,280 450,200 500,230 550,160"
+                                      fill="none" stroke="#2563EB" stroke-width="2"/>
+                            </svg>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block">
+                            <input type="radio" name="q1" value="less" class="mr-2" onclick="checkAnswer('q1', 'less', 'By changing the maximum value of the Y-axis, you compress the data vertically, making the fluctuations appear smaller.')"> Less
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q1" value="more" class="mr-2" onclick="checkAnswer('q1', 'less', 'By changing the maximum value of the Y-axis, you compress the data vertically, making the fluctuations appear smaller.')"> More
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q1" value="the same" class="mr-2" onclick="checkAnswer('q1', 'less', 'By changing the maximum value of the Y-axis, you compress the data vertically, making the fluctuations appear smaller.')"> The same
+                        </label>
+                    </div>
+                    <div id="q1-feedback" class="mt-4 hidden"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div id="q2-container" class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <p class="font-semibold text-gray-700 mb-4">2. In a scatter plot, if the data points form a perfect horizontal line, what can you conclude?</p>
+                    <div class="space-y-2">
+                        <label class="block">
+                            <input type="radio" name="q2" value="strong" class="mr-2" onclick="checkAnswer('q2', 'constant', 'A horizontal line has a slope of zero, indicating that the value on the Y-axis is constant regardless of the value on the X-axis.')"> There is a strong linear relationship.
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q2" value="none" class="mr-2" onclick="checkAnswer('q2', 'constant', 'A horizontal line has a slope of zero, indicating that the value on the Y-axis is constant regardless of the value on the X-axis.')"> There is no linear relationship.
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q2" value="constant" class="mr-2" onclick="checkAnswer('q2', 'constant', 'A horizontal line has a slope of zero, indicating that the value on the Y-axis is constant regardless of the value on the X-axis.')"> The relationship is constant with a slope of zero.
+                        </label>
+                    </div>
+                    <div id="q2-feedback" class="mt-4 hidden"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div id="q3-container" class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <p class="font-semibold text-gray-700 mb-4">3. The total of all frequencies in a frequency distribution always equals what?</p>
+                    <div class="space-y-2">
+                        <label class="block">
+                            <input type="radio" name="q3" value="one" class="mr-2" onclick="checkAnswer('q3', 'total', 'A frequency distribution shows how often each value appears. The sum of all frequencies is simply the count of all observations in the dataset.')"> One
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q3" value="classes" class="mr-2" onclick="checkAnswer('q3', 'total', 'A frequency distribution shows how often each value appears. The sum of all frequencies is simply the count of all observations in the dataset.')"> The number of classes
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q3" value="total" class="mr-2" onclick="checkAnswer('q3', 'total', 'A frequency distribution shows how often each value appears. The sum of all frequencies is simply the count of all observations in the dataset.')"> The total number of observations
+                        </label>
+                    </div>
+                    <div id="q3-feedback" class="mt-4 hidden"></div>
+                </div>
+
+                <!-- Question 4 -->
+                <div id="q4-container" class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <p class="font-semibold text-gray-700 mb-4">4. Which of the following describes the shape of the histogram shown below? </p>
+                    <div class="graph-container">
+                        <svg width="100%" height="100%" viewBox="0 0 600 400">
+                            <!-- Graph Area -->
+                            <rect x="50" y="50" width="500" height="300" fill="#F3F4F6"/>
+                            <!-- Y-Axis -->
+                            <line x1="50" y1="50" x2="50" y2="350" stroke="#4B5563"/>
+                            <text x="35" y="55" font-size="12" text-anchor="end">High</text>
+                            <text x="35" y="345" font-size="12" text-anchor="end">Low</text>
+                            <text x="5" y="200" font-size="14" font-weight="bold" transform="rotate(-90 5 200)">Frequency</text>
+                            <!-- X-Axis -->
+                            <line x1="50" y1="350" x2="550" y2="350" stroke="#4B5563"/>
+                            <text x="300" y="390" font-size="14" font-weight="bold" text-anchor="middle">Data Values</text>
+                            <!-- Histogram Bars -->
+                            <rect x="60" y="150" width="40" height="200" fill="#94A3B8"/>
+                            <rect x="100" y="100" width="40" height="250" fill="#94A3B8"/>
+                            <rect x="140" y="75" width="40" height="275" fill="#94A3B8"/>
+                            <rect x="180" y="150" width="40" height="200" fill="#94A3B8"/>
+                            <rect x="220" y="200" width="40" height="150" fill="#94A3B8"/>
+                            <rect x="260" y="250" width="40" height="100" fill="#94A3B8"/>
+                            <rect x="300" y="280" width="40" height="70" fill="#94A3B8"/>
+                            <rect x="340" y="300" width="40" height="50" fill="#94A3B8"/>
+                            <rect x="380" y="320" width="40" height="30" fill="#94A3B8"/>
+                            <rect x="420" y="335" width="40" height="15" fill="#94A3B8"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block">
+                            <input type="radio" name="q4" value="symmetric" class="mr-2" onclick="checkAnswer('q4', 'pos-skew', 'A positively skewed distribution has a long tail extending to the right.')"> Symmetric
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q4" value="neg-skew" class="mr-2" onclick="checkAnswer('q4', 'pos-skew', 'A positively skewed distribution has a long tail extending to the right.')"> Negatively skewed
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q4" value="pos-skew" class="mr-2" onclick="checkAnswer('q4', 'pos-skew', 'A positively skewed distribution has a long tail extending to the right.')"> Positively skewed
+                        </label>
+                    </div>
+                    <div id="q4-feedback" class="mt-4 hidden"></div>
+                </div>
+
+                <!-- Question 5 -->
+                <div id="q5-container" class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <p class="font-semibold text-gray-700 mb-4">5. What type of graph is best suited for showing sales trends over several months?</p>
+                    <div class="space-y-2">
+                        <label class="block">
+                            <input type="radio" name="q5" value="bar" class="mr-2" onclick="checkAnswer('q5', 'line', 'Line charts are ideal for visualizing trends over time as they connect consecutive data points, making the overall trend easy to see.')"> Bar chart
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q5" value="line" class="mr-2" onclick="checkAnswer('q5', 'line', 'Line charts are ideal for visualizing trends over time as they connect consecutive data points, making the overall trend easy to see.')"> Line chart
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q5" value="pie" class="mr-2" onclick="checkAnswer('q5', 'line', 'Line charts are ideal for visualizing trends over time as they connect consecutive data points, making the overall trend easy to see.')"> Pie chart
+                        </label>
+                    </div>
+                    <div id="q5-feedback" class="mt-4 hidden"></div>
+                </div>
+
+                <!-- Question 6 -->
+                <div id="q6-container" class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <p class="font-semibold text-gray-700 mb-4">6. What is the primary purpose of a time-series graph?</p>
+                    <div class="space-y-2">
+                        <label class="block">
+                            <input type="radio" name="q6" value="categories" class="mr-2" onclick="checkAnswer('q6', 'trends', 'Time-series graphs, such as line charts, are specifically designed to show how data changes over a continuous period of time.')"> To compare different categories at a single point in time.
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q6" value="distribution" class="mr-2" onclick="checkAnswer('q6', 'trends', 'Time-series graphs, such as line charts, are specifically designed to show how data changes over a continuous period of time.')"> To show the distribution of a dataset.
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q6" value="trends" class="mr-2" onclick="checkAnswer('q6', 'trends', 'Time-series graphs, such as line charts, are specifically designed to show how data changes over a continuous period of time.')"> To illustrate changes in data over a period of time.
+                        </label>
+                    </div>
+                    <div id="q6-feedback" class="mt-4 hidden"></div>
+                </div>
+                
+                <!-- Question 7 -->
+                <div id="q7-container" class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <p class="font-semibold text-gray-700 mb-4">7. Which of the following is a potential limitation of using graphical techniques to present data?</p>
+                    <div class="space-y-2">
+                        <label class="block">
+                            <input type="radio" name="q7" value="small" class="mr-2" onclick="checkAnswer('q7', 'distort', 'Graphs can be misleading if their scales are manipulated. For example, a shortened or extended axis can make differences appear more or less significant than they actually are.')"> They are only useful for small data sets.
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q7" value="distort" class="mr-2" onclick="checkAnswer('q7', 'distort', 'Graphs can be misleading if their scales are manipulated. For example, a shortened or extended axis can make differences appear more or less significant than they actually are.')"> They can be visually manipulated to distort the true impression of the data.
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q7" value="tabular" class="mr-2" onclick="checkAnswer('q7', 'distort', 'Graphs can be misleading if their scales are manipulated. For example, a shortened or extended axis can make differences appear more or less significant than they actually are.')"> They are less effective than tabular data for all types of analysis.
+                        </label>
+                    </div>
+                    <div id="q7-feedback" class="mt-4 hidden"></div>
+                </div>
+
+                <!-- Histograms for questions 8, 9, 10 -->
+                <div class="p-6 rounded-xl border border-gray-200 text-center">
+                    <p class="font-semibold text-gray-700 mb-4">Refer to the two histograms below for the next three questions.</p>
+                    <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
+                         <div class="flex flex-col items-center">
+                            <h3 class="text-xl font-bold mb-2">Histogram A</h3>
+                            <div class="graph-container !h-48 !w-64">
+                                <!-- Adjusted SVG for Histogram A (lower center, smaller spread) -->
+                                <svg width="100%" height="100%" viewBox="0 0 300 200">
+                                    <line x1="30" y1="20" x2="30" y2="180" stroke="#4B5563"/>
+                                    <line x1="30" y1="180" x2="280" y2="180" stroke="#4B5563"/>
+                                    <text x="155" y="195" font-size="10" text-anchor="middle">Values</text>
+                                    <rect x="40" y="140" width="25" height="40" fill="#B2A7F8"/>
+                                    <rect x="65" y="100" width="25" height="80" fill="#B2A7F8"/>
+                                    <rect x="90" y="70" width="25" height="110" fill="#B2A7F8"/>
+                                    <rect x="115" y="50" width="25" height="130" fill="#B2A7F8"/>
+                                    <rect x="140" y="70" width="25" height="110" fill="#B2A7F8"/>
+                                    <rect x="165" y="100" width="25" height="80" fill="#B2A7F8"/>
+                                    <rect x="190" y="140" width="25" height="40" fill="#B2A7F8"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <h3 class="text-xl font-bold mb-2">Histogram B</h3>
+                             <div class="graph-container !h-48 !w-64">
+                                 <!-- Adjusted SVG for Histogram B (higher center, larger spread) -->
+                                <svg width="100%" height="100%" viewBox="0 0 300 200">
+                                    <line x1="30" y1="20" x2="30" y2="180" stroke="#4B5563"/>
+                                    <line x1="30" y1="180" x2="280" y2="180" stroke="#4B5563"/>
+                                    <text x="155" y="195" font-size="10" text-anchor="middle">Values</text>
+                                    <rect x="40" y="155" width="30" height="25" fill="#C5BCEB"/>
+                                    <rect x="70" y="130" width="30" height="50" fill="#C5BCEB"/>
+                                    <rect x="100" y="105" width="30" height="75" fill="#C5BCEB"/>
+                                    <rect x="130" y="80" width="30" height="100" fill="#C5BCEB"/>
+                                    <rect x="160" y="55" width="30" height="125" fill="#C5BCEB"/>
+                                    <rect x="190" y="130" width="30" height="50" fill="#C5BCEB"/>
+                                    <rect x="220" y="155" width="30" height="25" fill="#C5BCEB"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 8 -->
+                <div id="q8-container" class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <p class="font-semibold text-gray-700 mb-4">8. Compare the two histograms above. Which statement about their shape is true? </p>
+                    <div class="space-y-2">
+                        <label class="block">
+                            <input type="radio" name="q8" value="same-shape" class="mr-2" onclick="checkAnswer('q8', 'same-shape', 'Both histograms have a similar bell-shaped, symmetric distribution.')"> They have the same shape.
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q8" value="diff-shape" class="mr-2" onclick="checkAnswer('q8', 'same-shape', 'Both histograms have a similar bell-shaped, symmetric distribution.')"> They have different shapes.
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q8" value="cannot-compare" class="mr-2" onclick="checkAnswer('q8', 'same-shape', 'Both histograms have a similar bell-shaped, symmetric distribution.')"> You cannot compare their shapes without the original data.
+                        </label>
+                    </div>
+                    <div id="q8-feedback" class="mt-4 hidden"></div>
+                </div>
+                
+                <!-- Question 9 -->
+                <div id="q9-container" class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <p class="font-semibold text-gray-700 mb-4">9. Compare the two histograms above. Which statement about their center is true?</p>
+                    <div class="space-y-2">
+                        <label class="block">
+                            <input type="radio" name="q9" value="same-center" class="mr-2" onclick="checkAnswer('q9', 'a-lower-center', 'Histogram A has a lower center because its data is clustered to the left, while Histogram B\'s data is centered to the right.')"> They have the same center.
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q9" value="a-lower-center" class="mr-2" onclick="checkAnswer('q9', 'a-lower-center', 'Histogram A has a lower center because its data is clustered to the left, while Histogram B\'s data is centered to the right.')"> Histogram A has a lower center than Histogram B.
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q9" value="a-higher-center" class="mr-2" onclick="checkAnswer('q9', 'a-lower-center', 'Histogram A has a lower center because its data is clustered to the left, while Histogram B\'s data is centered to the right.')"> Histogram A has a higher center than Histogram B.
+                        </label>
+                    </div>
+                    <div id="q9-feedback" class="mt-4 hidden"></div>
+                </div>
+                
+                <!-- Question 10 -->
+                <div id="q10-container" class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <p class="font-semibold text-gray-700 mb-4">10. Compare the two histograms above. Which statement about their spread is true?</p>
+                    <div class="space-y-2">
+                        <label class="block">
+                            <input type="radio" name="q10" value="same-spread" class="mr-2" onclick="checkAnswer('q10', 'a-larger-spread', 'Histogram B has a wider spread than Histogram A, as its data is more dispersed and less concentrated around a single point.')"> They have the same spread.
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q10" value="a-larger-spread" class="mr-2" onclick="checkAnswer('q10', 'a-larger-spread', 'Histogram B has a wider spread than Histogram A, as its data is more dispersed and less concentrated around a single point.')"> Histogram A has a larger spread than Histogram B.
+                        </label>
+                        <label class="block">
+                            <input type="radio" name="q10" value="a-smaller-spread" class="mr-2" onclick="checkAnswer('q10', 'a-larger-spread', 'Histogram B has a wider spread than Histogram A, as its data is more dispersed and less concentrated around a single point.')"> Histogram A has a smaller spread than Histogram B.
+                        </label>
+                    </div>
+                    <div id="q10-feedback" class="mt-4 hidden"></div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function checkAnswer(questionId, correctAnswer, explanation) {
+            const container = document.getElementById(questionId + '-container');
+            const feedbackDiv = document.getElementById(questionId + '-feedback');
+            const radios = container.querySelectorAll('input[type="radio"]');
+            
+            let selectedValue;
+            radios.forEach(radio => {
+                if (radio.checked) {
+                    selectedValue = radio.value;
+                }
+            });
+            
+            // Disable all radio buttons for this question
+            radios.forEach(radio => {
+                radio.disabled = true;
+            });
+
+            // Display feedback
+            feedbackDiv.classList.remove('hidden');
+
+            if (selectedValue === correctAnswer) {
+                feedbackDiv.innerHTML = `<p class="font-bold text-green-600">Correct! </p><p class="mt-2 text-gray-700">${explanation}</p>`;
+            } else {
+                feedbackDiv.innerHTML = `<p class="font-bold text-red-600">Incorrect. The correct answer is:</p><p class="mt-2 text-gray-700">${explanation}</p>`;
+            }
+        }
+    </script>
+
+</body>
+</html>
