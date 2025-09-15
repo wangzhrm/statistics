@@ -37,15 +37,9 @@
     {"word": "Relative frequency distribution", "chinese_meaning": "相对频数分布"},
     {"word": "Pie chart", "chinese_meaning": "饼图"},
     {"word": "Bar chart", "chinese_meaning": "条形图"},
-    {"word": "Pareto chart", "chinese_meaning": "帕累托图"},
-    {"word": "Class (interval)", "chinese_meaning": "组（区间）"},
-    {"word": "Ogive", "chinese_meaning": "累积图"},
-    {"word": "Stem-and-leaf display", "chinese_meaning": "茎叶图"},
-    {"word": "Dot plot", "chinese_meaning": "点图"},
     {"word": "Cross-classification table", "chinese_meaning": "交叉分类表"},
     {"word": "Line chart", "chinese_meaning": "折线图"},
-    {"word": "Scatter plot", "chinese_meaning": "散点图"},
-    {"word": "Spurious correlation", "chinese_meaning": "伪相关"}
+    {"word": "Scatter plot", "chinese_meaning": "散点图"}
   ],
   "Lecture3": [
     {"word": "Measures of central location", "chinese_meaning": "集中趋势度量"},
