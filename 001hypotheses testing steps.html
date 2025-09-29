@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steps in Hypothesis Testing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        ol {
+            list-style-type: decimal;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #555;
+            font-size: 1.2em;
+        }
+        p {
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Steps in Hypothesis Testing</h1>
+    <p>Hypothesis testing is a statistical method used to make inferences or draw conclusions about a population based on sample data. Below are the key steps involved in the process, along with explanations of what each step means.</p>
+    
+    <ol>
+        <li>
+            <h2>Establishing Hypotheses</h2>
+            <p>This is the first step where you define the null hypothesis (H₀) and the alternative hypothesis (H₁ or Hₐ). The null hypothesis represents the default assumption or no effect (e.g., "There is no difference between the groups"), while the alternative hypothesis represents what you are trying to prove or the presence of an effect (e.g., "There is a difference"). These hypotheses must be mutually exclusive and exhaustive.</p>
+        </li>
+        <li>
+            <h2>Choosing the Appropriate Testing Methods</h2>
+            <p>In this step, you select the right statistical test based on the type of data, the research question, sample size, and assumptions. For example, a t-test might be used for comparing means of small samples, a z-test for large samples, or a chi-square test for categorical data. You also decide on the significance level (α, often 0.05) and whether the test is one-tailed or two-tailed.</p>
+        </li>
+        <li>
+            <h2>Calculating the Test Statistic</h2>
+            <p>Here, you compute the test statistic using the sample data. This value measures how far the sample result deviates from the null hypothesis. For instance, in a t-test, the formula might be t = (sample mean - hypothesized mean) / (standard deviation / √sample size). The test statistic follows a known distribution (e.g., t-distribution, normal distribution).</p>
+        </li>
+        <li>
+            <h2>Calculating the P-Value</h2>
+            <p>The p-value is the probability of obtaining a test statistic at least as extreme as the one observed, assuming the null hypothesis is true. It is calculated based on the test statistic and the distribution. A small p-value indicates strong evidence against the null hypothesis.</p>
+        </li>
+        <li>
+            <h2>Interpreting the Results</h2>
+            <p>Finally, compare the p-value to the significance level (α). If p ≤ α, reject the null hypothesis in favor of the alternative. If p > α, fail to reject the null hypothesis. Also, consider practical significance, potential errors (Type I or II), and report confidence intervals if applicable. This step involves drawing conclusions in the context of the original research question.</p>
+        </li>
+    </ol>
+</body>
+</html>
