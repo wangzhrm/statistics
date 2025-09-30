@@ -1,0 +1,206 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inference for Population Proportion Practice Quiz 2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p {
+            margin: 5px 0;
+        }
+        .question {
+            margin-bottom: 30px;
+        }
+        .options {
+            margin-left: 20px;
+        }
+        .formula {
+            font-style: italic;
+            color: #555;
+            margin: 10px 0;
+        }
+        hr {
+            margin: 20px 0;
+            border: 0;
+            border-top: 1px solid #ccc;
+        }
+        @media print {
+            body {
+                margin: 20px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            h2 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Inference for Population Proportion Practice Quiz 2 (10 Questions) 🧠</h1>
+    <p style="text-align: center;">Please circle the correct answer for each question. Show your work for calculations.</p>
+
+    <div class="question">
+        <h2>1. What is the Null Hypothesis (H0) for a two-tailed test of a population proportion where the hypothesized proportion (p0) is 0.3?</h2>
+        <div class="options">
+            <p>A. p ≠ 0.3</p>
+            <p>B. p > 0.3</p>
+            <p>C. p < 0.3</p>
+            <p>D. p = 0.3</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <h2>2. For a one-tailed test suspecting the population proportion is greater than 0.7, what is the Alternative Hypothesis (Ha)?</h2>
+        <div class="options">
+            <p>A. p = 0.7</p>
+            <p>B. p > 0.7</p>
+            <p>C. p < 0.7</p>
+            <p>D. p ≠ 0.7</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <h2>3. Calculation: A sample of n = 150 has a sample proportion (phat) of 0.4, testing against p0 = 0.35. What is the Z-statistic?</h2>
+        <p class="formula">Formula: Z = (phat - p0) / sqrt(p0 * (1 - p0) / n)</p>
+        <div class="options">
+            <p>A. Z ≈ 1.29</p>
+            <p>B. Z ≈ -1.29</p>
+            <p>C. Z ≈ 0.64</p>
+            <p>D. Z ≈ -0.64</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <h2>4. Calculation: In a sample of n = 250 with 100 successes (phat = 0.4), testing against p0 = 0.45, what is the Z-statistic?</h2>
+        <p class="formula">Formula: Z = (phat - p0) / sqrt(p0 * (1 - p0) / n)</p>
+        <div class="options">
+            <p>A. Z ≈ 1.58</p>
+            <p>B. Z ≈ -1.58</p>
+            <p>C. Z ≈ 0.79</p>
+            <p>D. Z ≈ -0.79</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <h2>5. In the Z-statistic formula for proportion inference, the denominator is known as:</h2>
+        <div class="options">
+            <p>A. The sample variance</p>
+            <p>B. The standard error of the proportion</p>
+            <p>C. The population proportion</p>
+            <p>D. The sample mean deviation</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <h2>6. For a two-tailed test with Z = 2.576, what is the approximate P-value? (Standard normal distribution; critical value at α=0.01 is ±2.576)</h2>
+        <div class="options">
+            <p>A. P = 0.01</p>
+            <p>B. P = 0.005</p>
+            <p>C. P = 0.05</p>
+            <p>D. P = 0.99</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <h2>7. Calculation: For a left-tailed test with Z = -1.28, what is the approximate P-value? (Area to the left of -1.28 is 0.10)</h2>
+        <div class="options">
+            <p>A. P = 0.05</p>
+            <p>B. P = 0.10</p>
+            <p>C. P = 0.90</p>
+            <p>D. P = 0.20</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <h2>8. Interpretation: If a two-tailed test yields a P-value of 0.06 with α = 0.05, what is the decision?</h2>
+        <div class="options">
+            <p>A. Reject H0</p>
+            <p>B. Fail to reject H0</p>
+            <p>C. Accept Ha</p>
+            <p>D. Redo the test</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <h2>9. Interpretation: In a right-tailed test, the P-value is 0.02 and α = 0.05. What is the conclusion?</h2>
+        <div class="options">
+            <p>A. Fail to reject H0</p>
+            <p>B. Reject H0; evidence supports Ha</p>
+            <p>C. Accept H0</p>
+            <p>D. The result is inconclusive</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <h2>10. What is the purpose of the P-value in hypothesis testing for a population proportion?</h2>
+        <div class="options">
+            <p>A. To estimate the population proportion</p>
+            <p>B. To measure the probability of the null hypothesis being true</p>
+            <p>C. To determine the probability of observing the sample data or more extreme, assuming H0 is true</p>
+            <p>D. To calculate the standard error</p>
+        </div>
+    </div>
+
+    <hr>
+    <p style="text-align: center;">End of Quiz. Please submit your answers for grading!</p>
+</body>
+</html>
