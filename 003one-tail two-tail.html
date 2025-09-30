@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One-Tail vs. Two-Tail Tests</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            margin: 40px;
+            background-color: #f7f7f7;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #3f51b5; /* Indigo */
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #009688; /* Teal */
+            margin-top: 25px;
+            border-bottom: 1px dashed #e0e0e0;
+            padding-bottom: 5px;
+        }
+        .test-section {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .test-box {
+            flex: 1;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        .one-tail {
+            background-color: #e0f7fa; /* Light Cyan */
+            border-color: #00bcd4; /* Cyan */
+        }
+        .two-tail {
+            background-color: #e8eaf6; /* Light Indigo */
+            border-color: #3f51b5; /* Indigo */
+        }
+        .key-point {
+            font-weight: bold;
+            color: #c62828; /* Red */
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        ul li:before {
+            content: '•';
+            color: #009688;
+            font-weight: bold;
+            display: inline-block; 
+            width: 1em;
+            margin-left: -1em;
+        }
+        .image-container {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #fafafa;
+            border-radius: 8px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>The Difference Between One-Tail and Two-Tail Hypothesis Tests</h1>
+
+    <div class="test-section">
+        
+        <div class="test-box one-tail">
+            <h2>One-Tail Test (Unidirectional) ➡️</h2>
+            <p>A one-tail (or **one-sided**) test is used when the alternative hypothesis specifies a **direction** for the effect or difference.</p>
+            <ul>
+                <li><span class="key-point">Alternative Hypothesis ($H_A$):</span> Claims the parameter is *greater than* **(>)** or *less than* **(<)** the null value.</li>
+                <li><span class="key-point">Critical Region:</span> The rejection region is located entirely in **one tail** (either the far left or the far right) of the distribution.</li>
+                <li><span class="key-point">When to Use:</span> When the research question asks if something has *increased* or *decreased*. (e.g., "Is the new average score higher than 75?")</li>
+            </ul>
+        </div>
+
+        <div class="test-box two-tail">
+            <h2>Two-Tail Test (Non-directional) ↕️</h2>
+            <p>A two-tail (or **two-sided**) test is used when the alternative hypothesis does **not** specify a direction, only that a difference exists.</p>
+            <ul>
+                <li><span class="key-point">Alternative Hypothesis ($H_A$):</span> Claims the parameter is simply *not equal to* **($\neq$)** the null value.</li>
+                <li><span class="key-point">Critical Region:</span> The rejection region is split equally between **both tails** of the distribution.</li>
+                <li><span class="key-point">When to Use:</span> When the research question asks only if something is *different* from a given value. (e.g., "Is the new average score different from 75?")</li>
+            </ul>
+        </div>
+        
+    </div>
+    
+    <div class="image-container">
+        <h2>Visual Comparison</h2>
+        <img src="https://tonysew.wordpress.com/wp-content/uploads/2025/09/453d9cbc-c5b6-4959-8965-efe946a4b148.png" 
+             alt="Diagram illustrating one-tail and two-tail tests on a normal distribution. The two-tail test shows the alpha divided into two rejection regions on both ends. The one-tail test shows the full alpha in one single rejection region on one end.">
+    </div>
+
+</div>
+
+</body>
+</html>
