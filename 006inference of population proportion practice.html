@@ -1,0 +1,240 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inference for Population Proportion Practice Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p {
+            margin: 5px 0;
+        }
+        .question {
+            margin-bottom: 30px;
+        }
+        .options {
+            margin-left: 20px;
+        }
+        .formula {
+            font-style: italic;
+            color: #555;
+            margin: 10px 0;
+        }
+        .answer {
+            font-weight: bold;
+            color: #2e7d32;
+            margin-top: 10px;
+            display: none;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        hr {
+            margin: 20px 0;
+            border: 0;
+            border-top: 1px solid #ccc;
+        }
+        @media print {
+            body {
+                margin: 20px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            h2 {
+                font-size: 16px;
+            }
+            .answer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Inference for Population Proportion Practice Quiz (10 Questions) 🧠</h1>
+    <p style="text-align: center;">Please select one answer for each question. The correct answer will appear below after selection.</p>
+
+    <div class="question" id="q1">
+        <h2>1. What is the Null Hypothesis (H0) for a two-tailed test of a population proportion where the hypothesized proportion (p0) is 0.4?</h2>
+        <div class="options">
+            <p><input type="radio" name="q1" value="A">A. p ≠ 0.4</p>
+            <p><input type="radio" name="q1" value="B">B. p > 0.4</p>
+            <p><input type="radio" name="q1" value="C">C. p < 0.4</p>
+            <p><input type="radio" name="q1" value="D">D. p = 0.4</p>
+        </div>
+        <p class="answer" id="answer1">Correct Answer: D. p = 0.4</p>
+    </div>
+
+    <div class="question" id="q2">
+        <h2>2. In a one-tailed test suspecting the population proportion is less than 0.6, what is the Alternative Hypothesis (Ha)?</h2>
+        <div class="options">
+            <p><input type="radio" name="q2" value="A">A. p = 0.6</p>
+            <p><input type="radio" name="q2" value="B">B. p > 0.6</p>
+            <p><input type="radio" name="q2" value="C">C. p < 0.6</p>
+            <p><input type="radio" name="q2" value="D">D. p ≠ 0.6</p>
+        </div>
+        <p class="answer" id="answer2">Correct Answer: C. p < 0.6</p>
+    </div>
+
+    <div class="question" id="q3">
+        <h2>3. Calculation: A sample of n = 100 has a sample proportion (phat) of 0.55, testing against p0 = 0.5. What is the Z-statistic?</h2>
+        <p class="formula">Formula: Z = (phat - p0) / sqrt(p0 * (1 - p0) / n)</p>
+        <div class="options">
+            <p><input type="radio" name="q3" value="A">A. Z = 1.0</p>
+            <p><input type="radio" name="q3" value="B">B. Z = -1.0</p>
+            <p><input type="radio" name="q3" value="C">C. Z = 0.5</p>
+            <p><input type="radio" name="q3" value="D">D. Z = -0.5</p>
+        </div>
+        <p class="answer" id="answer3">Correct Answer: A. Z = 1.0<br>
+            Calculation: Standard Error = sqrt(0.5 * 0.5 / 100) = sqrt(0.25 / 100) = 0.05; Z = (0.55 - 0.5) / 0.05 = 0.05 / 0.05 = 1.0</p>
+    </div>
+
+    <div class="question" id="q4">
+        <h2>4. Calculation: In a sample of n = 200 with 90 successes (phat = 0.45), testing against p0 = 0.5, what is the Z-statistic?</h2>
+        <p class="formula">Formula: Z = (phat - p0) / sqrt(p0 * (1 - p0) / n)</p>
+        <div class="options">
+            <p><input type="radio" name="q4" value="A">A. Z ≈ -1.41</p>
+            <p><input type="radio" name="q4" value="B">B. Z ≈ 1.41</p>
+            <p><input type="radio" name="q4" value="C">C. Z ≈ -0.71</p>
+            <p><input type="radio" name="q4" value="D">D. Z ≈ 0.71</p>
+        </div>
+        <p class="answer" id="answer4">Correct Answer: A. Z ≈ -1.41<br>
+            Calculation: Standard Error = sqrt(0.5 * 0.5 / 200) = sqrt(0.25 / 200) ≈ 0.0354; Z = (0.45 - 0.5) / 0.0354 ≈ -0.05 / 0.0354 ≈ -1.41</p>
+    </div>
+
+    <div class="question" id="q5">
+        <h2>5. What does the standard error measure in the Z-statistic formula for proportion inference?</h2>
+        <div class="options">
+            <p><input type="radio" name="q5" value="A">A. The sample proportion variability</p>
+            <p><input type="radio" name="q5" value="B">B. The standard deviation of the population proportion under H0</p>
+            <p><input type="radio" name="q5" value="C">C. The difference between phat and p0</p>
+            <p><input type="radio" name="q5" value="D">D. The variance of the sample</p>
+        </div>
+        <p class="answer" id="answer5">Correct Answer: B. The standard deviation of the population proportion under H0</p>
+    </div>
+
+    <div class="question" id="q6">
+        <h2>6. For a two-tailed test with Z = -1.96, what is the P-value? (Standard normal distribution; critical value at α=0.05 is ±1.96)</h2>
+        <div class="options">
+            <p><input type="radio" name="q6" value="A">A. P = 0.025</p>
+            <p><input type="radio" name="q6" value="B">B. P = 0.05</p>
+            <p><input type="radio" name="q6" value="C">C. P = 0.975</p>
+            <p><input type="radio" name="q6" value="D">D. P = 0.10</p>
+        </div>
+        <p class="answer" id="answer6">Correct Answer: B. P = 0.05</p>
+    </div>
+
+    <div class="question" id="q7">
+        <h2>7. Calculation: For a right-tailed test with Z = 1.645, what is the approximate P-value? (Area to the right of 1.645 is 0.05)</h2>
+        <div class="options">
+            <p><input type="radio" name="q7" value="A">A. P = 0.05</p>
+            <p><input type="radio" name="q7" value="B">B. P = 0.10</p>
+            <p><input type="radio" name="q7" value="C">C. P = 0.95</p>
+            <p><input type="radio" name="q7" value="D">D. P = 0.025</p>
+        </div>
+        <p class="answer" id="answer7">Correct Answer: A. P = 0.05</p>
+    </div>
+
+    <div class="question" id="q8">
+        <h2>8. Interpretation: A two-tailed test yields a P-value of 0.04 with α = 0.05. What is the decision?</h2>
+        <div class="options">
+            <p><input type="radio" name="q8" value="A">A. Fail to reject H0</p>
+            <p><input type="radio" name="q8" value="B">B. Reject H0; significant evidence against H0</p>
+            <p><input type="radio" name="q8" value="C">C. Accept H0</p>
+            <p><input type="radio" name="q8" value="D">D. Test is inconclusive</p>
+        </div>
+        <p class="answer" id="answer8">Correct Answer: B. Reject H0; significant evidence against H0</p>
+    </div>
+
+    <div class="question" id="q9">
+        <h2>9. Interpretation: In a left-tailed test, the P-value is 0.08 and α = 0.05. What is the conclusion?</h2>
+        <div class="options">
+            <p><input type="radio" name="q9" value="A">A. Reject H0</p>
+            <p><input type="radio" name="q9" value="B">B. Fail to reject H0; insufficient evidence</p>
+            <p><input type="radio" name="q9" value="C">C. Accept Ha</p>
+            <p><input type="radio" name="q9" value="D">D. Increase α to reject H0</p>
+        </div>
+        <p class="answer" id="answer9">Correct Answer: B. Fail to reject H0; insufficient evidence</p>
+    </div>
+
+    <div class="question" id="q10">
+        <h2>10. What does the P-value indicate in a population proportion test?</h2>
+        <div class="options">
+            <p><input type="radio" name="q10" value="A">A. The probability that H0 is true</p>
+            <p><input type="radio" name="q10" value="B">B. The probability of observing the sample data or more extreme, assuming H0 is true</p>
+            <p><input type="radio" name="q10" value="C">C. The sample proportion</p>
+            <p><input type="radio" name="q10" value="D">D. The standard error of the sample</p>
+        </div>
+        <p class="answer" id="answer10">Correct Answer: B. The probability of observing the sample data or more extreme, assuming H0 is true</p>
+    </div>
+
+    <hr>
+    <p style="text-align: center;">End of Quiz. Please review your answers carefully!</p>
+
+    <script>
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const questionId = this.name;
+                const answerElement = document.getElementById(`answer${questionId.slice(1)}`);
+                answerElement.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
