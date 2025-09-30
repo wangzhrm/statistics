@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Type I and Type II Errors Explained</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #c82333; /* Reddish for errors */
+            margin-top: 25px;
+        }
+        .error-box {
+            border-left: 5px solid;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        .type-i {
+            border-left-color: #dc3545; /* Red */
+        }
+        .type-ii {
+            border-left-color: #ffc107; /* Yellow/Orange */
+        }
+        .key-term {
+            font-weight: bold;
+            color: #007bff; /* Blue */
+        }
+        .note {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 20px;
+            text-align: center;
+            font-style: italic;
+        }
+        .image-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Statistical Hypothesis Errors: Type I and Type II</h1>
+
+    <div class="note">
+        Note: The terms <strong>Type 1 Error</strong> and <strong>Type I Error</strong> (using Roman numeral I) are <span class="key-term">identical</span> and interchangeable.
+    </div>
+
+    <hr>
+
+    <div class="error-box type-i">
+        <h2>Type I Error (<span class="key-term">False Positive</span>) 🚨</h2>
+        <p>A <strong>Type I Error</strong> occurs when you <strong>reject the null hypothesis</strong> (H<sub>0</sub>) when it is <strong>actually true</strong>.</p>
+        <ul>
+            <li><strong>Name:</strong> <strong>False Positive</strong></li>
+            <li><strong>Analogy:</strong> A medical test says you <strong>have</strong> a disease (positive result), but you are <strong>actually healthy</strong> (false alarm).</li>
+            <li><strong>In Statistics:</strong> You conclude there <strong>is</strong> a significant effect or difference when, in reality, there <strong>is not</strong>.</li>
+            <li><strong>Symbol:</strong> The probability of a Type I Error is denoted by <strong>alpha (&alpha;)</strong>, also known as the significance level.</li>
+        </ul>
+    </div>
+
+    <div class="error-box type-ii">
+        <h2>Type II Error (<span class="key-term">False Negative</span>) ⚠️</h2>
+        <p>A <strong>Type II Error</strong> occurs when you <strong>fail to reject the null hypothesis</strong> (H<sub>0</sub>) when it is <strong>actually false</strong>.</p>
+        <p><em>(This is the error that represents a "false negative" and is included for comparison.)</em></p>
+        <ul>
+            <li><strong>Name:</strong> <strong>False Negative</strong></li>
+            <li><strong>Analogy:</strong> A medical test says you are <strong>healthy</strong> (negative result), but you <strong>actually have</strong> the disease (missed case).</li>
+            <li><strong>In Statistics:</strong> You conclude there <strong>is no</strong> significant effect or difference when, in reality, there <strong>is</strong> one.</li>
+            <li><strong>Symbol:</strong> The probability of a Type II Error is denoted by <strong>beta (&beta;)</strong>.</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <div class="image-container">
+        <h2>Visual Illustration of Error Types</h2>
+        <img src="https://tonysew.wordpress.com/wp-content/uploads/2025/09/d0003c29-95dc-44e2-a42a-ff12fa734147-1.png" 
+             alt="A 2x2 table illustrating Type I and Type II errors in hypothesis testing."
+             title="The relationship between the truth and the test decision.">
+    </div>
+
+</div>
+
+</body>
+</html>

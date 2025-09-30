@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Type I and Type II Errors (Interactive)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f8f8f8;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #4CAF50; /* Green header */
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .question-box {
+            background-color: #e6f7ff; /* Light blue background for questions */
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 5px solid #007bff;
+        }
+        .question-box h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .options label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+        }
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            display: none; /* Hidden by default */
+            font-weight: bold;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .short-answer {
+            width: calc(100% - 10px);
+            padding: 5px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Quiz: Hypothesis Testing Errors (Interactive) 🧠</h1>
+    <p>Select or input your answer below each question to see immediate feedback.</p>
+    <hr>
+
+    <div class="question-box" id="q1">
+        <h3>1. What is another name for a Type I Error?</h3>
+        <div class="options">
+            <label><input type="radio" name="q1_ans" value="a" onclick="checkAnswer(1, 'c', this.value)"> A. True Negative</label>
+            <label><input type="radio" name="q1_ans" value="b" onclick="checkAnswer(1, 'c', this.value)"> B. False Negative</label>
+            <label><input type="radio" name="q1_ans" value="c" onclick="checkAnswer(1, 'c', this.value)"> C. False Positive</label>
+            <label><input type="radio" name="q1_ans" value="d" onclick="checkAnswer(1, 'c', this.value)"> D. True Positive</label>
+        </div>
+        <div class="feedback" id="feedback1"></div>
+    </div>
+
+    <div class="question-box" id="q2">
+        <h3>2. A Type II Error occurs when:</h3>
+        <div class="options">
+            <label><input type="radio" name="q2_ans" value="a" onclick="checkAnswer(2, 'b', this.value)"> A. The null hypothesis (H<sub>0</sub>) is true, and you reject it.</label>
+            <label><input type="radio" name="q2_ans" value="b" onclick="checkAnswer(2, 'b', this.value)"> B. The null hypothesis (H<sub>0</sub>) is false, and you fail to reject it.</label>
+            <label><input type="radio" name="q2_ans" value="c" onclick="checkAnswer(2, 'b', this.value)"> C. The alternative hypothesis (H<sub>A</sub>) is true, and you reject H<sub>0</sub>.</label>
+            <label><input type="radio" name="q2_ans" value="d" onclick="checkAnswer(2, 'b', this.value)"> D. Both H<sub>0</sub> and H<sub>A</sub> are true.</label>
+        </div>
+        <div class="feedback" id="feedback2"></div>
+    </div>
+
+    <div class="question-box" id="q3">
+        <h3>3. What Greek letter represents the probability of a Type I Error?</h3>
+        <input type="text" class="short-answer" id="q3_input" placeholder="Enter the symbol or name (e.g., 'alpha' or 'a')" onchange="checkShortAnswer(3, ['alpha', 'a', '&alpha;'])">
+        <div class="feedback" id="feedback3"></div>
+    </div>
+
+    <div class="question-box" id="q4">
+        <h3>4. True or False: Decreasing the probability of a Type I Error (&alpha;) will generally increase the probability of a Type II Error (&beta;).</h3>
+        <div class="options">
+            <label><input type="radio" name="q4_ans" value="a" onclick="checkAnswer(4, 'a', this.value)"> A. True</label>
+            <label><input type="radio" name="q4_ans" value="b" onclick="checkAnswer(4, 'a', this.value)"> B. False</label>
+        </div>
+        <div class="feedback" id="feedback4"></div>
+    </div>
+
+    <div class="question-box" id="q5">
+        <h3>5. In a criminal trial (H<sub>0</sub>: Innocent), if the jury convicts an innocent person, which type of error has occurred?</h3>
+        <input type="text" class="short-answer" id="q5_input" placeholder="Type I or Type II" onchange="checkShortAnswer(5, ['type i', 'type 1', 'type i error', 'type 1 error'])">
+        <div class="feedback" id="feedback5"></div>
+    </div>
+
+    <div class="question-box" id="q6">
+        <h3>6. The power of a statistical test is equal to:</h3>
+        <div class="options">
+            <label><input type="radio" name="q6_ans" value="a" onclick="checkAnswer(6, 'b', this.value)"> A. 1 - &alpha;</label>
+            <label><input type="radio" name="q6_ans" value="b" onclick="checkAnswer(6, 'b', this.value)"> B. 1 - &beta;</label>
+            <label><input type="radio" name="q6_ans" value="c" onclick="checkAnswer(6, 'b', this.value)"> C. &alpha; + &beta;</label>
+            <label><input type="radio" name="q6_ans" value="d" onclick="checkAnswer(6, 'b', this.value)"> D. &alpha; / &beta;</label>
+        </div>
+        <div class="feedback" id="feedback6"></div>
+    </div>
+
+    <div class="question-box" id="q7">
+        <h3>7. Which type of error is referred to as a "missed detection" or a "false alarm that was ignored"?</h3>
+        <input type="text" class="short-answer" id="q7_input" placeholder="Type I or Type II" onchange="checkShortAnswer(7, ['type ii', 'type 2', 'type ii error', 'type 2 error', 'false negative'])">
+        <div class="feedback" id="feedback7"></div>
+    </div>
+
+    <div class="question-box" id="q8">
+        <h3>8. What term is used to describe the Type I Error rate chosen by the researcher before conducting the test?</h3>
+        <input type="text" class="short-answer" id="q8_input" placeholder="Enter the statistical term" onchange="checkShortAnswer(8, ['significance level', 'alpha level'])">
+        <div class="feedback" id="feedback8"></div>
+    </div>
+
+    <div class="question-box" id="q9">
+        <h3>9. Which consequence is typical of a Type I Error in a study testing a new drug?</h3>
+        <div class="options">
+            <label><input type="radio" name="q9_ans" value="a" onclick="checkAnswer(9, 'b', this.value)"> A. A truly effective drug is incorrectly rejected.</label>
+            <label><input type="radio" name="q9_ans" value="b" onclick="checkAnswer(9, 'b', this.value)"> B. An ineffective drug is incorrectly marketed as effective.</label>
+            <label><input type="radio" name="q9_ans" value="c" onclick="checkAnswer(9, 'b', this.value)"> C. The study correctly fails to find an effect.</label>
+            <label><input type="radio" name="q9_ans" value="d" onclick="checkAnswer(9, 'b', this.value)"> D. The null hypothesis is correctly rejected.</label>
+        </div>
+        <div class="feedback" id="feedback9"></div>
+    </div>
+
+    <div class="question-box" id="q10">
+        <h3>10. Can both Type I and Type II errors be committed simultaneously in a single hypothesis test?</h3>
+        <div class="options">
+            <label><input type="radio" name="q10_ans" value="a" onclick="checkAnswer(10, 'b', this.value)"> A. Yes, because they are independent.</label>
+            <label><input type="radio" name="q10_ans" value="b" onclick="checkAnswer(10, 'b', this.value)"> B. No, because the truth of H<sub>0</sub> is fixed for any given test.</label>
+        </div>
+        <div class="feedback" id="feedback10"></div>
+    </div>
+
+</div>
+
+<script>
+    // Correct answers for short-answer questions for display purposes
+    const shortAnswerKeys = {
+        3: 'Alpha (&alpha;)',
+        5: 'Type I Error',
+        7: 'Type II Error (False Negative)',
+        8: 'Significance Level (or Alpha Level)'
+    };
+
+    /**
+     * Checks multiple-choice answers and provides immediate feedback.
+     * @param {number} qNum - Question number (1-10).
+     * @param {string} correctAns - The correct option value ('a', 'b', 'c', or 'd').
+     * @param {string} userAns - The user's selected option value.
+     */
+    function checkAnswer(qNum, correctAns, userAns) {
+        const feedbackElement = document.getElementById(`feedback${qNum}`);
+        feedbackElement.style.display = 'block';
+
+        if (userAns === correctAns) {
+            feedbackElement.className = 'feedback correct';
+            feedbackElement.innerHTML = '✅ **Correct!**';
+        } else {
+            // Find the text of the correct answer to show
+            let correctText = '';
+            const labels = document.querySelectorAll(`#q${qNum} .options label`);
+            labels.forEach(label => {
+                const input = label.querySelector('input');
+                if (input && input.value === correctAns) {
+                    correctText = label.textContent.trim();
+                }
+            });
+            
+            feedbackElement.className = 'feedback incorrect';
+            feedbackElement.innerHTML = `❌ **Incorrect.** The correct answer is: ${correctText}`;
+        }
+    }
+
+    /**
+     * Checks short-answer questions and provides immediate feedback.
+     * @param {number} qNum - Question number (1-10).
+     * @param {Array<string>} correctAnswers - Array of acceptable correct answers (case-insensitive).
+     */
+    function checkShortAnswer(qNum, correctAnswers) {
+        const inputElement = document.getElementById(`q${qNum}_input`);
+        const feedbackElement = document.getElementById(`feedback${qNum}`);
+        const userAns = inputElement.value.trim().toLowerCase();
+        
+        // Hide feedback if the input is cleared
+        if (userAns === '') {
+            feedbackElement.style.display = 'none';
+            return;
+        }
+
+        feedbackElement.style.display = 'block';
+
+        // Check against normalized correct answers
+        const normalizedCorrect = correctAnswers.map(ans => ans.toLowerCase());
+
+        if (normalizedCorrect.includes(userAns) || normalizedCorrect.some(ans => userAns.includes(ans) && userAns.length > 3)) {
+            feedbackElement.className = 'feedback correct';
+            feedbackElement.innerHTML = '✅ **Correct!**';
+        } else {
+            feedbackElement.className = 'feedback incorrect';
+            // Use the key to display the official correct answer
+            const officialAnswer = shortAnswerKeys[qNum] || 'Check the key terms for this topic.';
+            feedbackElement.innerHTML = `❌ **Incorrect.** The correct answer is: ${officialAnswer}`;
+        }
+    }
+</script>
+
+</body>
+</html>
