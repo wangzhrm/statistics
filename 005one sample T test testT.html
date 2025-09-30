@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One-Sample T-Test Practice Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p {
+            margin: 5px 0;
+        }
+        .question {
+            margin-bottom: 30px;
+        }
+        .options {
+            margin-left: 20px;
+        }
+        .formula {
+            font-style: italic;
+            color: #555;
+            margin: 10px 0;
+        }
+        .answer {
+            font-weight: bold;
+            color: #2e7d32;
+            margin-top: 10px;
+        }
+        hr {
+            margin: 20px 0;
+            border: 0;
+            border-top: 1px solid #ccc;
+        }
+        @media print {
+            body {
+                margin: 20px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            h2 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>One-Sample T-Test Practice Quiz (10 Questions) 🧠</h1>
+    <p style="text-align: center;">Please circle the correct answer for each question. Show your work for calculations.</p>
+
+    <div class="question">
+        <h2>1. What is the main objective of a one-sample T-test?</h2>
+        <div class="options">
+            <p>A. To compare the means of two dependent groups.</p>
+            <p>B. To compare a sample mean to a known or hypothesized population mean.</p>
+            <p>C. To evaluate the correlation between two variables.</p>
+            <p>D. To compare the variances of two samples.</p>
+        </div>
+        <p class="answer">Correct Answer: B. To compare a sample mean to a known or hypothesized population mean.</p>
+    </div>
+
+    <div class="question">
+        <h2>2. For a one-sample T-test with a sample size of n = 45, what are the degrees of freedom (df)?</h2>
+        <p class="formula">Formula: df = n - 1</p>
+        <div class="options">
+            <p>A. 44</p>
+            <p>B. 45</p>
+            <p>C. 46</p>
+            <p>D. 43</p>
+        </div>
+        <p class="answer">Correct Answer: A. 44</p>
+    </div>
+
+    <div class="question">
+        <h2>3. A critical assumption for a one-sample T-test is that the population data follows which distribution?</h2>
+        <div class="options">
+            <p>A. Poisson distribution.</p>
+            <p>B. Normal distribution (or approximately normal for small samples).</p>
+            <p>C. Geometric distribution.</p>
+            <p>D. Beta distribution.</p>
+        </div>
+        <p class="answer">Correct Answer: B. Normal distribution (or approximately normal for small samples).</p>
+    </div>
+
+    <div class="question">
+        <h2>4. The Null Hypothesis (H0) for a two-tailed one-sample T-test typically states:</h2>
+        <div class="options">
+            <p>A. The population mean (μ) ≠ the hypothesized mean (μ0).</p>
+            <p>B. The population mean (μ) = the hypothesized mean (μ0).</p>
+            <p>C. The population mean (μ) > the hypothesized mean (μ0).</p>
+            <p>D. The population mean (μ) < the hypothesized mean (μ0).</p>
+        </div>
+        <p class="answer">Correct Answer: B. The population mean (μ) = the hypothesized mean (μ0).</p>
+    </div>
+
+    <div class="question">
+        <h2>5. Calculation: A sample (n = 16) has a mean (x̄) of 20 and a standard deviation (s) of 8. The hypothesized mean (μ0) is 17. What is the T-statistic (t)?</h2>
+        <p class="formula">Recall: Standard Error = s / √n; t = (x̄ - μ0) / Standard Error</p>
+        <div class="options">
+            <p>A. t = 1.5</p>
+            <p>B. t = 2.0</p>
+            <p>C. t = 1.0</p>
+            <p>D. t = 2.5</p>
+        </div>
+        <p class="answer">Correct Answer: A. t = 1.5<br>
+            Calculation: Standard Error = 8 / √16 = 8 / 4 = 2; t = (20 - 17) / 2 = 3 / 2 = 1.5</p>
+    </div>
+
+    <div class="question">
+        <h2>6. Calculation: A sample (n = 36) has a mean (x̄) of 60 and a standard deviation (s) of 12. The hypothesized mean (μ0) is 64. What is the T-statistic (t)?</h2>
+        <p class="formula">Recall: Standard Error = s / √n; t = (x̄ - μ0) / Standard Error</p>
+        <div class="options">
+            <p>A. t = -1.0</p>
+            <p>B. t = -2.0</p>
+            <p>C. t = -1.5</p>
+            <p>D. t = -3.0</p>
+        </div>
+        <p class="answer">Correct Answer: B. t = -2.0<br>
+            Calculation: Standard Error = 12 / √36 = 12 / 6 = 2; t = (60 - 64) / 2 = -4 / 2 = -2.0</p>
+    </div>
+
+    <div class="question">
+        <h2>7. Interpretation: If the calculated T-statistic is t = 2.5 and the critical T-value is t_crit = ± 2.13, what is the correct decision?</h2>
+        <div class="options">
+            <p>A. Fail to reject the Null Hypothesis (H0).</p>
+            <p>B. Reject the Null Hypothesis (H0) because |2.5| > 2.13.</p>
+            <p>C. Accept the Null Hypothesis (H0).</p>
+            <p>D. The result is inconclusive without the sample size.</p>
+        </div>
+        <p class="answer">Correct Answer: B. Reject the Null Hypothesis (H0) because |2.5| > 2.13.</p>
+    </div>
+
+    <div class="question">
+        <h2>8. Interpretation: A one-sample T-test gives a p-value of p = 0.015 with a significance level (α) of 0.05. What is the conclusion?</h2>
+        <div class="options">
+            <p>A. Fail to reject H0; p > α.</p>
+            <p>B. Reject H0; p ≤ α indicates a significant difference.</p>
+            <p>C. The result is inconclusive.</p>
+            <p>D. The p-value must be less than 0.01 to reject H0.</p>
+        </div>
+        <p class="answer">Correct Answer: B. Reject H0; p ≤ α indicates a significant difference.</p>
+    </div>
+
+    <div class="question">
+        <h2>9. In the T-statistic formula, the Standard Error in the denominator represents:</h2>
+        <div class="options">
+            <p>A. The variance of the population.</p>
+            <p>B. The variability of the sample mean relative to the population mean if the experiment is repeated.</p>
+            <p>C. The standard deviation of the sample.</p>
+            <p>D. The difference between the sample mean and the hypothesized mean.</p>
+        </div>
+        <p class="answer">Correct Answer: B. The variability of the sample mean relative to the population mean if the experiment is repeated.</p>
+    </div>
+
+    <div class="question">
+        <h2>10. Why is the T-test preferred over the Z-test when the population standard deviation (σ) is unknown?</h2>
+        <div class="options">
+            <p>A. The T-test accounts for uncertainty by using the sample standard deviation (s).</p>
+            <p>B. The T-test is only used for large samples.</p>
+            <p>C. The T-test does not assume normality of data.</p>
+            <p>D. The T-test is simpler to compute than the Z-test.</p>
+        </div>
+        <p class="answer">Correct Answer: A. The T-test accounts for uncertainty by using the sample standard deviation (s).</p>
+    </div>
+
+    <hr>
+    <p style="text-align: center;">End of Quiz. Please review your answers carefully!</p>
+</body>
+</html>
