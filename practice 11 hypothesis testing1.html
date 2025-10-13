@@ -1,0 +1,284 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistical Analysis Scenarios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        h2 {
+            color: #005566;
+            margin-top: 20px;
+        }
+        .scenario {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .scenario p {
+            margin: 10px 0;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        select {
+            width: auto;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Statistical Analysis Scenarios</h1>
+    <p>Below are ten scenarios requiring a one-sample z-test or t-test. Each scenario provides enough information to perform the test, including sample data. For each, provide the null and alternative hypotheses, choose the testing method (z-test or t-test), and determine whether a one-tail or two-tail test is appropriate. The parameter to be tested is denoted by μ (population mean).</p>
+
+    <div class="scenario">
+        <h2>Scenario 1: Factory Machine Output</h2>
+        <p>A factory claims its machines produce widgets with an average weight of 50 grams (μ). The population standard deviation is known to be 2 grams. A sample of 40 widgets has a mean weight of 50.8 grams. Test if the average weight differs from 50 grams. Parameter: μ (population mean weight).</p>
+        <label for="hypotheses1">Null and Alternative Hypotheses:</label>
+        <textarea id="hypotheses1" rows="4" placeholder="Enter H₀ and H₁ (e.g., H₀: μ = 50, H₁: μ ≠ 50)"></textarea>
+        <label for="testMethod1">Testing Method:</label>
+        <select id="testMethod1">
+            <option value="">Select</option>
+            <option value="z-test">One-sample z-test</option>
+            <option value="t-test">One-sample t-test</option>
+        </select>
+        <label for="tail1">Test Type:</label>
+        <select id="tail1">
+            <option value="">Select</option>
+            <option value="one-tail">One-tail test</option>
+            <option value="two-tail">Two-tail test</option>
+        </select>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 2: Student Test Scores</h2>
+        <p>A school claims its students score an average of 75 points (μ) on a standardized test, with population variance unknown. A sample of 25 students has a mean score of 78 points and a sample standard deviation of 5 points. Test if the average score is higher than 75 points. Parameter: μ (population mean score).</p>
+        <label for="hypotheses2">Null and Alternative Hypotheses:</label>
+        <textarea id="hypotheses2" rows="4" placeholder="Enter H₀ and H₁"></textarea>
+        <label for="testMethod2">Testing Method:</label>
+        <select id="testMethod2">
+            <option value="">Select</option>
+            <option value="z-test">One-sample z-test</option>
+            <option value="t-test">One-sample t-test</option>
+        </select>
+        <label for="tail2">Test Type:</label>
+        <select id="tail2">
+            <option value="">Select</option>
+            <option value="one-tail">One-tail test</option>
+            <option value="two-tail">Two-tail test</option>
+        </select>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 3: Battery Life</h2>
+        <p>A manufacturer claims their batteries last an average of 100 hours (μ) with a known population standard deviation of 5 hours. A sample of 50 batteries has a mean life of 98 hours. Test if the average battery life is less than 100 hours. Parameter: μ (population mean battery life).</p>
+        <label for="hypotheses3">Null and Alternative Hypotheses:</label>
+        <textarea id="hypotheses3" rows="4" placeholder="Enter H₀ and H₁"></textarea>
+        <label for="testMethod3">Testing Method:</label>
+        <select id="testMethod3">
+            <option value="">Select</option>
+            <option value="z-test">One-sample z-test</option>
+            <option value="t-test">One-sample t-test</option>
+        </select>
+        <label for="tail3">Test Type:</label>
+        <select id="tail3">
+            <option value="">Select</option>
+            <option value="one-tail">One-tail test</option>
+            <option value="two-tail">Two-tail test</option>
+        </select>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 4: Coffee Shop Wait Time</h2>
+        <p>A coffee shop claims customers wait an average of 5 minutes (μ) for orders, with population variance unknown. A sample of 30 customers has a mean wait time of 5.4 minutes and a sample standard deviation of 1.2 minutes. Test if the average wait time differs from 5 minutes. Parameter: μ (population mean wait time).</p>
+        <label for="hypotheses4">Null and Alternative Hypotheses:</label>
+        <textarea id="hypotheses4" rows="4" placeholder="Enter H₀ and H₁"></textarea>
+        <label for="testMethod4">Testing Method:</label>
+        <select id="testMethod4">
+            <option value="">Select</option>
+            <option value="z-test">One-sample z-test</option>
+            <option value="t-test">One-sample t-test</option>
+        </select>
+        <label for="tail4">Test Type:</label>
+        <select id="tail4">
+            <option value="">Select</option>
+            <option value="one-tail">One-tail test</option>
+            <option value="two-tail">Two-tail test</option>
+        </select>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 5: Drug Effectiveness</h2>
+        <p>A pharmaceutical company claims a drug reduces blood pressure by an average of 10 mmHg (μ) with a known population standard deviation of 1.5 mmHg. A sample of 60 patients has a mean reduction of 10.8 mmHg. Test if the reduction is greater than 10 mmHg. Parameter: μ (population mean reduction).</p>
+        <label for="hypotheses5">Null and Alternative Hypotheses:</label>
+        <textarea id="hypotheses5" rows="4" placeholder="Enter H₀ and H₁"></textarea>
+        <label for="testMethod5">Testing Method:</label>
+        <select id="testMethod5">
+            <option value="">Select</option>
+            <option value="z-test">One-sample z-test</option>
+            <option value="t-test">One-sample t-test</option>
+        </select>
+        <label for="tail5">Test Type:</label>
+        <select id="tail5">
+            <option value="">Select</option>
+            <option value="one-tail">One-tail test</option>
+            <option value="two-tail">Two-tail test</option>
+        </select>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 6: Employee Productivity</h2>
+        <p>A company claims employees complete tasks in an average of 40 hours per week (μ), with population variance unknown. A sample of 20 employees has a mean of 42 hours and a sample standard deviation of 3 hours. Test if the average time differs from 40 hours. Parameter: μ (population mean hours).</p>
+        <label for="hypotheses6">Null and Alternative Hypotheses:</label>
+        <textarea id="hypotheses6" rows="4" placeholder="Enter H₀ and H₁"></textarea>
+        <label for="testMethod6">Testing Method:</label>
+        <select id="testMethod6">
+            <option value="">Select</option>
+            <option value="z-test">One-sample z-test</option>
+            <option value="t-test">One-sample t-test</option>
+        </select>
+        <label for="tail6">Test Type:</label>
+        <select id="tail6">
+            <option value="">Select</option>
+            <option value="one-tail">One-tail test</option>
+            <option value="two-tail">Two-tail test</option>
+        </select>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 7: Light Bulb Lifespan</h2>
+        <p>A manufacturer claims their light bulbs last an average of 1000 hours (μ) with a known population standard deviation of 50 hours. A sample of 45 bulbs has a mean lifespan of 980 hours. Test if the lifespan is less than 1000 hours. Parameter: μ (population mean lifespan).</p>
+        <label for="hypotheses7">Null and Alternative Hypotheses:</label>
+        <textarea id="hypotheses7" rows="4" placeholder="Enter H₀ and H₁"></textarea>
+        <label for="testMethod7">Testing Method:</label>
+        <select id="testMethod7">
+            <option value="">Select</option>
+            <option value="z-test">One-sample z-test</option>
+            <option value="t-test">One-sample t-test</option>
+        </select>
+        <label for="tail7">Test Type:</label>
+        <select id="tail7">
+            <option value="">Select</option>
+            <option value="one-tail">One-tail test</option>
+            <option value="two-tail">Two-tail test</option>
+        </select>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 8: Customer Satisfaction</h2>
+        <p>A store claims an average customer satisfaction score of 4.0 (μ) on a 5-point scale, with population variance unknown. A sample of 35 customers has a mean score of 3.8 and a sample standard deviation of 0.6. Test if the score differs from 4.0. Parameter: μ (population mean satisfaction score).</p>
+        <label for="hypotheses8">Null and Alternative Hypotheses:</label>
+        <textarea id="hypotheses8" rows="4" placeholder="Enter H₀ and H₁"></textarea>
+        <label for="testMethod8">Testing Method:</label>
+        <select id="testMethod8">
+            <option value="">Select</option>
+            <option value="z-test">One-sample z-test</option>
+            <option value="t-test">One-sample t-test</option>
+        </select>
+        <label for="tail8">Test Type:</label>
+        <select id="tail8">
+            <option value="">Select</option>
+            <option value="one-tail">One-tail test</option>
+            <option value="two-tail">Two-tail test</option>
+        </select>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 9: Delivery Time</h2>
+        <p>A delivery service claims packages are delivered in an average of 30 minutes (μ) with a known population standard deviation of 4 minutes. A sample of 50 deliveries has a mean time of 31.5 minutes. Test if the average delivery time is greater than 30 minutes. Parameter: μ (population mean delivery time).</p>
+        <label for="hypotheses9">Null and Alternative Hypotheses:</label>
+        <textarea id="hypotheses9" rows="4" placeholder="Enter H₀ and H₁"></textarea>
+        <label for="testMethod9">Testing Method:</label>
+        <select id="testMethod9">
+            <option value="">Select</option>
+            <option value="z-test">One-sample z-test</option>
+            <option value="t-test">One-sample t-test</option>
+        </select>
+        <label for="tail9">Test Type:</label>
+        <select id="tail9">
+            <option value="">Select</option>
+            <option value="one-tail">One-tail test</option>
+            <option value="two-tail">Two-tail test</option>
+        </select>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 10: Software Response Time</h2>
+        <p>A software company claims their application has an average response time of 200 milliseconds (μ), with population variance unknown. A sample of 30 tests has a mean response time of 195 milliseconds and a sample standard deviation of 10 milliseconds. Test if the response time is less than 200 milliseconds. Parameter: μ (population mean response time).</p>
+        <label for="hypotheses10">Null and Alternative Hypotheses:</label>
+        <textarea id="hypotheses10" rows="4" placeholder="Enter H₀ and H₁"></textarea>
+        <label for="testMethod10">Testing Method:</label>
+        <select id="testMethod10">
+            <option value="">Select</option>
+            <option value="z-test">One-sample z-test</option>
+            <option value="t-test">One-sample t-test</option>
+        </select>
+        <label for="tail10">Test Type:</label>
+        <select id="tail10">
+            <option value="">Select</option>
+            <option value="one-tail">One-tail test</option>
+            <option value="two-tail">Two-tail test</option>
+        </select>
+    </div>
+</body>
+</html>
