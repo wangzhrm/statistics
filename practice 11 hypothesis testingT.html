@@ -1,0 +1,316 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistical Analysis Scenarios - Complete</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        h2 {
+            color: #005566;
+            margin-top: 20px;
+        }
+        .scenario {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .scenario p {
+            margin: 10px 0;
+        }
+        .step {
+            margin: 15px 0;
+            padding-left: 10px;
+            border-left: 3px solid #005566;
+        }
+        .math {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Statistical Analysis Scenarios - Complete</h1>
+    <p>Below are ten scenarios with all six steps of statistical analysis completed for a one-sample z-test or t-test. The parameter tested is μ (population mean). The significance level is α = 0.05.</p>
+
+    <div class="scenario">
+        <h2>Scenario 1: Factory Machine Output</h2>
+        <p>A factory claims its machines produce widgets with an average weight of 50 grams (μ). The population standard deviation is 2 grams. A sample of 40 widgets has a mean weight of 50.8 grams. Test if the average weight differs from 50 grams.</p>
+        <div class="step">
+            <p><strong>Step 1: Hypotheses</strong><br>H₀: μ = 50, H₁: μ ≠ 50</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 2: Testing Method</strong><br>One-sample z-test (population standard deviation known)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 3: Test Type</strong><br>Two-tail test</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 4: Test Statistic</strong><br>Given: x̄ = 50.8, μ = 50, σ = 2, n = 40<br>Test statistic: z = (x̄ - μ) / (σ / √n) = (50.8 - 50) / (2 / √40) ≈ 2.53</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 5: P-value</strong><br>Excel calculation: NORM.S.DIST(2.53, TRUE) ≈ 0.9943<br>For a two-tail test, true p-value = 2 * (1 - NORM.S.DIST(|z|, TRUE)) = 2 * (1 - 0.9943) = 2 * 0.0057 ≈ 0.0114</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 6: Interpret Results</strong><br>Since p = 0.0114 < 0.05, reject H₀. There is sufficient evidence to conclude that the average widget weight differs from 50 grams.</p>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 2: Student Test Scores</h2>
+        <p>A school claims its students score an average of 75 points (μ) on a standardized test, with population variance unknown. A sample of 25 students has a mean score of 78 points and a sample standard deviation of 5 points. Test if the average score is higher than 75 points.</p>
+        <div class="step">
+            <p><strong>Step 1: Hypotheses</strong><br>H₀: μ = 75, H₁: μ > 75</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 2: Testing Method</strong><br>One-sample t-test (population variance unknown)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 3: Test Type</strong><br>One-tail test (right-tailed)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 4: Test Statistic</strong><br>Given: x̄ = 78, μ = 75, s = 5, n = 25<br>Test statistic: t = (x̄ - μ) / (s / √n) = (78 - 75) / (5 / √25) = 3.00</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 5: P-value</strong><br>Excel calculation: T.DIST.RT(3.00, 24) ≈ 0.0031<br>For a right-tail test, true p-value = T.DIST.RT(3.00, 24) = 0.0031</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 6: Interpret Results</strong><br>Since p = 0.0031 < 0.05, reject H₀. There is sufficient evidence to conclude that the average test score is higher than 75 points.</p>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 3: Battery Life</h2>
+        <p>A manufacturer claims their batteries last an average of 100 hours (μ) with a known population standard deviation of 5 hours. A sample of 50 batteries has a mean life of 98 hours. Test if the average battery life is less than 100 hours.</p>
+        <div class="step">
+            <p><strong>Step 1: Hypotheses</strong><br>H₀: μ = 100, H₁: μ < 100</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 2: Testing Method</strong><br>One-sample z-test (population standard deviation known)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 3: Test Type</strong><br>One-tail test (left-tailed)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 4: Test Statistic</strong><br>Given: x̄ = 98, μ = 100, σ = 5, n = 50<br>Test statistic: z = (x̄ - μ) / (σ / √n) = (98 - 100) / (5 / √50) ≈ -2.83</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 5: P-value</strong><br>Excel calculation: NORM.S.DIST(-2.83, TRUE) ≈ 0.0023<br>For a left-tail test, true p-value = NORM.S.DIST(z, TRUE) = 0.0023</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 6: Interpret Results</strong><br>Since p = 0.0023 < 0.05, reject H₀. There is sufficient evidence to conclude that the average battery life is less than 100 hours.</p>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 4: Coffee Shop Wait Time</h2>
+        <p>A coffee shop claims customers wait an average of 5 minutes (μ) for orders, with population variance unknown. A sample of 30 customers has a mean wait time of 5.4 minutes and a sample standard deviation of 1.2 minutes. Test if the average wait time differs from 5 minutes.</p>
+        <div class="step">
+            <p><strong>Step 1: Hypotheses</strong><br>H₀: μ = 5, H₁: μ ≠ 5</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 2: Testing Method</strong><br>One-sample t-test (population variance unknown)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 3: Test Type</strong><br>Two-tail test</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 4: Test Statistic</strong><br>Given: x̄ = 5.4, μ = 5, s = 1.2, n = 30<br>Test statistic: t = (x̄ - μ) / (s / √n) = (5.4 - 5) / (1.2 / √30) ≈ 1.83</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 5: P-value</strong><br>Excel calculation (one tail): T.DIST(1.83, 29, TRUE) ≈ 0.9611<br>For a two-tail test, true p-value = T.DIST.2T(1.83, 29) ≈ 2 * (1 - 0.9611) ≈ 0.0778</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 6: Interpret Results</strong><br>Since p = 0.0778 > 0.05, fail to reject H₀. There is insufficient evidence to conclude that the average wait time differs from 5 minutes.</p>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 5: Drug Effectiveness</h2>
+        <p>A pharmaceutical company claims a drug reduces blood pressure by an average of 10 mmHg (μ) with a known population standard deviation of 1.5 mmHg. A sample of 60 patients has a mean reduction of 10.8 mmHg. Test if the reduction is greater than 10 mmHg.</p>
+        <div class="step">
+            <p><strong>Step 1: Hypotheses</strong><br>H₀: μ = 10, H₁: μ > 10</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 2: Testing Method</strong><br>One-sample z-test (population standard deviation known)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 3: Test Type</strong><br>One-tail test (right-tailed)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 4: Test Statistic</strong><br>Given: x̄ = 10.8, μ = 10, σ = 1.5, n = 60<br>Test statistic: z = (x̄ - μ) / (σ / √n) = (10.8 - 10) / (1.5 / √60) ≈ 4.13</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 5: P-value</strong><br>Excel calculation: NORM.S.DIST(4.13, TRUE) ≈ 0.99998<br>For a right-tail test, true p-value = 1 - NORM.S.DIST(z, TRUE) = 1 - 0.99998 ≈ 0.00002</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 6: Interpret Results</strong><br>Since p = 0.00002 < 0.05, reject H₀. There is sufficient evidence to conclude that the average blood pressure reduction is greater than 10 mmHg.</p>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 6: Employee Productivity</h2>
+        <p>A company claims employees complete tasks in an average of 40 hours per week (μ), with population variance unknown. A sample of 20 employees has a mean of 42 hours and a sample standard deviation of 3 hours. Test if the average time differs from 40 hours.</p>
+        <div class="step">
+            <p><strong>Step 1: Hypotheses</strong><br>H₀: μ = 40, H₁: μ ≠ 40</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 2: Testing Method</strong><br>One-sample t-test (population variance unknown)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 3: Test Type</strong><br>Two-tail test</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 4: Test Statistic</strong><br>Given: x̄ = 42, μ = 40, s = 3, n = 20<br>Test statistic: t = (x̄ - μ) / (s / √n) = (42 - 40) / (3 / √20) ≈ 2.98</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 5: P-value</strong><br>Excel calculation (one tail): T.DIST(2.98, 19, TRUE) ≈ 0.9963<br>For a two-tail test, true p-value = T.DIST.2T(2.98, 19) ≈ 2 * (1 - 0.9963) ≈ 0.0074</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 6: Interpret Results</strong><br>Since p = 0.0074 < 0.05, reject H₀. There is sufficient evidence to conclude that the average task completion time differs from 40 hours.</p>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 7: Light Bulb Lifespan</h2>
+        <p>A manufacturer claims their light bulbs last an average of 1000 hours (μ) with a known population standard deviation of 50 hours. A sample of 45 bulbs has a mean lifespan of 980 hours. Test if the lifespan is less than 1000 hours.</p>
+        <div class="step">
+            <p><strong>Step 1: Hypotheses</strong><br>H₀: μ = 1000, H₁: μ < 1000</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 2: Testing Method</strong><br>One-sample z-test (population standard deviation known)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 3: Test Type</strong><br>One-tail test (left-tailed)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 4: Test Statistic</strong><br>Given: x̄ = 980, μ = 1000, σ = 50, n = 45<br>Test statistic: z = (x̄ - μ) / (σ / √n) = (980 - 1000) / (50 / √45) ≈ -2.68</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 5: P-value</strong><br>Excel calculation: NORM.S.DIST(-2.68, TRUE) ≈ 0.0037<br>For a left-tail test, true p-value = NORM.S.DIST(z, TRUE) = 0.0037</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 6: Interpret Results</strong><br>Since p = 0.0037 < 0.05, reject H₀. There is sufficient evidence to conclude that the average bulb lifespan is less than 1000 hours.</p>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 8: Customer Satisfaction</h2>
+        <p>A store claims an average customer satisfaction score of 4.0 (μ) on a 5-point scale, with population variance unknown. A sample of 35 customers has a mean score of 3.8 and a sample standard deviation of 0.6. Test if the score differs from 4.0.</p>
+        <div class="step">
+            <p><strong>Step 1: Hypotheses</strong><br>H₀: μ = 4.0, H₁: μ ≠ 4.0</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 2: Testing Method</strong><br>One-sample t-test (population variance unknown)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 3: Test Type</strong><br>Two-tail test</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 4: Test Statistic</strong><br>Given: x̄ = 3.8, μ = 4.0, s = 0.6, n = 35<br>Test statistic: t = (x̄ - μ) / (s / √n) = (3.8 - 4.0) / (0.6 / √35) ≈ -1.97</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 5: P-value</strong><br>Excel calculation (one tail): T.DIST(1.97, 34, TRUE) ≈ 0.9717<br>For a two-tail test, true p-value = T.DIST.2T(1.97, 34) ≈ 2 * (1 - 0.9717) ≈ 0.0566</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 6: Interpret Results</strong><br>Since p = 0.0566 > 0.05, fail to reject H₀. There is insufficient evidence to conclude that the average customer satisfaction score differs from 4.0.</p>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 9: Delivery Time</h2>
+        <p>A delivery service claims packages are delivered in an average of 30 minutes (μ) with a known population standard deviation of 4 minutes. A sample of 50 deliveries has a mean time of 31.5 minutes. Test if the average delivery time is greater than 30 minutes.</p>
+        <div class="step">
+            <p><strong>Step 1: Hypotheses</strong><br>H₀: μ = 30, H₁: μ > 30</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 2: Testing Method</strong><br>One-sample z-test (population standard deviation known)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 3: Test Type</strong><br>One-tail test (right-tailed)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 4: Test Statistic</strong><br>Given: x̄ = 31.5, μ = 30, σ = 4, n = 50<br>Test statistic: z = (x̄ - μ) / (σ / √n) = (31.5 - 30) / (4 / √50) ≈ 2.65</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 5: P-value</strong><br>Excel calculation: NORM.S.DIST(2.65, TRUE) ≈ 0.9960<br>For a right-tail test, true p-value = 1 - NORM.S.DIST(z, TRUE) = 1 - 0.9960 ≈ 0.0040</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 6: Interpret Results</strong><br>Since p = 0.0040 < 0.05, reject H₀. There is sufficient evidence to conclude that the average delivery time is greater than 30 minutes.</p>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <h2>Scenario 10: Software Response Time</h2>
+        <p>A software company claims their application has an average response time of 200 milliseconds (μ), with population variance unknown. A sample of 30 tests has a mean response time of 195 milliseconds and a sample standard deviation of 10 milliseconds. Test if the response time is less than 200 milliseconds.</p>
+        <div class="step">
+            <p><strong>Step 1: Hypotheses</strong><br>H₀: μ = 200, H₁: μ < 200</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 2: Testing Method</strong><br>One-sample t-test (population variance unknown)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 3: Test Type</strong><br>One-tail test (left-tailed)</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 4: Test Statistic</strong><br>Given: x̄ = 195, μ = 200, s = 10, n = 30<br>Test statistic: t = (x̄ - μ) / (s / √n) = (195 - 200) / (10 / √30) ≈ -2.74</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 5: P-value</strong><br>Excel calculation: T.DIST(-2.74, 29, TRUE) ≈ 0.0052<br>For a left-tail test, true p-value = T.DIST(-2.74, 29, TRUE) = 0.0052</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 6: Interpret Results</strong><br>Since p = 0.0052 < 0.05, reject H₀. There is sufficient evidence to conclude that the average response time is less than 200 milliseconds.</p>
+        </div>
+    </div>
+</body>
+</html>
