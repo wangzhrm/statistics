@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics Multiple Choice Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .question {
+            background: #fff;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .question p {
+            font-weight: bold;
+        }
+        .options {
+            margin-left: 20px;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Statistics Multiple Choice Quiz</h1>
+    <form id="quizForm">
+        <!-- Question 1 -->
+        <div class="question" data-correct="b" data-explanation="A one-sample z-test is used when the population variance is known and the sample size is large (typically n ≥ 30), as the z-test relies on the Central Limit Theorem for normality approximation.">
+            <p>1. When should you use a one-sample z-test?</p>
+            <div class="options">
+                <input type="radio" name="q1" value="a"> a) When the population variance is unknown and the sample size is small.<br>
+                <input type="radio" name="q1" value="b"> b) When the population variance is known and the sample size is large.<br>
+                <input type="radio" name="q1" value="c"> c) When comparing two independent samples.<br>
+                <input type="radio" name="q1" value="d"> d) When the population mean is unknown but the variance is known.<br>
+            </div>
+            <div class="feedback" id="feedback1"></div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="question" data-correct="b" data-explanation="A one-sample t-test is used when the population variance is unknown and the sample size is small (n < 30), assuming the population is normally distributed.">
+            <p>2. A one-sample t-test is most appropriate when:</p>
+            <div class="options">
+                <input type="radio" name="q2" value="a"> a) The population variance is known and the sample size is large.<br>
+                <input type="radio" name="q2" value="b"> b) The population variance is unknown and the sample size is small.<br>
+                <input type="radio" name="q2" value="c"> c) The sample size is large and the data is not normally distributed.<br>
+                <input type="radio" name="q2" value="d"> d) Comparing two groups with equal variances.<br>
+            </div>
+            <div class="feedback" id="feedback2"></div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="question" data-correct="b" data-explanation="A one-tail test is used when the hypothesis specifies a direction (e.g., greater than or less than), as it tests for an effect in one direction only.">
+            <p>3. When is a one-tail test preferred over a two-tail test?</p>
+            <div class="options">
+                <input type="radio" name="q3" value="a"> a) When the hypothesis is non-directional.<br>
+                <input type="radio" name="q3" value="b"> b) When the hypothesis specifies a direction (e.g., greater than or less than).<br>
+                <input type="radio" name="q3" value="c"> c) When the sample size is small.<br>
+                <input type="radio" name="q3" value="d"> d) When comparing two independent samples.<br>
+            </div>
+            <div class="feedback" id="feedback3"></div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="question" data-correct="b" data-explanation="A two-tail test is used when the hypothesis tests for any difference (greater or less than), as it checks both tails of the distribution.">
+            <p>4. A two-tail test is used when:</p>
+            <div class="options">
+                <input type="radio" name="q4" value="a"> a) The hypothesis specifies that the mean is greater than a value.<br>
+                <input type="radio" name="q4" value="b"> b) The hypothesis tests for any difference (greater or less than).<br>
+                <input type="radio" name="q4" value="c"> c) The population variance is known.<br>
+                <input type="radio" name="q4" value="d"> d) The sample size is less than 30.<br>
+            </div>
+            <div class="feedback" id="feedback4"></div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="question" data-correct="b" data-explanation="A two-sample t-test assuming equal variances is used when the variances of the two populations are similar (confirmed by an F-test) and sample sizes are similar, ensuring accurate pooled variance estimates.">
+            <p>5. When should you use a two-sample t-test assuming equal variances?</p>
+            <div class="options">
+                <input type="radio" name="q5" value="a"> a) When the variances of the two populations are significantly different.<br>
+                <input type="radio" name="q5" value="b"> b) When the variances of the two populations are similar and sample sizes are similar.<br>
+                <input type="radio" name="q5" value="c"> c) When the population means are known.<br>
+                <input type="radio" name="q5" value="d"> d) When the sample sizes are very large.<br>
+            </div>
+            <div class="feedback" id="feedback5"></div>
+        </div>
+
+        <!-- Question 6 -->
+        <div class="question" data-correct="b" data-explanation="A two-sample t-test assuming unequal variances (Welch’s t-test) is used when the population variances are significantly different, as it adjusts the degrees of freedom to account for the variance difference.">
+            <p>6. A two-sample t-test assuming unequal variances is used when:</p>
+            <div class="options">
+                <input type="radio" name="q6" value="a"> a) The population variances are equal and sample sizes are large.<br>
+                <input type="radio" name="q6" value="b"> b) The population variances are significantly different.<br>
+                <input type="radio" name="q6" value="c"> c) The sample sizes are equal.<br>
+                <input type="radio" name="q6" value="d"> d) The data is not normally distributed.<br>
+            </div>
+            <div class="feedback" id="feedback6"></div>
+        </div>
+
+        <!-- Question 7 -->
+        <div class="question" data-correct="b" data-explanation="A one-sample z-test assumes the population is normally distributed or the sample size is large (n ≥ 30), allowing the use of the Central Limit Theorem for normality approximation.">
+            <p>7. What is a key assumption for using a one-sample z-test?</p>
+            <div class="options">
+                <input type="radio" name="q7" value="a"> a) The population variance is unknown.<br>
+                <input type="radio" name="q7" value="b"> b) The population is normally distributed or the sample size is large.<br>
+                <input type="radio" name="q7" value="c"> c) The sample size is small.<br>
+                <input type="radio" name="q7" value="d"> d) The data is not normally distributed.<br>
+            </div>
+            <div class="feedback" id="feedback7"></div>
+        </div>
+
+        <!-- Question 8 -->
+        <div class="question" data-correct="b" data-explanation="Since the population variance is known and the sample size is large (n = 50), a one-sample z-test is appropriate for comparing the sample mean to a known population mean.">
+            <p>8. A researcher wants to test if a sample mean is significantly different from a known population mean. The population variance is known, and the sample size is 50. Which test should they use?</p>
+            <div class="options">
+                <input type="radio" name="q8" value="a"> a) One-sample t-test<br>
+                <input type="radio" name="q8" value="b"> b) One-sample z-test<br>
+                <input type="radio" name="q8" value="c"> c) Two-sample t-test<br>
+                <input type="radio" name="q8" value="d"> d) Paired t-test<br>
+            </div>
+            <div class="feedback" id="feedback8"></div>
+        </div>
+
+        <!-- Question 9 -->
+        <div class="question" data-correct="b" data-explanation="A one-sample t-test is preferred when the population variance is unknown and the sample size is small, as it uses the sample variance to estimate the population variance.">
+            <p>9. When is a one-sample t-test preferred over a one-sample z-test?</p>
+            <div class="options">
+                <input type="radio" name="q9" value="a"> a) When the population variance is known.<br>
+                <input type="radio" name="q9" value="b"> b) When the population variance is unknown and the sample size is small.<br>
+                <input type="radio" name="q9" value="c"> c) When comparing two independent samples.<br>
+                <input type="radio" name="q9" value="d"> d) When the population mean is unknown.<br>
+            </div>
+            <div class="feedback" id="feedback9"></div>
+        </div>
+
+        <!-- Question 10 -->
+        <div class="question" data-correct="b" data-explanation="A one-tail test is used when the hypothesis specifies a direction (e.g., the mean is greater than or less than a value), focusing the critical region in one tail.">
+            <p>10. A one-tail test is appropriate when:</p>
+            <div class="options">
+                <input type="radio" name="q10" value="a"> a) The hypothesis tests for a difference in either direction.<br>
+                <input type="radio" name="q10" value="b"> b) The hypothesis specifies a direction of the effect.<br>
+                <input type="radio" name="q10" value="c"> c) The sample size is large.<br>
+                <input type="radio" name="q10" value="d"> d) The population variance is unknown.<br>
+            </div>
+            <div class="feedback" id="feedback10"></div>
+        </div>
+
+        <!-- Question 11 -->
+        <div class="question" data-correct="c" data-explanation="A two-tail test is used when the alternative hypothesis states the mean is not equal to a specific value, testing for differences in both directions.">
+            <p>11. A two-tail test is used when the alternative hypothesis states that:</p>
+            <div class="options">
+                <input type="radio" name="q11" value="a"> a) The mean is greater than a specific value.<br>
+                <input type="radio" name="q11" value="b"> b) The mean is less than a specific value.<br>
+                <input type="radio" name="q11" value="c"> c) The mean is not equal to a specific value.<br>
+                <input type="radio" name="q11" value="d"> d) The variance is known.<br>
+            </div>
+            <div class="feedback" id="feedback11"></div>
+        </div>
+
+        <!-- Question 12 -->
+        <div class="question" data-correct="b" data-explanation="An F-test is used to compare the variances of two populations to determine if they are equal before conducting a two-sample t-test.">
+            <p>12. When conducting a two-sample t-test, what test is used to check if variances are equal?</p>
+            <div class="options">
+                <input type="radio" name="q12" value="a"> a) Z-test<br>
+                <input type="radio" name="q12" value="b"> b) F-test<br>
+                <input type="radio" name="q12" value="c"> c) T-test<br>
+                <input type="radio" name="q12" value="d"> d) Chi-square test<br>
+            </div>
+            <div class="feedback" id="feedback12"></div>
+        </div>
+
+        <!-- Question 13 -->
+        <div class="question" data-correct="a" data-explanation="Since the F-test shows equal variances and the samples are independent, a two-sample t-test assuming equal variances is appropriate.">
+            <p>13. A researcher compares the means of two independent groups with sample sizes of 20 each and unknown variances. An F-test shows the variances are equal. Which test should be used?</p>
+            <div class="options">
+                <input type="radio" name="q13" value="a"> a) Two-sample t-test assuming equal variances<br>
+                <input type="radio" name="q13" value="b"> b) Two-sample t-test assuming unequal variances<br>
+                <input type="radio" name="q13" value="c"> c) One-sample z-test<br>
+                <input type="radio" name="q13" value="d"> d) Paired t-test<br>
+            </div>
+            <div class="feedback" id="feedback13"></div>
+        </div>
+
+        <!-- Question 14 -->
+        <div class="question" data-correct="b" data-explanation="A two-sample t-test assuming unequal variances is known as Welch’s t-test, which adjusts for differing variances and sample sizes.">
+            <p>14. A two-sample t-test assuming unequal variances is also known as:</p>
+            <div class="options">
+                <input type="radio" name="q14" value="a"> a) Paired t-test<br>
+                <input type="radio" name="q14" value="b"> b) Welch’s t-test<br>
+                <input type="radio" name="q14" value="c"> c) Z-test<br>
+                <input type="radio" name="q14" value="d"> d) F-test<br>
+            </div>
+            <div class="feedback" id="feedback14"></div>
+        </div>
+
+        <!-- Question 15 -->
+        <div class="question" data-correct="b" data-explanation="A one-sample z-test typically requires a sample size of 30 or more to ensure the Central Limit Theorem applies, making the test robust.">
+            <p>15. For a one-sample z-test, the sample size should typically be:</p>
+            <div class="options">
+                <input type="radio" name="q15" value="a"> a) Less than 30<br>
+                <input type="radio" name="q15" value="b"> b) Greater than or equal to 30<br>
+                <input type="radio" name="q15" value="c"> c) Exactly 30<br>
+                <input type="radio" name="q15" value="d"> d) Less than 10<br>
+            </div>
+            <div class="feedback" id="feedback15"></div>
+        </div>
+
+        <!-- Question 16 -->
+        <div class="question" data-correct="b" data-explanation="A one-sample t-test assumes the population is normally distributed, especially for small samples, to ensure the test statistic follows a t-distribution.">
+            <p>16. A one-sample t-test assumes that the population is:</p>
+            <div class="options">
+                <input type="radio" name="q16" value="a"> a) Uniformly distributed<br>
+                <input type="radio" name="q16" value="b"> b) Normally distributed<br>
+                <input type="radio" name="q16" value="c"> c) Exponentially distributed<br>
+                <input type="radio" name="q16" value="d"> d) Binomially distributed<br>
+            </div>
+            <div class="feedback" id="feedback16"></div>
+        </div>
+
+        <!-- Question 17 -->
+        <div class="question" data-correct="b" data-explanation="Since the hypothesis specifies an increase (a directional effect), a one-tail test (right-tailed) is appropriate to test for higher blood pressure.">
+            <p>17. A researcher hypothesizes that a new drug increases blood pressure. Which test should they use?</p>
+            <div class="options">
+                <input type="radio" name="q17" value="a"> a) Two-tail test<br>
+                <input type="radio" name="q17" value="b"> b) One-tail test (right-tailed)<br>
+                <input type="radio" name="q17" value="c"> c) One-tail test (left-tailed)<br>
+                <input type="radio" name="q17" value="d"> d) Two-sample t-test<br>
+            </div>
+            <div class="feedback" id="feedback17"></div>
+        </div>
+
+        <!-- Question 18 -->
+        <div class="question" data-correct="b" data-explanation="A two-sample t-test is inappropriate for paired or matched data, as a paired t-test should be used to account for the dependency between observations.">
+            <p>18. When is a two-sample t-test inappropriate?</p>
+            <div class="options">
+                <input type="radio" name="q18" value="a"> a) When comparing two independent groups.<br>
+                <input type="radio" name="q18" value="b"> b) When the data is paired or matched.<br>
+                <input type="radio" name="q18" value="c"> c) When variances are equal.<br>
+                <input type="radio" name="q18" value="d"> d) When sample sizes are large.<br>
+            </div>
+            <div class="feedback" id="feedback18"></div>
+        </div>
+
+        <!-- Question 19 -->
+        <div class="question" data-correct="b" data-explanation="A one-sample z-test requires a known population variance to calculate the standard error and use the z-distribution.">
+            <p>19. A one-sample z-test requires which of the following?</p>
+            <div class="options">
+                <input type="radio" name="q19" value="a"> a) Unknown population mean<br>
+                <input type="radio" name="q19" value="b"> b) Known population variance<br>
+                <input type="radio" name="q19" value="c"> c) Small sample size<br>
+                <input type="radio" name="q19" value="d"> d) Non-normal population<br>
+            </div>
+            <div class="feedback" id="feedback19"></div>
+        </div>
+
+        <!-- Question 20 -->
+        <div class="question" data-correct="b" data-explanation="A two-sample t-test assuming equal variances requires similar variances in both populations to pool the variances for the test statistic.">
+            <p>20. A two-sample t-test assuming equal variances requires:</p>
+            <div class="options">
+                <input type="radio" name="q20" value="a"> a) Unequal sample sizes<br>
+                <input type="radio" name="q20" value="b"> b) Similar variances in both populations<br>
+                <input type="radio" name="q20" value="c"> c) Known population means<br>
+                <input type="radio" name="q20" value="d"> d) Non-normal data<br>
+            </div>
+            <div class="feedback" id="feedback20"></div>
+        </div>
+
+        <!-- Question 21 -->
+        <div class="question" data-correct="b" data-explanation="A one-tail test has one critical region in either the left or right tail, corresponding to the direction of the alternative hypothesis.">
+            <p>21. A one-tail test has:</p>
+            <div class="options">
+                <input type="radio" name="q21" value="a"> a) Two critical regions<br>
+                <input type="radio" name="q21" value="b"> b) One critical region<br>
+                <input type="radio" name="q21" value="c"> c) No critical regions<br>
+                <input type="radio" name="q21" value="d"> d) Three critical regions<br>
+            </div>
+            <div class="feedback" id="feedback21"></div>
+        </div>
+
+        <!-- Question 22 -->
+        <div class="question" data-correct="b" data-explanation="A two-tail test has two critical regions, one in each tail, to test for differences in either direction.">
+            <p>22. A two-tail test has:</p>
+            <div class="options">
+                <input type="radio" name="q22" value="a"> a) One critical region<br>
+                <input type="radio" name="q22" value="b"> b) Two critical regions<br>
+                <input type="radio" name="q22" value="c"> c) No critical regions<br>
+                <input type="radio" name="q22" value="d"> d) Three critical regions<br>
+            </div>
+            <div class="feedback" id="feedback22"></div>
+        </div>
+
+        <!-- Question 23 -->
+        <div class="question" data-correct="b" data-explanation="Since the population variance is unknown and the sample size is small (n = 25), a one-sample t-test is appropriate to compare the sample mean to a known value.">
+            <p>23. A researcher tests if a training program improves test scores. The population variance is unknown, and the sample size is 25. Which test should be used?</p>
+            <div class="options">
+                <input type="radio" name="q23" value="a"> a) One-sample z-test<br>
+                <input type="radio" name="q23" value="b"> b) One-sample t-test<br>
+                <input type="radio" name="q23" value="c"> c) Two-sample t-test<br>
+                <input type="radio" name="q23" value="d"> d) F-test<br>
+            </div>
+            <div class="feedback" id="feedback23"></div>
+        </div>
+
+        <!-- Question 24 -->
+        <div class="question" data-correct="b" data-explanation="When variances are unequal, a two-sample t-test assuming unequal variances (Welch’s t-test) is used to compare the means of two independent groups.">
+            <p>24. When comparing two independent groups with unequal variances, which test is appropriate?</p>
+            <div class="options">
+                <input type="radio" name="q24" value="a"> a) Two-sample t-test assuming equal variances<br>
+                <input type="radio" name="q24" value="b"> b) Two-sample t-test assuming unequal variances<br>
+                <input type="radio" name="q24" value="c"> c) One-sample z-test<br>
+                <input type="radio" name="q24" value="d"> d) Paired t-test<br>
+            </div>
+            <div class="feedback" id="feedback24"></div>
+        </div>
+
+        <!-- Question 25 -->
+        <div class="question" data-correct="a" data-explanation="The null hypothesis in a one-sample z-test states that the sample mean equals the population mean, testing for no difference.">
+            <p>25. The null hypothesis in a one-sample z-test typically states that:</p>
+            <div class="options">
+                <input type="radio" name="q25" value="a"> a) The sample mean equals the population mean.<br>
+                <input type="radio" name="q25" value="b"> b) The sample mean is greater than the population mean.<br>
+                <input type="radio" name="q25" value="c"> c) The population variance is unknown.<br>
+                <input type="radio" name="q25" value="d"> d) The sample size is large.<br>
+            </div>
+            <div class="feedback" id="feedback25"></div>
+        </div>
+
+        <!-- Question 26 -->
+        <div class="question" data-correct="a" data-explanation="A two-sample t-test assumes that both populations are normally distributed to ensure the test statistic follows a t-distribution.">
+            <p>26. A two-sample t-test assumes that the populations are:</p>
+            <div class="options">
+                <input type="radio" name="q26" value="a"> a) Normally distributed<br>
+                <input type="radio" name="q26" value="b"> b) Uniformly distributed<br>
+                <input type="radio" name="q26" value="c"> c) Exponentially distributed<br>
+                <input type="radio" name="q26" value="d"> d) Binomially distributed<br>
+            </div>
+            <div class="feedback" id="feedback26"></div>
+        </div>
+
+        <!-- Question 27 -->
+        <div class="question" data-correct="b" data-explanation="Since the hypothesis tests for a difference (not specifying direction), a two-tail test is appropriate to check for any difference.">
+            <p>27. A researcher hypothesizes that a new teaching method is different from the traditional method. Which test should they use?</p>
+            <div class="options">
+                <input type="radio" name="q27" value="a"> a) One-tail test<br>
+                <input type="radio" name="q27" value="b"> b) Two-tail test<br>
+                <input type="radio" name="q27" value="c"> c) F-test<br>
+                <input type="radio" name="q27" value="d"> d) Z-test<br>
+            </div>
+            <div class="feedback" id="feedback27"></div>
+        </div>
+
+        <!-- Question 28 -->
+        <div class="question" data-correct="b" data-explanation="A one-sample z-test is inappropriate when the population variance is unknown and the sample size is small, as it requires a known variance and a large sample.">
+            <p>28. When is a one-sample z-test inappropriate?</p>
+            <div class="options">
+                <input type="radio" name="q28" value="a"> a) When the population variance is known.<br>
+                <input type="radio" name="q28" value="b"> b) When the population variance is unknown and the sample size is small.<br>
+                <input type="radio" name="q28" value="c"> c) When the sample size is large.<br>
+                <input type="radio" name="q28" value="d"> d) When the population is normally distributed.<br>
+            </div>
+            <div class="feedback" id="feedback28"></div>
+        </div>
+
+        <!-- Question 29 -->
+        <div class="question" data-correct="b" data-explanation="A two-sample t-test is used to compare the means of two independent groups to determine if they are significantly different.">
+            <p>29. A two-sample t-test is used to compare:</p>
+            <div class="options">
+                <input type="radio" name="q29" value="a"> a) A sample mean to a population mean<br>
+                <input type="radio" name="q29" value="b"> b) The means of two independent groups<br>
+                <input type="radio" name="q29" value="c"> c) Paired observations<br>
+                <input type="radio" name="q29" value="d"> d) The variances of two populations<br>
+            </div>
+            <div class="feedback" id="feedback29"></div>
+        </div>
+
+        <!-- Question 30 -->
+        <div class="question" data-correct="b" data-explanation="A one-sample t-test is used when the sample size is small and the population variance is unknown, relying on the sample variance.">
+            <p>30. A one-sample t-test is used when the sample size is:</p>
+            <div class="options">
+                <input type="radio" name="q30" value="a"> a) Always large<br>
+                <input type="radio" name="q30" value="b"> b) Small and the population variance is unknown<br>
+                <input type="radio" name="q30" value="c"> c) Large and the population variance is known<br>
+                <input type="radio" name="q30" value="d"> d) Equal to the population size<br>
+            </div>
+            <div class="feedback" id="feedback30"></div>
+        </div>
+
+        <!-- Question 31 -->
+        <div class="question" data-correct="b" data-explanation="Since the F-test shows unequal variances, a two-sample t-test assuming unequal variances (Welch’s t-test) is appropriate for comparing the two groups.">
+            <p>31. A researcher compares two groups with sample sizes of 15 and 20, and an F-test shows unequal variances. Which test should be used?</p>
+            <div class="options">
+                <input type="radio" name="q31" value="a"> a) Two-sample t-test assuming equal variances<br>
+                <input type="radio" name="q31" value="b"> b) Two-sample t-test assuming unequal variances<br>
+                <input type="radio" name="q31" value="c"> c) One-sample z-test<br>
+                <input type="radio" name="q31" value="d"> d) Paired t-test<br>
+            </div>
+            <div class="feedback" id="feedback31"></div>
+        </div>
+
+        <!-- Question 32 -->
+        <div class="question" data-correct="b" data-explanation="The critical value for a one-tail test is located in one tail of the distribution, corresponding to the direction of the hypothesis.">
+            <p>32. The critical value for a one-tail test is:</p>
+            <div class="options">
+                <input type="radio" name="q32" value="a"> a) Split between two tails<br>
+                <input type="radio" name="q32" value="b"> b) Located in one tail of the distribution<br>
+                <input type="radio" name="q32" value="c"> c) Always zero<br>
+                <input type="radio" name="q32" value="d"> d) The same as a two-tail test<br>
+            </div>
+            <div class="feedback" id="feedback32"></div>
+        </div>
+
+        <!-- Question 33 -->
+        <div class="question" data-correct="b" data-explanation="A two-sample t-test assuming equal variances is more powerful when variances are similar and sample sizes are similar, as pooling variances increases precision.">
+            <p>33. A two-sample t-test assuming equal variances is more powerful when:</p>
+            <div class="options">
+                <input type="radio" name="q33" value="a"> a) Variances are significantly different<br>
+                <input type="radio" name="q33" value="b"> b) Variances are similar and sample sizes are similar<br>
+                <input type="radio" name="q33" value="c"> c) Sample sizes are very different<br>
+                <input type="radio" name="q33" value="d"> d) The population mean is known<br>
+            </div>
+            <div class="feedback" id="feedback33"></div>
+        </div>
+
+        <!-- Question 34 -->
+        <div class="question" data-correct="a" data-explanation="A one-sample z-test assumes the population is normally distributed or the sample size is large, allowing the use of the z-distribution via the Central Limit Theorem.">
+            <p>34. A one-sample z-test assumes that the population is:</p>
+            <div class="options">
+                <input type="radio" name="q34" value="a"> a) Normally distributed or the sample size is large<br>
+                <input type="radio" name="q34" value="b"> b) Uniformly distributed<br>
+                <input type="radio" name="q34" value="c"> c) Exponentially distributed<br>
+                <input type="radio" name="q34" value="d"> d) Binomially distributed<br>
+            </div>
+            <div class="feedback" id="feedback34"></div>
+        </div>
+
+        <!-- Question 35 -->
+        <div class="question" data-correct="b" data-explanation="A one-sample t-test is used when the population variance is unknown and the sample size is small, using the sample variance to estimate the population variance.">
+            <p>35. When should you use a one-sample t-test?</p>
+            <div class="options">
+                <input type="radio" name="q35" value="a"> a) When the population variance is known and the sample size is large<br>
+                <input type="radio" name="q35" value="b"> b) When the population variance is unknown and the sample size is small<br>
+                <input type="radio" name="q35" value="c"> c) When comparing two independent groups<br>
+                <input type="radio" name="q35" value="d"> d) When the population mean is known<br>
+            </div>
+            <div class="feedback" id="feedback35"></div>
+        </div>
+
+        <!-- Question 36 -->
+        <div class="question" data-correct="b" data-explanation="Since the hypothesis specifies that the new machine is faster (a directional effect), a one-tail test (right-tailed) is appropriate.">
+            <p>36. A researcher hypothesizes that a new machine produces parts faster than the old machine. Which test is appropriate?</p>
+            <div class="options">
+                <input type="radio" name="q36" value="a"> a) Two-tail test<br>
+                <input type="radio" name="q36" value="b"> b) One-tail test (right-tailed)<br>
+                <input type="radio" name="q36" value="c"> c) One-tail test (left-tailed)<br>
+                <input type="radio" name="q36" value="d"> d) Two-sample t-test assuming equal variances<br>
+            </div>
+            <div class="feedback" id="feedback36"></div>
+        </div>
+
+        <!-- Question 37 -->
+        <div class="question" data-correct="b" data-explanation="A two-sample t-test assuming unequal variances uses the Welch-Satterthwaite equation to adjust the degrees of freedom for unequal variances.">
+            <p>37. A two-sample t-test assuming unequal variances adjusts the degrees of freedom using:</p>
+            <div class="options">
+                <input type="radio" name="q37" value="a"> a) The F-test formula<br>
+                <input type="radio" name="q37" value="b"> b) The Welch-Satterthwaite equation<br>
+                <input type="radio" name="q37" value="c"> c) The z-test formula<br>
+                <input type="radio" name="q37" value="d"> d) The chi-square test<br>
+            </div>
+            <div class="feedback" id="feedback37"></div>
+        </div>
+
+        <!-- Question 38 -->
+        <div class="question" data-correct="b" data-explanation="A one-sample z-test is robust to violations of normality when the sample size is large (n ≥ 30), due to the Central Limit Theorem.">
+            <p>38. A one-sample z-test is robust to violations of normality when:</p>
+            <div class="options">
+                <input type="radio" name="q38" value="a"> a) The sample size is small<br>
+                <input type="radio" name="q38" value="b"> b) The sample size is large<br>
+                <input type="radio" name="q38" value="c"> c) The population variance is unknown<br>
+                <input type="radio" name="q38" value="d"> d) The data is paired<br>
+            </div>
+            <div class="feedback" id="feedback38"></div>
+        </div>
+
+        <!-- Question 39 -->
+        <div class="question" data-correct="b" data-explanation="A two-sample t-test assuming equal variances is inappropriate when variances are significantly different, as it leads to incorrect standard error estimates.">
+            <p>39. A two-sample t-test assuming equal variances is inappropriate when:</p>
+            <div class="options">
+                <input type="radio" name="q39" value="a"> a) The variances are similar<br>
+                <input type="radio" name="q39" value="b"> b) The variances are significantly different<br>
+                <input type="radio" name="q39" value="c"> c) The sample sizes are equal<br>
+                <input type="radio" name="q39" value="d"> d) The populations are normally distributed<br>
+            </div>
+            <div class="feedback" id="feedback39"></div>
+        </div>
+
+        <!-- Question 40 -->
+        <div class="question" data-correct="b" data-explanation="Since the population variance is known, the sample size is large (n = 40), and the hypothesis is directional (less than), a one-sample z-test (left-tailed) is appropriate.">
+            <p>40. A researcher wants to test if a sample mean is less than a known population mean with a sample size of 40 and known variance. Which test should they use?</p>
+            <div class="options">
+                <input type="radio" name="q40" value="a"> a) One-sample t-test<br>
+                <input type="radio" name="q40" value="b"> b) One-sample z-test (left-tailed)<br>
+                <input type="radio" name="q40" value="c"> c) Two-sample t-test<br>
+                <input type="radio" name="q40" value="d"> d) Paired t-test<br>
+            </div>
+            <div class="feedback" id="feedback40"></div>
+        </div>
+
+        <button type="submit">Submit Answers</button>
+    </form>
+
+    <script>
+        document.querySelectorAll('input[type="radio"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const questionDiv = this.closest('.question');
+                const feedbackDiv = questionDiv.querySelector('.feedback');
+                const correctAnswer = questionDiv.dataset.correct;
+                const explanation = questionDiv.dataset.explanation;
+                const selectedAnswer = this.value;
+
+                if (selectedAnswer === correctAnswer) {
+                    feedbackDiv.className = 'feedback correct';
+                    feedbackDiv.textContent = `Correct! The answer is ${correctAnswer}. ${explanation}`;
+                } else {
+                    feedbackDiv.className = 'feedback incorrect';
+                    feedbackDiv.textContent = `Incorrect. The correct answer is ${correctAnswer}. ${explanation}`;
+                }
+                feedbackDiv.style.display = 'block';
+            });
+        });
+
+        // Optional: Prevent form submission to keep feedback visible (remove if you want to allow submission)
+        document.getElementById('quizForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Answers are checked as you select them. Review the feedback for each question.');
+        });
+    </script>
+</body>
+</html>
