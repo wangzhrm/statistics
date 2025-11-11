@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Give Feedback</title>
+  <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.15.0/dist/av-min.js"></script>
+  <script>
+    AV.init({
+      appId: "NvC4d9DG9SsuryBsCgkX7fpW-gzGzoHsz",
+      appKey: "GOuT5So30SilOjB65cuFGQ4X",
+      serverURL: "https://nvc4d9dg.lc-cn-n1-shared.com"
+    });
+  </script>
+  <style>
+    table { border-collapse: collapse; margin: 20px 0; }
+    th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+    input[type=number] { width: 60px; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h2>Give Feedback to a Student</h2>
+
+  <label for="studentSelect">Select Student:</label>
+  <select id="studentSelect">
+    <option value="">-- Choose --</option>
+  </select>
+
+  <form id="feedbackForm">
+    <table id="criteriaTable">
+      <thead>
+        <tr>
+          <th>Criterion</th>
+          <th>Description</th>
+          <th>Max Score</th>
+          <th>Your Score</th>
+        </tr>
+      </thead>
+      <tbody id="criteriaBody"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3"><strong>Total</strong></td>
+          <td id="totalScore">0</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <button type="submit">Submit Feedback</button>
+    <p id="message" class="error"></p>
+  </form>
+
+  <script>
+    let criteriaList = [];
+    let studentList = [];
+
+    // Generate unique device ID (simple localStorage-based)
+    function getDeviceId() {
+      let id = localStorage.getItem('feedback_device_id');
+      if (!id) {
+        id = 'device_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('feedback_device_id', id);
+      }
+      return id;
+    }
+
+    async function loadStudents() {
+      const query = new AV.Query('Student');
+      const students = await query.find();
+      studentList = students.map(s => ({ id: s.id, name: s.get('name') }));
+      const select = document.getElementById('studentSelect');
+      select.innerHTML = '<option value="">-- Choose --</option>';
+      studentList.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = s.name;
+        select.appendChild(opt);
+      });
+    }
+
+    async function loadCriteria() {
+      const query = new AV.Query('Criterion');
+      const criteria = await query.find();
+      criteriaList = criteria.map(c => ({
+        id: c.id,
+        title: c.get('title'),
+        description: c.get('description'),
+        maxScore: c.get('maxScore')
+      }));
+    }
+
+    function renderCriteriaTable() {
+      const tbody = document.getElementById('criteriaBody');
+      tbody.innerHTML = '';
+      criteriaList.forEach(criterion => {
+        const row = tbody.insertRow();
+        row.insertCell(0).textContent = criterion.title;
+        row.insertCell(1).textContent = criterion.description;
+        row.insertCell(2).textContent = criterion.maxScore;
+
+        const inputCell = row.insertCell(3);
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = 0;
+        input.max = criterion.maxScore;
+        input.step = 1;
+        input.dataset.criterionId = criterion.id;
+        input.dataset.max = criterion.maxScore;
+        input.addEventListener('input', calculateTotal);
+        inputCell.appendChild(input);
+      });
+    }
+
+    function calculateTotal() {
+      let total = 0;
+      document.querySelectorAll('#criteriaBody input').forEach(input => {
+        const val = parseFloat(input.value) || 0;
+        total += val;
+      });
+      document.getElementById('totalScore').textContent = total;
+    }
+
+    async function submitFeedback(event) {
+      event.preventDefault();
+      const studentId = document.getElementById('studentSelect').value;
+      if (!studentId) {
+        showMessage("Please select a student.");
+        return;
+      }
+
+      const inputs = document.querySelectorAll('#criteriaBody input');
+      const scores = {};
+      let valid = true;
+
+      inputs.forEach(input => {
+        const val = parseFloat(input.value);
+        const max = parseFloat(input.dataset.max);
+        const cid = input.dataset.criterionId;
+
+        if (isNaN(val) || val < 0 || val > max) {
+          input.style.borderColor = 'red';
+          valid = false;
+        } else {
+          input.style.borderColor = '';
+          scores[cid] = val;
+        }
+      });
+
+      if (!valid) {
+        showMessage("Please enter valid scores (0 to max).");
+        return;
+      }
+
+      // Check if this device already submitted for this student
+      const deviceId = getDeviceId();
+      const fbQuery = new AV.Query('Feedback');
+      fbQuery.equalTo('targetStudent', AV.Object.createWithoutData('Student', studentId));
+      fbQuery.equalTo('deviceId', deviceId);
+      const existing = await fbQuery.first();
+      if (existing) {
+        showMessage("You've already submitted feedback for this student from this device.");
+        return;
+      }
+
+      // Save feedback
+      const FeedbackClass = AV.Object.extend('Feedback');
+      const feedback = new FeedbackClass();
+      feedback.set('targetStudent', AV.Object.createWithoutData('Student', studentId));
+      feedback.set('scores', scores);
+      feedback.set('total', parseFloat(document.getElementById('totalScore').textContent));
+      feedback.set('deviceId', deviceId);
+
+      try {
+        await feedback.save();
+        showMessage("Feedback submitted successfully!", "green");
+        document.getElementById('feedbackForm').reset();
+        document.getElementById('totalScore').textContent = '0';
+      } catch (err) {
+        console.error(err);
+        showMessage("Error submitting feedback: " + err.message);
+      }
+    }
+
+    function showMessage(text, color = "red") {
+      const msg = document.getElementById('message');
+      msg.textContent = text;
+      msg.style.color = color;
+    }
+
+    // Initialize
+    (async () => {
+      await loadStudents();
+      await loadCriteria();
+      renderCriteriaTable();
+      document.getElementById('feedbackForm').addEventListener('submit', submitFeedback);
+    })();
+  </script>
+</body>
+</html>
