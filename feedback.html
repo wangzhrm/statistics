@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Give Feedback</title>
   <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.15.0/dist/av-min.js"></script>
   <script>
@@ -12,10 +13,92 @@
     });
   </script>
   <style>
-    table { border-collapse: collapse; margin: 20px 0; }
-    th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
-    input[type=number] { width: 60px; }
-    .error { color: red; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 16px;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: bold;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px; /* Prevents iOS zoom on focus */
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    /* Responsive Table */
+    .table-container {
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px; /* Ensures readability */
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+      font-size: 15px;
+    }
+
+    input[type="number"] {
+      width: 80px;
+      padding: 8px;
+      font-size: 16px; /* Prevents zoom on iOS */
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    /* On very small screens, allow full-width inputs */
+    @media (max-width: 480px) {
+      input[type="number"] {
+        width: 100%;
+        max-width: 100px;
+      }
+    }
+
+    button[type="submit"] {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    button[type="submit"]:active {
+      background-color: #0056b3;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    #message {
+      min-height: 1.5em;
+    }
   </style>
 </head>
 <body>
@@ -27,23 +110,25 @@
   </select>
 
   <form id="feedbackForm">
-    <table id="criteriaTable">
-      <thead>
-        <tr>
-          <th>Criterion</th>
-          <th>Description</th>
-          <th>Max Score</th>
-          <th>Your Score</th>
-        </tr>
-      </thead>
-      <tbody id="criteriaBody"></tbody>
-      <tfoot>
-        <tr>
-          <td colspan="3"><strong>Total</strong></td>
-          <td id="totalScore">0</td>
-        </tr>
-      </tfoot>
-    </table>
+    <div class="table-container">
+      <table id="criteriaTable">
+        <thead>
+          <tr>
+            <th>Criterion</th>
+            <th>Description</th>
+            <th>Max Score</th>
+            <th>Your Score</th>
+          </tr>
+        </thead>
+        <tbody id="criteriaBody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3"><strong>Total</strong></td>
+            <td id="totalScore">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
 
     <button type="submit">Submit Feedback</button>
     <p id="message" class="error"></p>
@@ -53,7 +138,6 @@
     let criteriaList = [];
     let studentList = [];
 
-    // Generate unique device ID (simple localStorage-based)
     function getDeviceId() {
       let id = localStorage.getItem('feedback_device_id');
       if (!id) {
@@ -150,7 +234,6 @@
         return;
       }
 
-      // Check if this device already submitted for this student
       const deviceId = getDeviceId();
       const fbQuery = new AV.Query('Feedback');
       fbQuery.equalTo('targetStudent', AV.Object.createWithoutData('Student', studentId));
@@ -161,7 +244,6 @@
         return;
       }
 
-      // Save feedback
       const FeedbackClass = AV.Object.extend('Feedback');
       const feedback = new FeedbackClass();
       feedback.set('targetStudent', AV.Object.createWithoutData('Student', studentId));
@@ -186,7 +268,6 @@
       msg.style.color = color;
     }
 
-    // Initialize
     (async () => {
       await loadStudents();
       await loadCriteria();
