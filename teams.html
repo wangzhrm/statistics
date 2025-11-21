@@ -3,159 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>分组系统 - 点击移动（手机超友好）</title>
+    <title>分组系统 - 超窄多列版</title>
     <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.13.2/dist/av-min.js"></script>
     <style>
         * { box-sizing: border-box; touch-action: manipulation; }
         body {
             font-family: "Microsoft YaHei", Arial, sans-serif;
-            background: linear-gradient(to bottom, #f5f9ff, #e6f2ff);
+            background: #f8fbff;
             margin: 0;
-            padding: 12px;
-            font-size: 15px;
-            line-height: 1.5;
+            padding: 8px;
+            font-size: 14px;
+            line-height: 1.4;
         }
-        h1 {
-            text-align: center;
-            color: #1a73e8;
-            margin: 10px 0;
-            font-size: 22px;
-        }
+        h1 { text-align: center; color: #1a73e8; margin: 8px 0; font-size: 20px; }
         .notice {
-            background: #fff3cd;
-            color: #856404;
-            padding: 14px;
-            border-radius: 12px;
-            text-align: center;
-            font-weight: bold;
-            margin: 0 8px 20px;
-            border: 2px solid #ffeaa7;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: #fff8e1; color: #856404; padding: 10px; border-radius: 10px;
+            text-align: center; font-weight: bold; margin: 0 6px 12px; font-size: 14px;
+            border: 1px solid #ffe082;
         }
-        .deadline { color: #d32f2f; font-size: 18px; }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
+        .deadline { color: #d32f2f; font-size: 16px; }
+        .container { max-width: 1400px; margin: 0 auto; display: flex; gap: 12px; flex-wrap: wrap; }
         .teams-section { flex: 2; min-width: 300px; }
         .removed-section {
             flex: 1;
-            min-width: 280px;
+            min-width: 240px;
             background: white;
-            border-radius: 14px;
-            padding: 16px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-            max-height: 80vh;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            max-height: 85vh;
             overflow-y: auto;
         }
         .removed-title {
-            font-size: 19px;
-            font-weight: bold;
-            color: #d32f2f;
-            text-align: center;
-            margin-bottom: 14px;
-            padding-bottom: 8px;
-            border-bottom: 3px solid #ffcdd2;
+            font-size: 16px; font-weight: bold; color: #d32f2f; text-align: center;
+            margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid #ffcdd2;
+        }
+        /* ★ 关键改动：右侧多列网格布局 ★ */
+        #removed-students {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 8px;
+            padding: 4px 0;
         }
         .teams-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 10px;
         }
         .team-card {
-            background: white;
-            border-radius: 12px;
-            padding: 14px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: white; border-radius: 10px; padding: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08); font-size: 13px;
         }
         .team-header {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1976d2;
-            text-align: center;
-            margin-bottom: 10px;
+            font-size: 15px; font-weight: bold; color: #1976d2;
+            text-align: center; margin-bottom: 8px;
         }
         .slot {
-            background: #e3f2fd;
-            border-radius: 8px;
-            padding: 10px 12px;
-            margin: 8px 0;
-            font-size: 16px;
-            user-select: none;
-            transition: all 0.2s;
-            position: relative;
+            background: #e1f5fe; border-radius: 7px; padding: 7px 9px;
+            margin: 6px 0; user-select: none; transition: all 0.2s;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            text-align: center;
         }
-        .slot:hover { background: #bbdefb; }
+        .slot:hover { background: #b3e5fc; }
         .slot.selected {
-            outline: 4px solid #1976d2;
-            background: #90caf9 !important;
-            transform: scale(1.05);
-            z-index: 10;
+            outline: 3px solid #1976d2; background: #81d4fa !important;
+            transform: scale(1.04);
         }
         .slot.empty {
-            background: #fff8e1;
-            color: #999;
-            font-style: italic;
-            border: 2px dashed #ff9800;
-            text-align: center;
+            background: #fff3e0; color: #999; border: 1.5px dashed #ff9800;
+            text-align: center; padding: 10px 6px; font-size: 12px;
         }
-        .slot.empty::after {
-            content: "← 点击放入";
-            font-size: 12px;
-            color: #f57c00;
-            display: block;
-            margin-top: 4px;
-        }
+        /* 右侧名字卡片超窄样式 */
         .removed-list .slot {
-            background: #ffebee;
-            border-left: 4px solid #f44336;
-            margin: 10px 0;
-            font-size: 15px;
+            background: #ffebee; border-left: 3px solid #f44336;
+            margin: 0; padding: 8px 4px; font-size: 13px;
+            border-radius: 6px;
         }
-        .loading { text-align: center; padding: 40px; color: #666; font-size: 18px; }
+        .loading { text-align: center; padding: 30px; color: #666; font-size: 16px; }
         .expired {
-            background: #ffebee;
-            color: #c62828;
-            text-align: center;
-            padding: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 12px;
-            margin: 20px 8px;
+            background: #ffebee; color: #c62828; text-align: center; padding: 18px;
+            font-size: 18px; font-weight: bold; border-radius: 10px; margin: 15px 6px;
         }
         @media (max-width: 768px) {
-            .teams-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-            .slot { font-size: 15px; padding: 9px; }
+            #removed-students { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 7px; }
+            .teams-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 9px; }
+            .removed-list .slot { font-size: 12.5px; padding: 7px 3px; }
         }
     </style>
 </head>
 <body>
-    <h1>分组系统（点击移动）</h1>
+    <h1>分组系统</h1>
 
     <div class="notice">
-        请在 <span class="deadline">2025年11月24日 23:59 前</span> 完成分组<br>
-        <strong>操作方式：</strong><br>
-        • 点击自己的名字 → 再点击空位 = 加入队伍<br>
-        • 双击自己的名字 = 退出队伍回到右侧
+        请在 <span class="deadline">2025.11.24 23:59</span> 前完成分组<br>
+        点击名字 → 点击空位加入队伍 · 双击名字退出队伍
     </div>
 
     <div id="expired-message" style="display:none;" class="expired">
         ⛔ 分组时间已截止（2025年11月24日 23:59）<br>
-        当前分组已锁定，如需调整请联系老师
+        分组已锁定，如需修改请联系老师
     </div>
 
     <div class="container">
         <div class="teams-section">
-            <div class="loading" id="loading">正在加载分组数据...</div>
+            <div class="loading" id="loading">加载中...</div>
             <div class="teams-grid" id="teams"></div>
         </div>
 
         <div class="removed-section">
-            <div class="removed-title">未分组同学（点击名字 → 点空位加入队伍）</div>
-            <div id="removed-students"></div>
+            <div class="removed-title">未分组同学</div>
+            <div id="removed-students" class="removed-list"></div>
         </div>
     </div>
 
@@ -167,8 +124,7 @@
         });
 
         const DEADLINE = new Date('2025-11-24T23:59:59+08:00').getTime();
-        const now = Date.now();
-        const isExpired = now > DEADLINE;
+        const isExpired = Date.now() > DEADLINE;
 
         if (isExpired) {
             document.getElementById('expired-message').style.display = 'block';
@@ -180,7 +136,7 @@
         const removedDiv = document.getElementById('removed-students');
         const loading = document.getElementById('loading');
         let allRecords = [];
-        let selectedObject = null;  // 当前选中的学生 AV.Object
+        let selectedObject = null;
 
         async function loadData() {
             if (isExpired) return;
@@ -210,14 +166,13 @@
                 const team = obj.get('teamnumber');
                 const slot = obj.get('slotnumber');
                 const name = obj.get('studentname');
-                if (team === 0) {
-                    removed.push({name, obj});
-                } else if (team >= 1 && team <= 24 && (slot === 1 || slot === 2)) {
+                if (team === 0) removed.push({name, obj});
+                else if (team >= 1 && team <= 24 && (slot === 1 || slot === 2)) {
                     teams[team][slot] = {name, obj};
                 }
             });
 
-            // Render teams
+            // 队伍渲染（保持紧凑）
             for (let t = 1; t <= 24; t++) {
                 const card = document.createElement('div');
                 card.className = 'team-card';
@@ -232,10 +187,10 @@
                         slotDiv.dataset.objectId = member.obj.id;
                         if (!isExpired) {
                             slotDiv.onclick = () => selectStudent(member.obj, slotDiv);
-                            slotDiv.ondblclick = (e) => { e.stopPropagation(); moveToRemoved(member.obj); };
+                            slotDiv.ondblclick = e => { e.stopPropagation(); moveToRemoved(member.obj); };
                         }
                     } else {
-                        slotDiv.textContent = '（空位）';
+                        slotDiv.textContent = '空位';
                         slotDiv.classList.add('empty');
                         if (!isExpired) {
                             slotDiv.dataset.team = t;
@@ -248,9 +203,9 @@
                 teamsDiv.appendChild(card);
             }
 
-            // Render removed
+            // 右侧未分组多列渲染
             if (removed.length === 0) {
-                removedDiv.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无未分组同学</div>';
+                removedDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#aaa;padding:20px;">暂无未分组</div>';
             } else {
                 removed.forEach(({name, obj}) => {
                     const div = document.createElement('div');
@@ -259,7 +214,7 @@
                     div.dataset.objectId = obj.id;
                     if (!isExpired) {
                         div.onclick = () => selectStudent(obj, div);
-                        div.ondblclick = (e) => { e.stopPropagation(); moveToRemoved(obj); };
+                        div.ondblclick = e => { e.stopPropagation(); moveToRemoved(obj); };
                     }
                     removedDiv.appendChild(div);
                 });
@@ -275,18 +230,8 @@
 
         async function moveSelectedHere(team, slot) {
             if (isExpired || !selectedObject) return;
-
-            // Check conflict
-            const conflict = allRecords.find(r =>
-                r.get('teamnumber') === team &&
-                r.get('slotnumber') === slot &&
-                r.id !== selectedObject.id
-            );
-            if (conflict) {
-                alert('此位置已有同学！');
-                return;
-            }
-
+            const conflict = allRecords.find(r => r.get('teamnumber') === team && r.get('slotnumber') === slot && r.id !== selectedObject.id);
+            if (conflict) { alert('此位置已有同学！'); return; }
             selectedObject.set('teamnumber', team);
             selectedObject.set('slotnumber', slot);
             await selectedObject.save();
@@ -303,10 +248,7 @@
             loadData();
         }
 
-        // Click outside to cancel selection
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.slot')) clearSelection();
-        });
+        document.addEventListener('click', e => { if (!e.target.closest('.slot')) clearSelection(); });
 
         if (!isExpired) loadData();
     </script>
