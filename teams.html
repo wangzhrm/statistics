@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>分组管理 - 拖拽分组（手机也可操作）</title>
+    <title>分组系统 - 点击移动（手机超友好）</title>
     <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.13.2/dist/av-min.js"></script>
     <style>
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; touch-action: manipulation; }
         body {
             font-family: "Microsoft YaHei", Arial, sans-serif;
             background: linear-gradient(to bottom, #f5f9ff, #e6f2ff);
@@ -32,10 +32,7 @@
             border: 2px solid #ffeaa7;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .deadline {
-            color: #d32f2f;
-            font-size: 18px;
-        }
+        .deadline { color: #d32f2f; font-size: 18px; }
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -43,10 +40,7 @@
             gap: 16px;
             flex-wrap: wrap;
         }
-        .teams-section {
-            flex: 2;
-            min-width: 300px;
-        }
+        .teams-section { flex: 2; min-width: 300px; }
         .removed-section {
             flex: 1;
             min-width: 280px;
@@ -54,7 +48,6 @@
             border-radius: 14px;
             padding: 16px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-            align-self: flex-start;
             max-height: 80vh;
             overflow-y: auto;
         }
@@ -77,9 +70,7 @@
             border-radius: 12px;
             padding: 14px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
         }
-        .team-card:hover { transform: translateY(-3px); }
         .team-header {
             font-size: 18px;
             font-weight: bold;
@@ -93,26 +84,30 @@
             padding: 10px 12px;
             margin: 8px 0;
             font-size: 16px;
-            cursor: move;
             user-select: none;
             transition: all 0.2s;
-            word-break: break-all;
+            position: relative;
         }
-        .slot:hover {
-            background: #bbdefb;
-            transform: scale(1.03);
-        }
-        .slot.dragging {
-            opacity: 0.6;
-            background: #90caf9;
+        .slot:hover { background: #bbdefb; }
+        .slot.selected {
+            outline: 4px solid #1976d2;
+            background: #90caf9 !important;
+            transform: scale(1.05);
+            z-index: 10;
         }
         .slot.empty {
             background: #fff8e1;
             color: #999;
             font-style: italic;
             border: 2px dashed #ff9800;
-            cursor: pointer;
             text-align: center;
+        }
+        .slot.empty::after {
+            content: "← 点击放入";
+            font-size: 12px;
+            color: #f57c00;
+            display: block;
+            margin-top: 4px;
         }
         .removed-list .slot {
             background: #ffebee;
@@ -120,12 +115,7 @@
             margin: 10px 0;
             font-size: 15px;
         }
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-size: 18px;
-        }
+        .loading { text-align: center; padding: 40px; color: #666; font-size: 18px; }
         .expired {
             background: #ffebee;
             color: #c62828;
@@ -137,23 +127,19 @@
             margin: 20px 8px;
         }
         @media (max-width: 768px) {
-            .teams-grid {
-                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-                gap: 12px;
-            }
-            .team-card { padding: 12px; }
+            .teams-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
             .slot { font-size: 15px; padding: 9px; }
-            .team-header { font-size: 17px; }
-            h1 { font-size: 20px; }
         }
     </style>
 </head>
 <body>
-    <h1>分组系统（长按拖拽）</h1>
+    <h1>分组系统（点击移动）</h1>
 
     <div class="notice">
-        请在 <span class="deadline">2025年11月24日 23:59 前</span> 拖拽自己的名字进入队伍<br>
-        逾期未分组的同学将由老师<span style="color:red;">随机分配</span>，之后无法自行修改！
+        请在 <span class="deadline">2025年11月24日 23:59 前</span> 完成分组<br>
+        <strong>操作方式：</strong><br>
+        • 点击自己的名字 → 再点击空位 = 加入队伍<br>
+        • 双击自己的名字 = 退出队伍回到右侧
     </div>
 
     <div id="expired-message" style="display:none;" class="expired">
@@ -168,7 +154,7 @@
         </div>
 
         <div class="removed-section">
-            <div class="removed-title">未分组同学（拖入队伍即可加入）</div>
+            <div class="removed-title">未分组同学（点击名字 → 点空位加入队伍）</div>
             <div id="removed-students"></div>
         </div>
     </div>
@@ -180,7 +166,7 @@
             serverURL: 'https://brduy3db.lc-cn-n1-shared.com'
         });
 
-        const DEADLINE = new Date('2025-11-24T23:59:59+08:00').getTime(); // 北京时间
+        const DEADLINE = new Date('2025-11-24T23:59:59+08:00').getTime();
         const now = Date.now();
         const isExpired = now > DEADLINE;
 
@@ -194,6 +180,7 @@
         const removedDiv = document.getElementById('removed-students');
         const loading = document.getElementById('loading');
         let allRecords = [];
+        let selectedObject = null;  // 当前选中的学生 AV.Object
 
         async function loadData() {
             if (isExpired) return;
@@ -205,7 +192,13 @@
             loading.style.display = 'none';
         }
 
+        function clearSelection() {
+            document.querySelectorAll('.slot.selected').forEach(el => el.classList.remove('selected'));
+            selectedObject = null;
+        }
+
         function renderAll() {
+            clearSelection();
             teamsDiv.innerHTML = '';
             removedDiv.innerHTML = '';
 
@@ -224,6 +217,7 @@
                 }
             });
 
+            // Render teams
             for (let t = 1; t <= 24; t++) {
                 const card = document.createElement('div');
                 card.className = 'team-card';
@@ -236,15 +230,17 @@
                     if (member) {
                         slotDiv.textContent = member.name;
                         slotDiv.dataset.objectId = member.obj.id;
-                        if (!isExpired) makeDraggable(slotDiv, member.obj);
+                        if (!isExpired) {
+                            slotDiv.onclick = () => selectStudent(member.obj, slotDiv);
+                            slotDiv.ondblclick = (e) => { e.stopPropagation(); moveToRemoved(member.obj); };
+                        }
                     } else {
                         slotDiv.textContent = '（空位）';
                         slotDiv.classList.add('empty');
                         if (!isExpired) {
                             slotDiv.dataset.team = t;
                             slotDiv.dataset.slot = s;
-                            slotDiv.ondrop = dropToTeam;
-                            slotDiv.ondragover = allowDrop;
+                            slotDiv.onclick = () => moveSelectedHere(t, s);
                         }
                     }
                     card.appendChild(slotDiv);
@@ -252,6 +248,7 @@
                 teamsDiv.appendChild(card);
             }
 
+            // Render removed
             if (removed.length === 0) {
                 removedDiv.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无未分组同学</div>';
             } else {
@@ -260,92 +257,56 @@
                     div.className = 'slot';
                     div.textContent = name;
                     div.dataset.objectId = obj.id;
-                    if (!isExpired) makeDraggable(div, obj);
+                    if (!isExpired) {
+                        div.onclick = () => selectStudent(obj, div);
+                        div.ondblclick = (e) => { e.stopPropagation(); moveToRemoved(obj); };
+                    }
                     removedDiv.appendChild(div);
                 });
             }
-
-            if (!isExpired) {
-                removedDiv.ondrop = dropToRemoved;
-                removedDiv.ondragover = allowDrop;
-            }
         }
 
-        function makeDraggable(el, avObject) {
-            el.draggable = true;
-            let touchStartTime;
-
-            el.ondragstart = ev => {
-                ev.dataTransfer.setData('objectId', avObject.id);
-                el.classList.add('dragging');
-            };
-            el.ondragend = () => el.classList.remove('dragging');
-
-            // 手机长按拖拽支持
-            el.addEventListener('touchstart', e => {
-                touchStartTime = Date.now();
-            });
-            el.addEventListener('touchmove', e => {
-                if (Date.now() - touchStartTime > 400) { // 长按 400ms 后可拖拽
-                    e.preventDefault();
-                    el.style.opacity = '0.6';
-                    const touch = e.touches[0];
-                    const fakeEv = { dataTransfer: { setData: (k,v) => el.dataset.dragId = v } };
-                    fakeEv.dataTransfer.setData('objectId', avObject.id);
-                    el.dataset.dragging = 'true';
-                }
-            });
-            el.addEventListener('touchend', () => {
-                setTimeout(() => {
-                    el.style.opacity = '';
-                    delete el.dataset.dragging;
-                }, 300);
-            });
-        }
-
-        function allowDrop(ev) {
-            ev.preventDefault();
-        }
-
-        async function dropToRemoved(ev) {
+        function selectStudent(avObject, element) {
             if (isExpired) return;
-            ev.preventDefault();
-            const objectId = ev.dataTransfer ? ev.dataTransfer.getData('objectId') : ev.target.closest('[data-objectId]')?.dataset.objectId || ev.target.dataset.dragId;
-            if (!objectId) return;
-            const obj = allRecords.find(r => r.id === objectId);
-            if (!obj) return;
-            obj.set('teamnumber', 0);
-            obj.set('slotnumber', 0);
-            await obj.save();
-            loadData();
+            clearSelection();
+            selectedObject = avObject;
+            element.classList.add('selected');
         }
 
-        async function dropToTeam(ev) {
-            if (isExpired) return;
-            ev.preventDefault();
-            const objectId = ev.dataTransfer ? ev.dataTransfer.getData('objectId') : ev.target.closest('[data-objectId]')?.dataset.objectId || ev.target.dataset.dragId;
-            if (!objectId) return;
-            const obj = allRecords.find(r => r.id === objectId);
-            if (!obj) return;
+        async function moveSelectedHere(team, slot) {
+            if (isExpired || !selectedObject) return;
 
-            const newTeam = parseInt(ev.target.dataset.team);
-            const newSlot = parseInt(ev.target.dataset.slot);
-
+            // Check conflict
             const conflict = allRecords.find(r =>
-                r.get('teamnumber') === newTeam &&
-                r.get('slotnumber') === newSlot &&
-                r.id !== objectId
+                r.get('teamnumber') === team &&
+                r.get('slotnumber') === slot &&
+                r.id !== selectedObject.id
             );
             if (conflict) {
-                alert('该位置已有同学，请选择空位！');
+                alert('此位置已有同学！');
                 return;
             }
 
-            obj.set('teamnumber', newTeam);
-            obj.set('slotnumber', newSlot);
-            await obj.save();
+            selectedObject.set('teamnumber', team);
+            selectedObject.set('slotnumber', slot);
+            await selectedObject.save();
+            clearSelection();
             loadData();
         }
+
+        async function moveToRemoved(avObject) {
+            if (isExpired) return;
+            avObject.set('teamnumber', 0);
+            avObject.set('slotnumber', 0);
+            await avObject.save();
+            clearSelection();
+            loadData();
+        }
+
+        // Click outside to cancel selection
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.slot')) clearSelection();
+        });
 
         if (!isExpired) loadData();
     </script>
