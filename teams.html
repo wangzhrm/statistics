@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>分组系统 - 超窄多列版</title>
+    <title>分组系统 - 安全提交版</title>
     <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.13.2/dist/av-min.js"></script>
     <style>
         * { box-sizing: border-box; touch-action: manipulation; }
@@ -38,7 +38,6 @@
             font-size: 16px; font-weight: bold; color: #d32f2f; text-align: center;
             margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid #ffcdd2;
         }
-        /* ★ 关键改动：右侧多列网格布局 ★ */
         #removed-students {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
@@ -73,7 +72,6 @@
             background: #fff3e0; color: #999; border: 1.5px dashed #ff9800;
             text-align: center; padding: 10px 6px; font-size: 12px;
         }
-        /* 右侧名字卡片超窄样式 */
         .removed-list .slot {
             background: #ffebee; border-left: 3px solid #f44336;
             margin: 0; padding: 8px 4px; font-size: 13px;
@@ -93,23 +91,19 @@
 </head>
 <body>
     <h1>分组系统</h1>
-
     <div class="notice">
         请在 <span class="deadline">2025.11.24 23:59</span> 前完成分组<br>
-        点击名字 → 点击空位加入队伍 · 双击名字退出队伍
+        点击名字 → 点击空位（或双击退出） → 满意后点右下角 <b>提交修改</b>
     </div>
-
     <div id="expired-message" style="display:none;" class="expired">
         ⛔ 分组时间已截止（2025年11月24日 23:59）<br>
         分组已锁定，如需修改请联系老师
     </div>
-
     <div class="container">
         <div class="teams-section">
             <div class="loading" id="loading">加载中...</div>
             <div class="teams-grid" id="teams"></div>
         </div>
-
         <div class="removed-section">
             <div class="removed-title">未分组同学</div>
             <div id="removed-students" class="removed-list"></div>
@@ -135,19 +129,51 @@
         const teamsDiv = document.getElementById('teams');
         const removedDiv = document.getElementById('removed-students');
         const loading = document.getElementById('loading');
-        let allRecords = [];
+
+        let serverRecords = [];                    // 服务器最新数据
+        let localChanges = new Map();              // objectId → {teamnumber, slotnumber} 本地待提交修改
         let selectedObject = null;
 
+        // ==================== 提交按钮 ====================
+        const submitBtn = document.createElement('div');
+        submitBtn.style.cssText = `
+            position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+            background: #d32f2f; color: white; font-size: 18px; font-weight: bold;
+            padding: 14px 28px; border-radius: 50px; box-shadow: 0 4px 20px rgba(211,47,47,0.4);
+            cursor: pointer; user-select: none; text-align: center; line-height: 1.2;
+            transition: all 0.3s;
+        `;
+        submitBtn.textContent = '✔️ 已是最新';
+        submitBtn.onclick = commitChanges;
+        document.body.appendChild(submitBtn);
+
+        function updateSubmitButton() {
+            const pending = localChanges.size;
+            if (pending === 0) {
+                submitBtn.textContent = '✔️ 已是最新';
+                submitBtn.style.background = '#4caf50';
+                submitBtn.style.cursor = 'default';
+            } else {
+                submitBtn.textContent = `提交修改 (${pending}处)`;
+                submitBtn.style.background = '#d32f2f';
+                submitBtn.style.cursor = 'pointer';
+            }
+        }
+
+        // ==================== 数据加载 ====================
         async function loadData() {
             if (isExpired) return;
             const query = new AV.Query('TeamAssignment');
             query.ascending('teamnumber').ascending('slotnumber');
             const results = await query.find();
-            allRecords = results;
+            serverRecords = results;
+            localChanges.clear();           // 刷新时清除未提交的本地修改
             renderAll();
+            updateSubmitButton();
             loading.style.display = 'none';
         }
 
+        // ==================== 渲染 ====================
         function clearSelection() {
             document.querySelectorAll('.slot.selected').forEach(el => el.classList.remove('selected'));
             selectedObject = null;
@@ -162,7 +188,8 @@
             const removed = [];
             for (let i = 1; i <= 24; i++) teams[i] = {1: null, 2: null};
 
-            allRecords.forEach(obj => {
+            // 1. 先放服务器数据
+            serverRecords.forEach(obj => {
                 const team = obj.get('teamnumber');
                 const slot = obj.get('slotnumber');
                 const name = obj.get('studentname');
@@ -172,12 +199,35 @@
                 }
             });
 
-            // 队伍渲染（保持紧凑）
+            // 2. 再覆盖本地待提交修改（仅视觉）
+            localChanges.forEach((change, objectId) => {
+                const record = serverRecords.find(r => r.id === objectId);
+                if (!record) return;
+                const name = record.get('studentname');
+
+                // 从原位置移除
+                for (let t = 1; t <= 24; t++) {
+                    for (let s = 1; s <= 2; s++) {
+                        if (teams[t][s] && teams[t][s].obj.id === objectId) teams[t][s] = null;
+                    }
+                }
+                if (record.get('teamnumber') === 0) {
+                    removed.splice(removed.findIndex(x => x.obj.id === objectId), 1);
+                }
+
+                // 放到新位置
+                if (change.teamnumber === 0) {
+                    removed.push({name, obj: record});
+                } else {
+                    teams[change.teamnumber][change.slotnumber] = {name, obj: record};
+                }
+            });
+
+            // 渲染队伍
             for (let t = 1; t <= 24; t++) {
                 const card = document.createElement('div');
                 card.className = 'team-card';
                 card.innerHTML = `<div class="team-header">第 ${t} 组</div>`;
-
                 [1, 2].forEach(s => {
                     const member = teams[t][s];
                     const slotDiv = document.createElement('div');
@@ -188,6 +238,10 @@
                         if (!isExpired) {
                             slotDiv.onclick = () => selectStudent(member.obj, slotDiv);
                             slotDiv.ondblclick = e => { e.stopPropagation(); moveToRemoved(member.obj); };
+                        }
+                        if (localChanges.has(member.obj.id)) {
+                            slotDiv.style.outline = '3px solid #ff9800';
+                            slotDiv.title = '有未提交的修改';
                         }
                     } else {
                         slotDiv.textContent = '空位';
@@ -203,10 +257,11 @@
                 teamsDiv.appendChild(card);
             }
 
-            // 右侧未分组多列渲染
+            // 渲染未分组
             if (removed.length === 0) {
                 removedDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#aaa;padding:20px;">暂无未分组</div>';
             } else {
+                removed.sort((a,b) => a.name.localeCompare(b.name));
                 removed.forEach(({name, obj}) => {
                     const div = document.createElement('div');
                     div.className = 'slot';
@@ -216,11 +271,16 @@
                         div.onclick = () => selectStudent(obj, div);
                         div.ondblclick = e => { e.stopPropagation(); moveToRemoved(obj); };
                     }
+                    if (localChanges.has(obj.id)) {
+                        div.style.outline = '3px solid #ff9800';
+                        div.title = '有未提交的修改';
+                    }
                     removedDiv.appendChild(div);
                 });
             }
         }
 
+        // ==================== 操作 ====================
         function selectStudent(avObject, element) {
             if (isExpired) return;
             clearSelection();
@@ -228,27 +288,95 @@
             element.classList.add('selected');
         }
 
-        async function moveSelectedHere(team, slot) {
+        function moveSelectedHere(team, slot) {
             if (isExpired || !selectedObject) return;
-            const conflict = allRecords.find(r => r.get('teamnumber') === team && r.get('slotnumber') === slot && r.id !== selectedObject.id);
-            if (conflict) { alert('此位置已有同学！'); return; }
-            selectedObject.set('teamnumber', team);
-            selectedObject.set('slotnumber', slot);
-            await selectedObject.save();
+
+            // 防止把自己挤掉
+            const current = serverRecords.find(r => 
+                r.get('teamnumber') === team && 
+                r.get('slotnumber') === slot
+            );
+            if (current && current.id !== selectedObject.id && !localChanges.has(current.id)) {
+                alert('此位置已有其他同学！');
+                return;
+            }
+
+            localChanges.set(selectedObject.id, {teamnumber: team, slotnumber: slot});
             clearSelection();
-            loadData();
+            renderAll();
+            updateSubmitButton();
         }
 
-        async function moveToRemoved(avObject) {
+        function moveToRemoved(avObject) {
             if (isExpired) return;
-            avObject.set('teamnumber', 0);
-            avObject.set('slotnumber', 0);
-            await avObject.save();
+            localChanges.set(avObject.id, {teamnumber: 0, slotnumber: 0});
             clearSelection();
-            loadData();
+            renderAll();
+            updateSubmitButton();
         }
 
-        document.addEventListener('click', e => { if (!e.target.closest('.slot')) clearSelection(); });
+        // ==================== 提交修改 ====================
+        async function commitChanges() {
+            if (localChanges.size === 0) return;
+
+            submitBtn.textContent = '提交中...';
+            submitBtn.style.background = '#666';
+
+            try {
+                // 1. 重新拉取最新数据
+                await loadData();
+
+                // 2. 检查每一条本地修改是否仍然合法
+                const conflicts = [];
+                for (const [objectId, change] of localChanges) {
+                    const latest = serverRecords.find(r => r.id === objectId);
+                    if (!latest) {
+                        conflicts.push('记录已被删除');
+                        continue;
+                    }
+                    if (change.teamnumber > 0) {
+                        const occupied = serverRecords.find(r =>
+                            r.id !== objectId &&
+                            r.get('teamnumber') === change.teamnumber &&
+                            r.get('slotnumber') === change.slotnumber
+                        );
+                        if (occupied) {
+                            conflicts.push(`${latest.get('studentname')} 想去的第${change.teamnumber}组 ${change.slotnumber}号位已被占用`);
+                        }
+                    }
+                }
+
+                if (conflicts.length > 0) {
+                    alert('提交失败！有以下冲突：\n\n' + conflicts.join('\n') + '\n\n页面已刷新为最新状态，请重新操作。');
+                    localChanges.clear();
+                    await loadData();
+                    return;
+                }
+
+                // 3. 批量保存
+                const promises = [];
+                for (const [objectId, change] of localChanges) {
+                    const obj = serverRecords.find(r => r.id === objectId);
+                    obj.set('teamnumber', change.teamnumber);
+                    obj.set('slotnumber', change.slotnumber);
+                    promises.push(obj.save());
+                }
+                await Promise.all(promises);
+
+                alert('🎉 所有修改提交成功！');
+                localChanges.clear();
+                await loadData();
+
+            } catch (err) {
+                alert('提交失败：' + (err.message || err));
+            } finally {
+                updateSubmitButton();
+            }
+        }
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.slot')) clearSelection();
+        });
 
         if (!isExpired) loadData();
     </script>
