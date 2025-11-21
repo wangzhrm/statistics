@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>分组拖拽系统</title>
+<script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.13.2/dist/av-min.js"></script>
+<style>
+  body { font-family: "Microsoft YaHei", Arial, sans-serif; margin: 20px; background: #f7f9fc; }
+  h1 { text-align: center; color: #2c3e50; }
+  .container { display: flex; gap: 30px; flex-wrap: wrap; }
+  .teams { flex: 2; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+  .team {
+    border: 2px solid #3498db; border-radius: 10px; padding: 10px; background: #fff; min-height: 120px;
+  }
+  .team h3 { margin: 0 0 10px 0; text-align: center; color: #2980b9; }
+  .slot {
+    height: 45px; margin: 8px 0; background: #ecf0f1; border-radius: 6px; display: flex; align-items: center;
+    justify-content: center; border: 2px dashed #bdc3c7; font-size: 16px; cursor: pointer;
+  }
+  .slot.filled { background: #d5f4e6; border: 2px solid #27ae60; color: #2c3e50; }
+  .pool {
+    flex: 1; min-width: 250px; background: #fff; border: 2px solid #e74c3c; border-radius: 10px; padding: 15px;
+  }
+  .pool h2 { margin-top: 0; color: #c0392b; text-align: center; }
+  .student {
+    padding: 10px; margin: 6px 0; background: #fef5e7; border-radius: 6px; cursor: move;
+    user-select: none; text-align: center; font-weight: bold;
+  }
+  .student.dragging { opacity: 0.5; }
+  .highlight { border: 3px dashed #f1c40f !important; background: #fef9e7 !important; }
+</style>
+</head>
+<body>
+
+<h1>班级分组拖拽系统（实时保存到 LeanCloud）</h1>
+
+<div class="container">
+  <div class="teams" id="teams"></div>
+
+  <div class="pool">
+    <h2>待分配学生（拖拽到左侧组别）</h2>
+    <div id="studentPool"></div>
+  </div>
+</div>
+
+<script>
+// ================== LeanCloud 初始化 ==================
+const APP_ID = 'IgXd8B4cfA1N6dcnGY8ipZcD-gzGzoHsz';
+const APP_KEY = 'o7JdYuMhgcGMETm83Y1dq0KZ';
+AV.init({ appId: APP_ID, appKey: APP_KEY });
+
+// 我们用一个 ObjectId 固定的对象来保存所有分组（方便读取和更新）
+const MASTER_OBJECT_ID = '673e9f9b123456789abc0001';  // 你可以随便填一个固定值，或者下面代码会自动创建
+
+// ================== 学生名单 ==================
+const allStudents = [
+  "田雪","胡雅涵","范思颖","刘小潞","李欣霖","李唯怡","何雨熹","罗熙琳","吴可涵","何艾霖",
+  "吴莹莹","于静雯","彭桢茗","柯柏宇","赵彦杰","丁泊文","肖喃允","张钰翎","唐思诺","余宜莲",
+  "郑行","陶雨果","李虹颖","何雨睿","冯琳娟","李海韵","金志晖","柯柏廷","周朕宇","唐晞尧",
+  "李书行","陈安达","任柯嘉","刘阳睿","李志浩","陈怡诺（男）","王铄","冯嘉熙","许欣仪","李沂蔓",
+  "方小灿","罗钰淇","刘子琦","陈怡诺（女）","吴郑阳","易星辰","殷小丁"
+];
+
+// ================== 创建 24 个组 ==================
+const teamsContainer = document.getElementById('teams');
+for (let i = 1; i <= 24; i++) {
+  const teamDiv = document.createElement('div');
+  teamDiv.className = 'team';
+  teamDiv.innerHTML = `<h3>第 ${i} 组</h3><div class="slot" data-team="${i}" data-pos="1"></div><div class="slot" data-team="${i}" data-pos="2"></div>`;
+  teamsContainer.appendChild(teamDiv);
+}
+
+// ================== 拖拽逻辑 ==================
+let draggedStudent = null;
+
+function allowDrop(ev) { ev.preventDefault(); }
+function drag(ev) {
+  draggedStudent = ev.target;
+  ev.dataTransfer.setData("text", ev.target.innerText);
+  setTimeout(() => draggedStudent.style.display = 'none', 0);
+}
+function dragEnd(ev) {
+  draggedStudent.style.display = 'block';
+  draggedStudent = null;
+}
+function drop(ev) {
+  ev.preventDefault();
+  if (!draggedStudent) return;
+  const targetSlot = ev.target.closest('.slot');
+  if (!targetSlot) return;
+
+  // 如果目标槽已有学生，先把原来的学生踢回池子
+  if (targetSlot.classList.contains('filled')) {
+    const oldName = targetSlot.innerText.trim();
+    if (oldName) addStudentToPool(oldName);
+  }
+
+  // 把拖来的学生放进去
+  targetSlot.innerText = draggedStudent.innerText.trim();
+  targetSlot.classList.add('filled');
+
+  // 从原来位置删除
+  draggedStudent.remove();
+
+  // 高亮一下
+  targetSlot.classList.add('highlight');
+  setTimeout(() => targetSlot.classList.remove('highlight'), 500);
+
+  saveAllToLeanCloud();
+}
+
+// 把学生放回池子
+function returnToPool(ev) {
+  ev.preventDefault();
+  const slot = ev.target.closest('.slot');
+  if (!slot || !slot.classList.contains('filled')) return;
+  const name = slot.innerText.trim();
+  addStudentToPool(name);
+  slot.innerText = '';
+  slot.classList.remove('filled');
+  saveAllToLeanCloud();
+}
+
+function addStudentToPool(name) {
+  const pool = document.getElementById('studentPool');
+  const div = document.createElement('div');
+  div.className = 'student';
+  div.innerText = name;
+  div.draggable = true;
+  div.ondragstart = drag;
+  div.ondragend = dragEnd;
+  pool.appendChild(div);
+}
+
+// ================== 保存到 LeanCloud ==================
+async function saveAllToLeanCloud() {
+  const assignment = {};
+  document.querySelectorAll('.slot').forEach(slot => {
+    const team = slot.dataset.team;
+    const pos = slot.dataset.pos;
+    const name = slot.classList.contains('filled') ? slot.innerText.trim() : null;
+    if (!assignment[`team${team}`]) assignment[`team${team}`] = { member1: null, member2: null };
+    assignment[`team${team}`][`member${pos}`] = name;
+  });
+
+  let record = AV.Object.createWithoutData('TeamAssignment', MASTER_OBJECT_ID);
+  try {
+    await record.fetch();  // 如果存在就更新
+  } catch (e) {
+    record = new AV.Object('TeamAssignment');  // 不存在就新建
+  }
+
+  record.set('data', assignment);
+  await record.save();
+  console.log('已保存到 LeanCloud', new Date().toLocaleString());
+}
+
+// ================== 从 LeanCloud 加载 ==================
+async function loadFromLeanCloud() {
+  try {
+    const record = AV.Object.createWithoutData('TeamAssignment', MASTER_OBJECT_ID);
+    await record.fetch();
+    const data = record.get('data') || {};
+
+    // 清空所有槽位
+    document.querySelectorAll('.slot').forEach(s => {
+      s.innerText = '';
+      s.classList.remove('filled');
+    });
+
+    // 清空学生池
+    document.getElementById('studentPool').innerHTML = '';
+
+    const usedNames = new Set();
+
+    Object.keys(data).forEach(key => {
+      const teamNum = key.replace('team', '');
+      const m = data[key];
+      if (m.member1) {
+        const slot = document.querySelector(`.slot[data-team="${teamNum}"][data-pos="1"]`);
+        slot.innerText = m.member1;
+        slot.classList.add('filled');
+        usedNames.add(m.member1);
+      }
+      if (m.member2) {
+        const slot = document.querySelector(`.slot[data-team="${teamNum}"][data-pos="2"]`);
+        slot.innerText = m.member2;
+        slot.classList.add('filled');
+        usedNames.add(m.member2);
+      }
+    });
+
+    // 剩下的学生放回池子
+    allStudents.forEach(name => {
+      if (!usedNames.has(name)) addStudentToPool(name);
+    });
+
+  } catch (err) {
+    // 如果记录还不存在，就把所有学生放进池子
+    allStudents.forEach(addStudentToPool);
+  }
+}
+
+// ================== 绑定事件 ==================
+document.querySelectorAll('.slot').forEach(slot => {
+  slot.ondragover = allowDrop;
+  slot.ondrop = drop;
+  slot.ondblclick = returnToPool;  // 双击槽位也可以把人踢回池子
+});
+
+document.getElementById('studentPool').ondragover = allowDrop;
+document.getElementById('studentPool').ondrop = (ev) => {
+  ev.preventDefault();
+  if (draggedStudent) {
+    // 从槽位拖回池子的情况
+    const name = draggedStudent.innerText.trim();
+    const oldSlot = draggedStudent.closest('.slot');
+    if (oldSlot) {
+      oldSlot.innerText = '';
+      oldSlot.classList.remove('filled');
+    }
+    addStudentToPool(name);
+    draggedStudent.remove();
+    saveAllToLeanCloud();
+  }
+};
+
+// ================== 启动 ==================
+loadFromLeanCloud();  // 页面加载时读取最新分组
+</script>
+</body>
+</html>
