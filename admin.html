@@ -52,6 +52,16 @@
     </table>
   </div>
 
+  <!-- Clear All Marks Button -->
+  <div class="section">
+    <button 
+      onclick="clearAllMarks()" 
+      style="background-color: #ffebee; color: #c62828; border: 1px solid #ef9a9a; padding: 6px 12px;"
+    >
+      🗑️ Remove All Marks
+    </button>
+  </div>
+
   <script>
     let students = [];
     let criteria = [];
@@ -214,6 +224,29 @@
         row.insertCell(1).textContent = scores.join(', ');
         row.insertCell(2).textContent = avg;
       });
+    }
+
+    // === NEW FUNCTION: Clear All Marks ===
+    async function clearAllMarks() {
+      const confirmed = confirm("⚠️ Are you sure you want to delete ALL student marks?\nThis action cannot be undone.");
+      if (!confirmed) return;
+
+      try {
+        const query = new AV.Query('Feedback');
+        const allFeedback = await query.limit(1000).find(); // LeanCloud default limit is 100, so increase if needed
+        if (allFeedback.length === 0) {
+          alert("No marks found to delete.");
+          return;
+        }
+
+        // Handle pagination if more than 1000 (optional; for most classroom use, 1000 is enough)
+        await AV.Object.destroyAll(allFeedback);
+        alert(`✅ Successfully deleted ${allFeedback.length} mark(s).`);
+        loadResults(); // Refresh results table
+      } catch (error) {
+        console.error("Error deleting marks:", error);
+        alert("❌ Failed to delete marks:\n" + (error.message || error));
+      }
     }
 
     // Init
