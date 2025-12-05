@@ -1,0 +1,124 @@
+<!-- summary.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Survey Summary (With Delete)</title>
+  <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.15.0/dist/av-min.js"></script>
+  <style>
+    body { font-family: Arial; max-width: 800px; margin: 30px auto; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+    th, td { border: 1px solid #999; padding: 10px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    button { padding: 10px 15px; margin-top: 10px; cursor: pointer; }
+    .danger { background-color: #ffcccc; color: darkred; }
+    .info { margin: 10px 0; padding: 10px; background: #f0f0f0; }
+  </style>
+</head>
+<body>
+  <h2>Survey Summary (Chi-Square Table)</h2>
+  <div id="totals" class="info"></div>
+  <table id="chiTable">
+    <thead>
+      <tr>
+        <th>Gender \ Sleep</th>
+        <th>Before 11 PM</th>
+        <th>At/After 11 PM</th>
+        <th>Row Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Female</td><td id="f_yes">0</td><td id="f_no">0</td><td id="f_total">0</td></tr>
+      <tr><td>Male</td><td id="m_yes">0</td><td id="m_no">0</td><td id="m_total">0</td></tr>
+      <tr style="font-weight:bold;">
+        <td>Column Total</td>
+        <td id="col_yes">0</td>
+        <td id="col_no">0</td>
+        <td id="grand_total">0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button id="refreshBtn">Refresh Data</button>
+  <button id="clearBtn" class="danger" onclick="clearAllData()">⚠️ Clear All Responses</button>
+
+  <script>
+    // ⚠️ WARNING: MasterKey is exposed here!
+    AV.init({
+      appId: "u5hBA55L2AJZp0IEiAaSnlhC-gzGzoHsz",
+      appKey: "axw7SM7mWH6ZQMFfOccF4AbD",
+      masterKey: "TinT1INoDChRUiJaqVpYBhQZ", // 🔥 NEVER DO THIS IN PRODUCTION
+      serverURLs: "https://u5hba55l.lc-cn-n1-shared.com"
+    });
+
+    async function loadSummary() {
+      try {
+        const query = new AV.Query('Response');
+        // Use masterKey to bypass ACL restrictions
+        const results = await query.find({ useMasterKey: true });
+
+        let f_yes = 0, f_no = 0, m_yes = 0, m_no = 0;
+
+        results.forEach(obj => {
+          const gender = obj.get('gender');
+          const sleep = obj.get('sleepBefore11');
+          if (gender === 'female') {
+            if (sleep) f_yes++; else f_no++;
+          } else if (gender === 'male') {
+            if (sleep) m_yes++; else m_no++;
+          }
+        });
+
+        const f_total = f_yes + f_no;
+        const m_total = m_yes + m_no;
+        const col_yes = f_yes + m_yes;
+        const col_no = f_no + m_no;
+        const grand_total = f_total + m_total;
+
+        document.getElementById('f_yes').textContent = f_yes;
+        document.getElementById('f_no').textContent = f_no;
+        document.getElementById('m_yes').textContent = m_yes;
+        document.getElementById('m_no').textContent = m_no;
+        document.getElementById('f_total').textContent = f_total;
+        document.getElementById('m_total').textContent = m_total;
+        document.getElementById('col_yes').textContent = col_yes;
+        document.getElementById('col_no').textContent = col_no;
+        document.getElementById('grand_total').textContent = grand_total;
+
+        document.getElementById('totals').innerHTML = `
+          Total Students: ${grand_total} |
+          Females: ${f_total} |
+          Males: ${m_total} |
+          Sleep Before 11 PM: ${col_yes}
+        `;
+      } catch (error) {
+        console.error('Load error:', error);
+        alert('Failed to load data: ' + (error.message || error));
+      }
+    }
+
+    async function clearAllData() {
+      if (!confirm("⚠️ PERMANENTLY delete ALL responses? This cannot be undone.")) return;
+
+      try {
+        const query = new AV.Query('Response');
+        const results = await query.find({ useMasterKey: true });
+        if (results.length === 0) {
+          alert('No data to delete.');
+          return;
+        }
+        await AV.Object.destroyAll(results, { useMasterKey: true });
+        alert(`✅ Deleted ${results.length} responses.`);
+        loadSummary();
+      } catch (error) {
+        console.error('Delete error:', error);
+        alert('Delete failed: ' + (error.message || error));
+      }
+    }
+
+    document.getElementById('refreshBtn').onclick = loadSummary;
+    loadSummary();
+  </script>
+</body>
+</html>
