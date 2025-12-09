@@ -98,53 +98,35 @@
   </div>
 
   <script>
+    async function loadAllStudents() {
+      const query = new AV.Query('Student');
+      query.limit(1000); // adjust if you have many students
+      const students = await query.find();
+      return students;
+    }
+
     async function loadFeedbackTotals() {
       const query = new AV.Query('Feedback');
-      query.include('targetStudent'); // ensures we get student name
-      query.limit(1000); // adjust if you have many submissions
+      query.include('targetStudent');
+      query.limit(1000);
       const feedbacks = await query.find();
 
-      const grouped = {};
+      const feedbackMap = {};
 
       feedbacks.forEach(fb => {
         const student = fb.get('targetStudent');
+        if (!student) return; // skip invalid references
+
         const studentId = student.id;
-        const studentName = student.get('name') || 'Unnamed Group';
         const total = fb.get('total') || 0;
 
-        if (!grouped[studentId]) {
-          grouped[studentId] = { name: studentName, totals: [] };
+        if (!feedbackMap[studentId]) {
+          feedbackMap[studentId] = [];
         }
-        grouped[studentId].totals.push(total);
+        feedbackMap[studentId].push(total);
       });
 
-      return grouped;
-    }
-
-    function renderResults(groupedData) {
-      const tbody = document.getElementById('resultsBody');
-      tbody.innerHTML = '';
-
-      if (Object.keys(groupedData).length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No feedback submitted yet.</td></tr>`;
-        return;
-      }
-
-      // Sort by student name
-      const sortedEntries = Object.entries(groupedData).sort((a, b) => a[1].name.localeCompare(b[1].name));
-
-      sortedEntries.forEach(([id, data]) => {
-        const row = tbody.insertRow();
-        row.insertCell(0).textContent = data.name;
-
-        // Show all total marks as comma-separated list
-        const totalsStr = data.totals.map(t => t.toFixed(1)).join(', ');
-        row.insertCell(1).textContent = totalsStr;
-
-        // Calculate average
-        const avg = data.totals.reduce((a, b) => a + b, 0) / data.totals.length;
-        row.insertCell(2).textContent = avg.toFixed(2);
-      });
+      return feedbackMap;
     }
 
     async function refreshResults() {
@@ -152,12 +134,56 @@
         document.getElementById('message').textContent = '';
         document.getElementById('resultsBody').innerHTML = '<tr><td colspan="3" class="loading">Loading...</td></tr>';
 
-        const grouped = await loadFeedbackTotals();
-        renderResults(grouped);
+        // Fetch all students and feedback in parallel
+        const [students, feedbackMap] = await Promise.all([
+          loadAllStudents(),
+          loadFeedbackTotals()
+        ]);
+
+        // Build a complete list of all students, with or without feedback
+        const groupedData = {};
+        students.forEach(student => {
+          const id = student.id;
+          const name = student.get('name') || 'Unnamed Group';
+          const totals = feedbackMap[id] || []; // empty if no feedback
+          groupedData[id] = { name, totals };
+        });
+
+        renderResults(groupedData);
       } catch (err) {
         console.error(err);
         document.getElementById('message').textContent = 'Error loading data: ' + (err.message || err);
       }
+    }
+
+    function renderResults(groupedData) {
+      const tbody = document.getElementById('resultsBody');
+      tbody.innerHTML = '';
+
+      if (Object.keys(groupedData).length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No students found.</td></tr>`;
+        return;
+      }
+
+      // Sort by student/group name
+      const sortedEntries = Object.entries(groupedData).sort((a, b) =>
+        a[1].name.localeCompare(b[1].name)
+      );
+
+      sortedEntries.forEach(([id, data]) => {
+        const row = tbody.insertRow();
+        row.insertCell(0).textContent = data.name;
+
+        if (data.totals.length === 0) {
+          row.insertCell(1).textContent = '—';
+          row.insertCell(2).textContent = '—';
+        } else {
+          const totalsStr = data.totals.map(t => t.toFixed(1)).join(', ');
+          row.insertCell(1).textContent = totalsStr;
+          const avg = data.totals.reduce((a, b) => a + b, 0) / data.totals.length;
+          row.insertCell(2).textContent = avg.toFixed(2);
+        }
+      });
     }
 
     document.getElementById('refreshBtn').addEventListener('click', refreshResults);
