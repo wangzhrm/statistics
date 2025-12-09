@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback Totals</title>
+  <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.15.0/dist/av-min.js"></script>
+  <script>
+    AV.init({
+      appId: "NvC4d9DG9SsuryBsCgkX7fpW-gzGzoHsz",
+      appKey: "GOuT5So30SilOjB65cuFGQ4X",
+      serverURL: "https://nvc4d9dg.lc-cn-n1-shared.com"
+    });
+  </script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 16px;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 500px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: #17a2b8;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #138496;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      font-style: italic;
+      color: #666;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Feedback Results</h2>
+
+  <button id="refreshBtn">Refresh Results</button>
+  <div id="message" class="error"></div>
+
+  <div class="table-container">
+    <table id="resultsTable">
+      <thead>
+        <tr>
+          <th>Student (Group)</th>
+          <th>Received Total Marks</th>
+          <th>Average</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody">
+        <tr><td colspan="3" class="loading">Loading feedback totals...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function loadFeedbackTotals() {
+      const query = new AV.Query('Feedback');
+      query.include('targetStudent'); // ensures we get student name
+      query.limit(1000); // adjust if you have many submissions
+      const feedbacks = await query.find();
+
+      const grouped = {};
+
+      feedbacks.forEach(fb => {
+        const student = fb.get('targetStudent');
+        const studentId = student.id;
+        const studentName = student.get('name') || 'Unnamed Group';
+        const total = fb.get('total') || 0;
+
+        if (!grouped[studentId]) {
+          grouped[studentId] = { name: studentName, totals: [] };
+        }
+        grouped[studentId].totals.push(total);
+      });
+
+      return grouped;
+    }
+
+    function renderResults(groupedData) {
+      const tbody = document.getElementById('resultsBody');
+      tbody.innerHTML = '';
+
+      if (Object.keys(groupedData).length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No feedback submitted yet.</td></tr>`;
+        return;
+      }
+
+      // Sort by student name
+      const sortedEntries = Object.entries(groupedData).sort((a, b) => a[1].name.localeCompare(b[1].name));
+
+      sortedEntries.forEach(([id, data]) => {
+        const row = tbody.insertRow();
+        row.insertCell(0).textContent = data.name;
+
+        // Show all total marks as comma-separated list
+        const totalsStr = data.totals.map(t => t.toFixed(1)).join(', ');
+        row.insertCell(1).textContent = totalsStr;
+
+        // Calculate average
+        const avg = data.totals.reduce((a, b) => a + b, 0) / data.totals.length;
+        row.insertCell(2).textContent = avg.toFixed(2);
+      });
+    }
+
+    async function refreshResults() {
+      try {
+        document.getElementById('message').textContent = '';
+        document.getElementById('resultsBody').innerHTML = '<tr><td colspan="3" class="loading">Loading...</td></tr>';
+
+        const grouped = await loadFeedbackTotals();
+        renderResults(grouped);
+      } catch (err) {
+        console.error(err);
+        document.getElementById('message').textContent = 'Error loading data: ' + (err.message || err);
+      }
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', refreshResults);
+
+    // Initial load
+    refreshResults();
+  </script>
+</body>
+</html>
