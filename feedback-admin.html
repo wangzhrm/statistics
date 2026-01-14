@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Feedback Totals</title>
+  <title>Feedback Totals & Export</title>
   <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.15.0/dist/av-min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  
   <script>
     AV.init({
       appId: "NvC4d9DG9SsuryBsCgkX7fpW-gzGzoHsz",
@@ -12,97 +14,57 @@
       serverURL: "https://nvc4d9dg.lc-cn-n1-shared.com"
     });
   </script>
+  
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 16px;
-      margin: 0;
-      background-color: #f9f9f9;
-    }
-
-    h2 {
-      text-align: center;
-      margin-top: 0;
-    }
-
-    .table-container {
-      overflow-x: auto;
-      margin: 20px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      background: white;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 500px;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 12px;
-      text-align: left;
-      font-size: 15px;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      background-color: #17a2b8;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #138496;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 20px;
-      font-style: italic;
-      color: #666;
-    }
-
-    .error {
-      color: red;
-      text-align: center;
-      margin-top: 10px;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 16px; background-color: #f9f9f9; }
+    h2 { text-align: center; }
+    .controls { display: flex; gap: 10px; margin-bottom: 20px; }
+    .table-container { overflow-x: auto; border: 1px solid #ccc; border-radius: 6px; background: white; }
+    table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+    button { padding: 10px 15px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
+    #refreshBtn { background-color: #17a2b8; color: white; flex: 1; }
+    #exportBtn { background-color: #28a745; color: white; flex: 1; }
+    .delete-btn { background-color: #dc3545; color: white; font-size: 12px; }
+    .delete-btn:hover { background-color: #a71d2a; }
+    .loading { text-align: center; padding: 20px; color: #666; }
+    .error { color: red; text-align: center; margin-bottom: 10px; }
   </style>
 </head>
 <body>
-  <h2>Feedback Results</h2>
 
-  <button id="refreshBtn">Refresh Results</button>
+  <h2>Feedback Management</h2>
+
   <div id="message" class="error"></div>
+
+  <div class="controls">
+    <button id="refreshBtn">🔄 Refresh Results</button>
+    <button id="exportBtn">📥 Export to Excel</button>
+  </div>
 
   <div class="table-container">
     <table id="resultsTable">
       <thead>
         <tr>
           <th>Student (Group)</th>
-          <th>Received Total Marks</th>
+          <th>Scores Received</th>
           <th>Average</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody id="resultsBody">
-        <tr><td colspan="3" class="loading">Loading feedback totals...</td></tr>
+        <tr><td colspan="4" class="loading">Loading data...</td></tr>
       </tbody>
     </table>
   </div>
 
   <script>
+    let globalGroupedData = {}; // To store data for export
+
     async function loadAllStudents() {
       const query = new AV.Query('Student');
-      query.limit(1000); // adjust if you have many students
-      const students = await query.find();
-      return students;
+      query.limit(1000);
+      return await query.find();
     }
 
     async function loadFeedbackTotals() {
@@ -112,83 +74,116 @@
       const feedbacks = await query.find();
 
       const feedbackMap = {};
-
       feedbacks.forEach(fb => {
         const student = fb.get('targetStudent');
-        if (!student) return; // skip invalid references
-
+        if (!student) return;
         const studentId = student.id;
-        const total = fb.get('total') || 0;
-
-        if (!feedbackMap[studentId]) {
-          feedbackMap[studentId] = [];
-        }
-        feedbackMap[studentId].push(total);
+        if (!feedbackMap[studentId]) feedbackMap[studentId] = [];
+        // Store both the value and the LeanCloud ID so we can delete it later
+        feedbackMap[studentId].push({ id: fb.id, total: fb.get('total') || 0 });
       });
-
       return feedbackMap;
     }
 
     async function refreshResults() {
       try {
         document.getElementById('message').textContent = '';
-        document.getElementById('resultsBody').innerHTML = '<tr><td colspan="3" class="loading">Loading...</td></tr>';
+        document.getElementById('resultsBody').innerHTML = '<tr><td colspan="4" class="loading">Loading...</td></tr>';
 
-        // Fetch all students and feedback in parallel
-        const [students, feedbackMap] = await Promise.all([
-          loadAllStudents(),
-          loadFeedbackTotals()
-        ]);
+        const [students, feedbackMap] = await Promise.all([loadAllStudents(), loadFeedbackTotals()]);
 
-        // Build a complete list of all students, with or without feedback
-        const groupedData = {};
+        globalGroupedData = {};
         students.forEach(student => {
           const id = student.id;
           const name = student.get('name') || 'Unnamed Group';
-          const totals = feedbackMap[id] || []; // empty if no feedback
-          groupedData[id] = { name, totals };
+          // Extract member names if they exist (assuming 'members' is a field or part of name)
+          // Adjust logic here if members are stored in a different column
+          const members = student.get('members') || name; 
+          const feedbacks = feedbackMap[id] || [];
+          
+          globalGroupedData[id] = { 
+            name, 
+            members: members.toString().split(/[,，]/).map(m => m.trim()), 
+            feedbacks 
+          };
         });
 
-        renderResults(groupedData);
+        renderResults();
       } catch (err) {
-        console.error(err);
-        document.getElementById('message').textContent = 'Error loading data: ' + (err.message || err);
+        document.getElementById('message').textContent = 'Error: ' + err.message;
       }
     }
 
-    function renderResults(groupedData) {
+    function renderResults() {
       const tbody = document.getElementById('resultsBody');
       tbody.innerHTML = '';
 
-      if (Object.keys(groupedData).length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No students found.</td></tr>`;
-        return;
-      }
-
-      // Sort by student/group name
-      const sortedEntries = Object.entries(groupedData).sort((a, b) =>
-        a[1].name.localeCompare(b[1].name)
-      );
+      const sortedEntries = Object.entries(globalGroupedData).sort((a, b) => a[1].name.localeCompare(b[1].name));
 
       sortedEntries.forEach(([id, data]) => {
         const row = tbody.insertRow();
         row.insertCell(0).textContent = data.name;
 
-        if (data.totals.length === 0) {
+        if (data.feedbacks.length === 0) {
           row.insertCell(1).textContent = '—';
           row.insertCell(2).textContent = '—';
+          row.insertCell(3).textContent = '';
         } else {
-          const totalsStr = data.totals.map(t => t.toFixed(1)).join(', ');
-          row.insertCell(1).textContent = totalsStr;
-          const avg = data.totals.reduce((a, b) => a + b, 0) / data.totals.length;
+          const scores = data.feedbacks.map(f => f.total);
+          row.insertCell(1).textContent = scores.map(s => s.toFixed(1)).join(', ');
+          const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
           row.insertCell(2).textContent = avg.toFixed(2);
+          
+          const delBtn = document.createElement('button');
+          delBtn.className = 'delete-btn';
+          delBtn.textContent = 'Delete Scores';
+          delBtn.onclick = () => deleteGroupScores(id, data.name);
+          row.insertCell(3).appendChild(delBtn);
         }
       });
     }
 
-    document.getElementById('refreshBtn').addEventListener('click', refreshResults);
+    async function deleteGroupScores(studentId, groupName) {
+      if (!confirm(`Are you sure you want to delete ALL scores for ${groupName}?`)) return;
 
-    // Initial load
+      try {
+        const feedbackIds = globalGroupedData[studentId].feedbacks.map(f => f.id);
+        const objectsToDelete = feedbackIds.map(id => AV.Object.createWithoutData('Feedback', id));
+        
+        await AV.Object.destroyAll(objectsToDelete);
+        alert('Scores deleted successfully');
+        refreshResults();
+      } catch (err) {
+        alert('Delete failed: ' + err.message);
+      }
+    }
+
+    function exportToExcel() {
+      const exportData = [];
+      
+      Object.values(globalGroupedData).forEach(group => {
+        const avgScore = group.feedbacks.length > 0 
+          ? (group.feedbacks.reduce((a, b) => a + b.total, 0) / group.feedbacks.length).toFixed(2)
+          : 'No Score';
+
+        group.members.forEach(memberName => {
+          exportData.push({
+            'Member Name': memberName,
+            'Group': group.name,
+            'Average Score': avgScore
+          });
+        });
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Scores");
+      XLSX.writeFile(workbook, "Student_Feedback_Scores.xlsx");
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', refreshResults);
+    document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+
     refreshResults();
   </script>
 </body>
