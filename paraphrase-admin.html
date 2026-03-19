@@ -32,6 +32,10 @@
         #resultsSection { margin-top: 40px; padding: 20px; background: #fff; border: 2px solid #007bff; border-radius: 8px; }
         .answer-entry { padding: 15px; border-bottom: 1px solid #eee; }
         .student-name { color: #007bff; font-weight: bold; }
+
+        /* Style for the missing students list */
+        #missingSection { margin-top: 20px; padding: 15px; background: #fff5f5; border: 1px dashed #d9534f; border-radius: 8px; }
+        #missingListDisplay { font-weight: bold; color: #d9534f; }
     </style>
 </head>
 <body>
@@ -63,6 +67,14 @@
 
     <div id="resultsSection">
         <p style="color: #888;">Click "Refresh Answers" to view active submissions...</p>
+    </div>
+
+    <div id="missingSection" style="display:none;">
+        <h3>3. Pending Submissions</h3>
+        <p>The following students have not submitted an answer yet:</p>
+        <div id="missingListDisplay"></div>
+        <br>
+        <button class="btn" style="background:#6c757d; color:white; font-size:0.8em;" onclick="copyMissing()">Copy List</button>
     </div>
 </div>
 
@@ -158,23 +170,48 @@
         if (error) { alert(error.message); return; }
 
         const resultsDiv = document.getElementById('resultsSection');
+        const missingDiv = document.getElementById('missingSection');
+        const missingDisplay = document.getElementById('missingListDisplay');
+        
         resultsDiv.innerHTML = '<h3>Active Student Answers:</h3>';
+        
+        let missingNames = [];
 
         if (data.length === 0) {
             resultsDiv.innerHTML += '<p>No students are currently "Allowed to Login".</p>';
+            missingDiv.style.display = "none";
             return;
         }
 
         data.forEach(s => {
+            if (!s.student_answer || s.student_answer.trim() === "") {
+                missingNames.push(s.username);
+            }
+            
             const answer = s.student_answer || "(No answer submitted)";
             resultsDiv.innerHTML += `
                 <div class="answer-entry">
                     <p><strong>${s.username}</strong>: ${answer}</p>
                 </div>`;
         });
+
+        // Show/Hide missing list based on findings
+        if (missingNames.length > 0) {
+            missingDiv.style.display = "block";
+            missingDisplay.innerText = missingNames.join(", ");
+        } else {
+            missingDiv.style.display = "block";
+            missingDisplay.innerText = "All active students have submitted their work!";
+        }
     }
 
-    // 5. NEW: Export to Word Function
+    function copyMissing() {
+        const text = document.getElementById('missingListDisplay').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Copied missing names to clipboard!");
+        });
+    }
+
     function exportToWord() {
         const content = document.getElementById('resultsSection').innerHTML;
         
@@ -183,7 +220,6 @@
             return;
         }
 
-        // HTML structure that Microsoft Word understands as a document
         const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
                 "xmlns:w='urn:schemas-microsoft-com:office:word' "+
                 "xmlns='http://www.w3.org/TR/REC-html40'>"+
@@ -195,7 +231,6 @@
             type: 'application/msword'
         });
         
-        // Create download link
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
