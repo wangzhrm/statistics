@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - RStudio Submissions</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 40px; background-color: #f0f2f5; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .submission-card { border-left: 5px solid #007bff; background: #fdfdfd; padding: 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .student-name { font-size: 1.2em; color: #007bff; margin-bottom: 10px; display: block; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .label { font-weight: bold; color: #555; margin-top: 10px; display: block; }
+        pre { background: #272822; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 0.9em; }
+        .prompt-text { font-style: italic; color: #333; background: #e9ecef; padding: 10px; border-radius: 4px; display: block; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>RStudio Assignment Submissions</h2>
+    <button onclick="fetchSubmissions()">Refresh Submissions</button>
+    <div id="displayArea">
+        <p>Loading submissions...</p>
+    </div>
+</div>
+
+<script>
+    const _URL = "https://btwdbphheotbqrmbswgk.supabase.co";
+    const _KEY = "sb_publishable_9lY3A1HrgERNIC597NEAKQ_YTCmkh2k";
+    const supabaseClient = supabase.createClient(_URL, _KEY);
+
+    async function fetchSubmissions() {
+        const { data, error } = await supabaseClient
+            .from('student_accounts')
+            .select('username, ai_prompt, r_code')
+            .not('ai_prompt', 'is', null) // Only show those who have submitted something
+            .order('username', { ascending: true });
+
+        if (error) {
+            alert("Error fetching data: " + error.message);
+            return;
+        }
+
+        const displayArea = document.getElementById('displayArea');
+        displayArea.innerHTML = "";
+
+        if (data.length === 0) {
+            displayArea.innerHTML = "<p>No submissions found yet.</p>";
+            return;
+        }
+
+        data.forEach(student => {
+            displayArea.innerHTML += `
+                <div class="submission-card">
+                    <strong class="student-name">Student: ${student.username}</strong>
+                    
+                    <span class="label">AI Prompt Used:</span>
+                    <span class="prompt-text">${student.ai_prompt || "<em>No prompt provided</em>"}</span>
+                    
+                    <span class="label">RStudio Script:</span>
+                    <pre><code>${student.r_code || "# No code provided"}</code></pre>
+                </div>
+            `;
+        });
+    }
+
+    // Initial load
+    fetchSubmissions();
+</script>
+</body>
+</html>
