@@ -7,16 +7,51 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; padding: 40px; background-color: #f0f2f5; }
         .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .submission-card { border-left: 5px solid #007bff; background: #fdfdfd; padding: 20px; margin-bottom: 30px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        /* Submission Card Styling */
+        .submission-card { 
+            position: relative; 
+            border-left: 5px solid #007bff; 
+            background: #fdfdfd; 
+            padding: 20px; 
+            margin-bottom: 30px; 
+            border-radius: 4px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        }
+        
         .student-name { font-size: 1.2em; color: #007bff; margin-bottom: 10px; display: block; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         .label { font-weight: bold; color: #555; margin-top: 10px; display: block; }
-        pre { background: #272822; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 0.9em; min-height: 40px; }
+        
+        /* Wrapper for Copy Button Positioning */
+        .copy-wrapper { position: relative; margin-top: 5px; }
+        
+        pre { background: #272822; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 0.9em; min-height: 40px; margin: 0; }
         .prompt-text { font-style: italic; color: #333; background: #e9ecef; padding: 10px; border-radius: 4px; display: block; min-height: 20px; }
+        
+        /* The Copy Button */
+        .btn-copy {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 10px;
+            font-size: 0.7em;
+            text-transform: uppercase;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        .btn-copy:hover { opacity: 1; background: #007bff; }
+        
+        /* Main UI Buttons */
         .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px; margin-bottom: 20px; }
         .btn-refresh { background: #007bff; color: white; }
         .btn-danger { background: #dc3545; color: white; float: right; }
         
-        /* New section for missing students */
         #missingSection { margin-top: 50px; padding: 20px; border: 2px dashed #dc3545; border-radius: 8px; background: #fff5f5; }
         #missingList { font-weight: bold; color: #c0392b; background: white; padding: 10px; border: 1px solid #ddd; display: block; margin: 10px 0; }
         .no-submission { color: #999; font-style: italic; }
@@ -37,7 +72,7 @@
         <h3>Students who have NOT submitted:</h3>
         <p>You can copy this list for your group chat:</p>
         <code id="missingList">Scanning...</code>
-        <button class="btn" style="background: #6c757d; color: white;" onclick="copyMissingList()">Copy Names Only</button>
+        <button class="btn" style="background: #6c757d; color: white;" onclick="copyTextOnly('missingList')">Copy Names Only</button>
     </div>
 </div>
 
@@ -63,29 +98,36 @@
         
         let missingNames = [];
 
-        data.forEach(student => {
+        data.forEach((student, index) => {
             const hasPrompt = student.ai_prompt && student.ai_prompt.trim() !== "";
             const hasCode = student.r_code && student.r_code.trim() !== "";
 
-            // Track missing submissions
             if (!hasPrompt && !hasCode) {
                 missingNames.push(student.username);
             }
 
+            // Create submission block with unique IDs for copying
             displayArea.innerHTML += `
                 <div class="submission-card">
                     <strong class="student-name">Student: ${student.username}</strong>
+                    
                     <span class="label">AI Prompt Used:</span>
-                    <span class="prompt-text ${!hasPrompt ? 'no-submission' : ''}">
-                        ${hasPrompt ? student.ai_prompt : "No prompt submitted yet."}
-                    </span>
+                    <div class="copy-wrapper">
+                        <button class="btn-copy" onclick="copyTextOnly('p-${index}', this)">Copy</button>
+                        <span id="p-${index}" class="prompt-text ${!hasPrompt ? 'no-submission' : ''}">
+                            ${hasPrompt ? student.ai_prompt : "No prompt submitted yet."}
+                        </span>
+                    </div>
+
                     <span class="label">RStudio Script:</span>
-                    <pre><code class="${!hasCode ? 'no-submission' : ''}">${hasCode ? student.r_code : "# No code submitted yet."}</code></pre>
+                    <div class="copy-wrapper">
+                        <button class="btn-copy" onclick="copyTextOnly('c-${index}', this)">Copy</button>
+                        <pre><code id="c-${index}" class="${!hasCode ? 'no-submission' : ''}">${hasCode ? student.r_code : "# No code submitted yet."}</code></pre>
+                    </div>
                 </div>
             `;
         });
 
-        // Update the missing list at the bottom
         if (missingNames.length > 0) {
             missingDisplay.innerText = missingNames.join(", ");
         } else {
@@ -93,10 +135,34 @@
         }
     }
 
-    function copyMissingList() {
-        const text = document.getElementById('missingList').innerText;
-        navigator.clipboard.writeText(text).then(() => {
-            alert("Copied to clipboard: " + text);
+    /**
+     * Function to copy text to clipboard
+     * @param {string} elementId - The ID of the element containing text
+     * @param {HTMLElement} btn - The button element to show feedback
+     */
+    function copyTextOnly(elementId, btn = null) {
+        const element = document.getElementById(elementId);
+        const textToCopy = element.innerText || element.textContent;
+
+        // Don't copy placeholder text
+        if (textToCopy.includes("No prompt submitted") || textToCopy.includes("# No code submitted")) {
+            return;
+        }
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            if (btn) {
+                const originalText = btn.innerText;
+                btn.innerText = "Copied!";
+                btn.style.background = "#28a745"; // Change to green temporarily
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = "#6c757d";
+                }, 1500);
+            } else {
+                alert("Copied to clipboard!");
+            }
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
         });
     }
 
