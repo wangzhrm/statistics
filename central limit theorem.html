@@ -2,24 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stochastic Simulation Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #f4f7f6; padding: 20px; }
-        .controls { margin-bottom: 20px; text-align: center; }
-        button { padding: 10px 25px; font-size: 16px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; transition: 0.2s; }
-        button:hover { background: #0056b3; }
-        .chart-container { width: 80%; max-width: 800px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
-        h2 { color: #333; margin-top: 0; }
-        .stats { font-weight: bold; color: #555; }
+        :root {
+            --primary: #007bff;
+            --secondary: #6c757d;
+            --bg: #f8f9fa;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            background: var(--bg); 
+            padding: 10px; 
+            margin: 0;
+            color: #333;
+        }
+
+        .controls { 
+            margin: 20px 0; 
+            text-align: center; 
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h2 { font-size: 1.5rem; margin-bottom: 10px; }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        button { 
+            padding: 12px 20px; 
+            font-size: 16px; 
+            font-weight: 600;
+            cursor: pointer; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            flex: 1;
+            /* Prevents gray highlight on tap in mobile Safari */
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        button#resetBtn { background: var(--secondary); }
+
+        .stats { 
+            font-size: 0.9rem;
+            color: #666; 
+            background: #fff;
+            padding: 8px;
+            border-radius: 20px;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .chart-container { 
+            width: 95%; 
+            max-width: 800px; 
+            background: white; 
+            padding: 15px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+            margin-bottom: 20px; 
+            box-sizing: border-box;
+            /* Helps maintain aspect ratio on different screens */
+            position: relative;
+            height: 300px; 
+        }
+
+        @media (max-width: 480px) {
+            .chart-container { height: 250px; padding: 10px; }
+            h2 { font-size: 1.2rem; }
+            button { font-size: 14px; padding: 10px; }
+        }
     </style>
 </head>
 <body>
 
     <div class="controls">
-        <h2>Random Sampling Simulation</h2>
-        <button id="generateBtn">Generate 10 Numbers</button>
+        <h2>Simulation Dashboard</h2>
+        <div class="button-group">
+            <button id="generateBtn">Generate +10</button>
+            <button id="resetBtn">Reset</button>
+        </div>
         <p class="stats">Total Samples: <span id="sampleCount">0</span></p>
     </div>
 
@@ -32,20 +106,26 @@
     </div>
 
     <script>
-        // Data storage
-        let allNumbers = [];
         let allMeans = [];
         const binCount = 20;
         const min = 0;
         const max = 100;
         const step = (max - min) / binCount;
 
-        // Initialize Bins (0-5, 5-10, etc.)
-        const labels = Array.from({length: binCount}, (_, i) => `${i * step}-${(i + 1) * step}`);
+        const labels = Array.from({length: binCount}, (_, i) => `${i * step}`);
         let rawFrequencies = new Array(binCount).fill(0);
         let meanFrequencies = new Array(binCount).fill(0);
 
-        // Chart Configurations
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 11 } } } },
+            scales: { 
+                y: { beginAtZero: true, ticks: { font: { size: 10 } } },
+                x: { ticks: { font: { size: 9 }, maxRotation: 45, minRotation: 45 } }
+            }
+        };
+
         const createConfig = (ctx, label, data, color) => new Chart(ctx, {
             type: 'bar',
             data: {
@@ -54,42 +134,41 @@
                     label: label,
                     data: data,
                     backgroundColor: color,
-                    borderWidth: 1,
-                    barPercentage: 1,
-                    categoryPercentage: 1
+                    barPercentage: 1.0,
+                    categoryPercentage: 1.0
                 }]
             },
-            options: {
-                scales: { 
-                    y: { beginAtZero: true, title: { display: true, text: 'Frequency' } },
-                    x: { title: { display: true, text: 'Value Intervals' } }
-                }
-            }
+            options: commonOptions
         });
 
-        const rawChart = createConfig(document.getElementById('rawChart'), 'Distribution of Individual Numbers', rawFrequencies, 'rgba(54, 162, 235, 0.7)');
-        const meanChart = createConfig(document.getElementById('meanChart'), 'Distribution of Sample Means (n=10)', meanFrequencies, 'rgba(255, 99, 132, 0.7)');
+        const rawChart = createConfig(document.getElementById('rawChart'), 'Individual Distributions', rawFrequencies, 'rgba(54, 162, 235, 0.7)');
+        const meanChart = createConfig(document.getElementById('meanChart'), 'Sample Means (n=10)', meanFrequencies, 'rgba(255, 99, 132, 0.7)');
 
         document.getElementById('generateBtn').addEventListener('click', () => {
             let currentBatch = [];
             for (let i = 0; i < 10; i++) {
                 let num = Math.random() * 100;
                 currentBatch.push(num);
-                
-                // Update Raw Frequency Bins
                 let binIndex = Math.min(Math.floor(num / step), binCount - 1);
                 rawFrequencies[binIndex]++;
             }
 
-            // Calculate Mean
             let mean = currentBatch.reduce((a, b) => a + b) / 10;
             let meanBinIndex = Math.min(Math.floor(mean / step), binCount - 1);
             meanFrequencies[meanBinIndex]++;
 
-            // Update UI and Charts
             allMeans.push(mean);
             document.getElementById('sampleCount').innerText = allMeans.length * 10;
             
+            rawChart.update('none'); // 'none' improves performance on mobile
+            meanChart.update('none');
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            rawFrequencies.fill(0);
+            meanFrequencies.fill(0);
+            allMeans = [];
+            document.getElementById('sampleCount').innerText = "0";
             rawChart.update();
             meanChart.update();
         });
